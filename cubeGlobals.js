@@ -1,4 +1,4 @@
-function x(m1,m2){
+function X(m1,m2){
     const result = [];
     for (let i=0; i<m1.length; i++){
         const r = [];
@@ -44,4 +44,31 @@ function Rz(t){
         [Math.sin(t), Math.cos(t), 0],
         [0, 0, 1],
     ]
+}
+
+let mx = [
+    [1,0,0],
+    [0,1,0],
+    [0,0,1],
+]
+
+let inv = [
+    [1,0,0],
+    [0,1,0],
+    [0,0,1]
+]
+
+function rotate(tx, ty, tz){
+    const rx = X(Rx(tx),mx);
+    const ry = X(Ry(ty),rx);
+    const rz = X(Rz(tz),ry);
+    mx = rz;
+
+    const ix = X(inv, Rx(-tx));
+    const iy = X(ix, Ry(-ty));
+    const iz = X(iy, Rz(-tz));
+    inv = iz;
+
+    console.log(mx, inv);
+    console.log(X(mx, inv));
 }
