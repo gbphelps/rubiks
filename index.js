@@ -1,7 +1,7 @@
 import { init, globals } from './globals.js';
 import cubeSpawn from './cubeSpawn';
 import * as THREE from 'three';
-import { makeMesh } from './utils/three';
+import { rotate, getRotation } from './cubeGlobals';
 
 document.addEventListener('DOMContentLoaded',()=>{
     init();
@@ -41,15 +41,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     globals.scene.add(cube);
 
     function animate(){
-        const s = new THREE.Shape();
-        s.moveTo(0,0);
-        s.lineTo(0,1);
-        s.lineTo(1,1);
-        s.lineTo(1,0);
-
         requestAnimationFrame(animate);
-        cube.rotation.x += .01;
-        cube.rotation.y += .01;
+        rotate(.01,.001,.01);
+        cube.setRotationFromMatrix(getRotation());
+        cube.updateMatrix();
+
         globals.render();
     }
 
