@@ -1,10 +1,36 @@
-import { init, globals } from './globals.js';
+import { init as initGlobals, globals } from './globals.js';
 import cubeSpawn from './cubeSpawn';
 import * as THREE from 'three';
 import { rotate, getRotation } from './cubeGlobals';
+import { init as initControls, controls } from './controls';
+import { makeMesh } from './utils/three';
+
+
+
+
+
+
+function makeDebugScreen() {
+    const m = new THREE.Shape();
+    m.moveTo(-1.5, 1.5);
+    m.lineTo(1.5, 1.5);
+    m.lineTo(1.5, -1.5);
+    m.lineTo(-1.5, -1.5);
+    const geometry = new THREE.ShapeGeometry(m);
+    const material = new THREE.MeshBasicMaterial({ 
+        color: 'black',
+        transparent: true,
+        opacity: .2, 
+    });
+    return makeMesh({
+        geometry,
+        material,
+    })
+}
 
 document.addEventListener('DOMContentLoaded',()=>{
-    init();
+    initGlobals();
+    initControls();
 
     const cube = new THREE.Object3D();
 
@@ -40,15 +66,25 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     globals.scene.add(cube);
 
+    const debug = makeDebugScreen();
+    globals.scene.add(debug);
+
     function animate(){
         requestAnimationFrame(animate);
-        rotate(.01,.001,.01);
+        rotate(.008, 0.015, .01);
         cube.setRotationFromMatrix(getRotation());
         cube.updateMatrix();
-
+        if (controls.click) getClickedCube();
         globals.render();
     }
 
     animate();
 
 })
+
+
+
+function getClickedCube() {
+    const { x, y } = controls.click;
+    console.log({x, y})
+}
