@@ -1,6 +1,17 @@
 import * as THREE from 'three'
 
-export const globals = {
+
+interface Globals {
+    canvas: HTMLCanvasElement | null,
+    scene: THREE.Scene | null,
+    camera: THREE.PerspectiveCamera | null,
+    renderer: THREE.Renderer | null,
+    render: (() => void) | null,
+    container: HTMLDivElement | null,
+    pixPerUnit: number,
+}
+
+export const globals: Globals = {
     canvas: null,
     scene: null,
     camera: null,
@@ -11,8 +22,14 @@ export const globals = {
 }
 
 export function init() {
-    const canvas = document.getElementById('three');
-    const container = document.getElementById('container');
+    const canvas = document.createElement('canvas');
+    
+    const container = document.createElement('div');
+    container.id = 'container';
+    
+    document.body.appendChild(container);
+    container.appendChild(canvas);
+
     const renderer = new THREE.WebGLRenderer({ 
         canvas, 
         antialias: true,
@@ -46,9 +63,13 @@ function resize() {
     camera.updateProjectionMatrix();
 
     const theta = camera.fov/180 * Math.PI;
-    const z = 1/Math.tan(theta/2) / 2;
 
-    globals.pixPerUnit = height/camera.position.z*z;
+    // calculate z distance of camera screen in pixels (using height).
+    const z = (height/2) / Math.tan(theta/2);
+
+    // calculate ratio between z in pixels and z in scene units.
+    globals.pixPerUnit = z/camera.position.z;
+
     renderer.setSize(width, height);
 }
 

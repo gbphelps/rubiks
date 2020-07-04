@@ -1,12 +1,18 @@
 import { globals } from './globals';
 
-export const controls = {
+interface Vec2 {
+    x: number;
+    y: number;
+}
+
+export const controls: Record<string, false | Vec2> = {
     click: false,
     mouse: false,
 }
 
-function assign(key) {
-    return function(e) {
+function assign(key: string) {
+    return function(e: MouseEvent) {
+        const { container } = globals;
         const { top: y0, left: x0, height, width } = container.getBoundingClientRect();
 
         const x = ((e.clientX - x0) - width/2)/globals.pixPerUnit;

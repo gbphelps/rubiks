@@ -1,6 +1,15 @@
 import * as THREE from 'three';
 
-function X(m1,m2){
+type Matrix = (number[])[];
+
+type Mx4 = [
+    number, number, number, number,
+    number, number, number, number,
+    number, number, number, number,
+    number, number, number, number,
+];
+
+function X(m1: Matrix, m2: Matrix): Matrix {
     const result = [];
     for (let i=0; i<m1.length; i++){
         const r = [];
@@ -24,7 +33,7 @@ function X(m1,m2){
     return result;
 }
 
-function Rx(t){ 
+function Rx(t: number){ 
     return [
         [1, 0, 0, 0],
         [0, Math.cos(t), -Math.sin(t), 0],
@@ -33,7 +42,7 @@ function Rx(t){
     ]
 }
 
-function Ry(t){ 
+function Ry(t: number){ 
     return [
         [Math.cos(t), 0, Math.sin(t), 0],
         [0, 1, 0, 0],
@@ -42,7 +51,7 @@ function Ry(t){
     ]
 }
 
-function Rz(t){ 
+function Rz(t: number){ 
     return [
         [Math.cos(t), -Math.sin(t), 0, 0],
         [Math.sin(t), Math.cos(t), 0, 0],
@@ -66,7 +75,7 @@ export const rotation = {
     ],
 }
 
-export function rotate(tx, ty, tz){
+export function rotate(tx: number, ty: number, tz: number){
 
     const rx = X(Rx(tx),rotation.mx);
     const ry = X(Ry(ty),rx);
@@ -81,8 +90,10 @@ export function rotate(tx, ty, tz){
 }
 
 
-function flatten(mx){
-    return mx.reduce((acc,el) => {
+function flatten<T>(
+    mx: (T | T[])[]
+): T[] {
+    return mx.reduce<T[]>((acc,el) => {
         if (Array.isArray(el)) {
             return acc.concat(flatten(el));
         } else {
@@ -90,8 +101,14 @@ function flatten(mx){
         }
     },[])
 }
+
 export function getRotation(){
     const mx4 = new THREE.Matrix4();
-    mx4.set(...flatten(rotation.mx));
+    const typedValues: Mx4 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const values = flatten(rotation.mx);
+    for (let i=0; i<values.length; i++){
+        typedValues[i] = values[i];
+    }
+    mx4.set(...typedValues);
     return mx4;
 }

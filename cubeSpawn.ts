@@ -1,15 +1,14 @@
 import * as THREE from 'three';
 
 import { makeMesh } from './utils/three';
+import { Side, Face, Vec3 } from './utils/types';
 
 
 
 const INSET = 0.8;
 const BORDER_RADIUS = .12;
 
-
-
-function makeDecal(color, side){
+function makeDecal(color: THREE.Color, side: Side){
     const decalShape = new THREE.Shape();
     decalShape.moveTo(BORDER_RADIUS,0);
 
@@ -19,15 +18,15 @@ function makeDecal(color, side){
 
     decalShape.lineTo(INSET,INSET-BORDER_RADIUS);
 
-    decalShape.arc(-BORDER_RADIUS, 0, BORDER_RADIUS, 0, Math.PI/2);
+    decalShape.arc(-BORDER_RADIUS, 0, BORDER_RADIUS, 0, Math.PI/2, false);
 
     decalShape.lineTo(BORDER_RADIUS,INSET);
 
-    decalShape.arc(0,-BORDER_RADIUS, BORDER_RADIUS, Math.PI/2, Math.PI);
+    decalShape.arc(0,-BORDER_RADIUS, BORDER_RADIUS, Math.PI/2, Math.PI, false);
 
     decalShape.lineTo(0,BORDER_RADIUS);
 
-    decalShape.arc(BORDER_RADIUS, 0, BORDER_RADIUS, Math.PI/2, Math.PI*3/2);
+    decalShape.arc(BORDER_RADIUS, 0, BORDER_RADIUS, Math.PI/2, Math.PI*3/2, false);
     
 
     const decal = makeMesh({
@@ -70,14 +69,14 @@ function makeDecal(color, side){
 
 
 
-export default function cubeSpawn(faces,position) {
+export default function cubeSpawn(faces: Face[], position: Vec3) {
 
     const box = makeMesh({
         geometry: new THREE.BoxGeometry(1,1,1),
         material: new THREE.MeshBasicMaterial({ color: 0x000000 })
     });
  
-    faces.forEach(({color, side}) => {
+    faces.forEach(({color, side}: Face) => {
         const decal = makeDecal(color, side);
         box.add(decal);
     })
