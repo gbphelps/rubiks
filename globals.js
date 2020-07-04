@@ -17,8 +17,8 @@ export function init() {
     });
 
     const { height, width } = canvas.getBoundingClientRect();
-    const camera = new THREE.PerspectiveCamera(75, width / height);
-    camera.position.z = 2;
+    const camera = new THREE.PerspectiveCamera(30, width / height);
+    camera.position.z = 10;
 
     const scene = new THREE.Scene()
 

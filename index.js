@@ -1,69 +1,51 @@
-import * as THREE from 'three';
 import { init, globals } from './globals.js';
-
-
-
-function makeMesh({geometry, material}){
-    return new THREE.Mesh(geometry, material);
-}
-
-function makeCube(color, inset=.8, r=.15) {
-
-    const box = makeMesh({
-        geometry: new THREE.BoxGeometry(1,1,1),
-        material: new THREE.MeshBasicMaterial({ color: 0x000000 })
-    });
-
-    const decalShape = new THREE.Shape();
-    decalShape.moveTo(r,0);
-
-    decalShape.lineTo(inset-r,0); // line
-
-    decalShape.arc(0, r, r, Math.PI*3/2, 0, false); // arc
-
-    decalShape.lineTo(inset,inset-r);
-
-    decalShape.arc(-r, 0, r, 0, Math.PI/2);
-
-    decalShape.lineTo(r,inset);
-
-    decalShape.arc(0,-r, r, Math.PI/2, Math.PI);
-
-    decalShape.lineTo(0,r);
-
-    decalShape.arc(r, 0, r, Math.PI/2, Math.PI*3/2);
-    
-
-    const decal = makeMesh({
-        geometry: new THREE.ShapeGeometry(decalShape),
-        material: new THREE.MeshBasicMaterial({ 
-            color,
-            polygonOffset: true,
-            polygonOffsetFactor: -1,
-            polygonOffsetUnits: -1, 
-        }),
-    })
-
-    decal.position.x = -inset/2;
-    decal.position.y = -inset/2;
-    decal.position.z = .5;
-
-    box.add(decal);
-
-    globals.scene.add( box );
-    return box;
-}
-
+import cubeSpawn from './cubeSpawn';
+import * as THREE from 'three';
 
 document.addEventListener('DOMContentLoaded',()=>{
     init();
-    const box = makeCube('red');
+
+    const cube = new THREE.Object3D();
+
+    for (let x=-1; x<=1; x++){
+        for (let y=-1; y<=1; y++){
+            for (let z=-1; z<=1; z++){
+                const decals = [];
+                
+                if (z === 1){
+                    decals.push({side: 'front', color: 'lime'})
+                } else if (z === -1){
+                    decals.push({side: 'back', color: 'yellow'})
+                }
+
+                if (x === 1){
+                    decals.push({side: 'right', color: 'red'})
+                } else if (x === -1){
+                    decals.push({side: 'left', color: 'orange'})
+                }
+
+                if (y === 1){
+                    decals.push({side: 'top', color: 'white'})
+                } else if (y === -1){
+                    decals.push({side: 'bottom', color: 'blue'})
+                }
+
+                const box = cubeSpawn(decals,{ x, y, z, });
+                cube.add(box);
+            }
+        }
+    }
+    
+
+    globals.scene.add(cube);
 
     function animate(){
         requestAnimationFrame(animate);
-        box.rotation.x += .01;
+        cube.rotation.x += .01;
+        cube.rotation.y += .01;
         globals.render();
     }
 
     animate();
+
 })
