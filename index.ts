@@ -11,6 +11,7 @@ import { Mesh, MeshBasicMaterial } from 'three';
 import { setAction, getAction } from './action';
 import applyTwist from './actions/twist';
 import applyRotate from './actions/rotate';
+import getUserTorque from './getUserTorque';
 
 
 function getInitialDecals(x: number,y: number,z: number) {
@@ -137,11 +138,20 @@ function deselectCube() {
 function mouseup(){
     deselectCube();
     const e = drain('mouseup');
+    if (!e) throw new Error();
+    
     const action = getAction();
     if (!action) return;
 
     if (action.type === 'twist'){
-        console.log('endTwist')
+        const torque = getUserTorque(e);
+        const quarterSlice = Math.PI/2;
+        const target = {
+            x: Math.round(torque.x/quarterSlice)*quarterSlice,
+            y: Math.round(torque.y/quarterSlice)*quarterSlice,
+            z: Math.round(torque.z/quarterSlice)*quarterSlice,
+        };
+        console.log(target);
     }
     setAction(null);
 }

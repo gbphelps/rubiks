@@ -1,12 +1,13 @@
-import { setAction, TwistAction, getAction } from "../action";
+import { setAction, TwistAction, getAction, RotateAction } from "../action";
 import { extractScreenCoords } from "../events";
 import { getProjectionOntoSide, getCameraCoords, getScreenCoords } from "../cubeProjections";
 import { getNormal_cubeSpace, CoordTriad, Vec3, Vec2 } from "../utils/types";
 import { XProd, X, Rx, Ry, Rz, Matrix2Tuple, unitVector, dotProd, vec3 } from "../utils/matrix";
 import { getTranche } from "../boxRegistry";
 import * as THREE from "three";
+import getUserTorque from "../getUserTorque";
 
-const THRESHHOLD = .01;
+const THRESHHOLD = 0.01;
 
 
 function getCardinalDirection(vec: Vec3){
@@ -41,29 +42,6 @@ function getCardinalDirection(vec: Vec3){
     return result;
 }
 
-
-function getTorque(e: MouseEvent, action: TwistAction){
-    if (!action.torqueParams) throw new Error();
-    const {
-        unitTorque,
-        screenDirection,
-    } = action.torqueParams;
-    
-    const {x: x2, y: y2} = extractScreenCoords(e);
-    const {x: x1, y: y1} = action.startPosition.screenCoords;
-    const userDir = {
-        x: x2 - x1,
-        y: y2 - y1,
-    }
-
-    const dot = dotProd(userDir, screenDirection);
-    return {
-        x: dot * unitTorque.x,
-        y: dot * unitTorque.y,
-        z: dot * unitTorque.z,
-    }
-}
-
 function getScreenDirection(startPosition: CoordTriad, direction: Vec3){
     const cameraStart = startPosition.cameraCoords;
     const cameraDir = getCameraCoords(direction);
@@ -93,7 +71,7 @@ function canSetTorqueParams(e: MouseEvent, action: TwistAction){
     return (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) >= THRESHHOLD*THRESHHOLD;
 }
 
-function setTorqueParams(e: MouseEvent, action: TwistAction){
+function getTorqueParams(e: MouseEvent, action: TwistAction){
     const screenCoords = extractScreenCoords(e);
     const { cubeCoords } = getProjectionOntoSide(screenCoords, action.side);
 
@@ -122,33 +100,33 @@ function setTorqueParams(e: MouseEvent, action: TwistAction){
     }
 
     if (!axis) throw new Error('Axis not found!');
-
-    setAction({
-        ...action,
-        torqueParams: {
-            direction,
-            screenDirection,
-            unitTorque,
-            axis,
-        },
-    })
+    return {
+        direction,
+        screenDirection,
+        unitTorque,
+        axis,
+    };
 }
 
 export default function applyTwist(e: MouseEvent, action: TwistAction){
-    if (!action.torqueParams) {
-        if (canSetTorqueParams(e, action)) setTorqueParams(e, action);
-        return;
+    let torqueParams = action.torqueParams; 
+    if (!torqueParams) {
         // When user first starts dragging, we don't have a good sense for
         // which direction they want to drag in. So we wait until their drag
         // distance has reached a certain threshhold here. Note that THRESHHOLD
         // is in screen units (the cube is 3x3x3 in screen units).
+        if (!canSetTorqueParams(e, action)) return;
+        torqueParams = getTorqueParams(e, action);
+        setAction({
+            ...action,
+            torqueParams,
+        })
     }
-        // apply direction
 
-    const torque = getTorque(e, action);
+    const torque = getUserTorque(e);
     let m = unitVector();
 
-    switch (action.torqueParams.axis) {
+    switch (torqueParams.axis) {
         case 'x':
             m = X(Rx(torque.x), m);
             break;
