@@ -1,4 +1,4 @@
-import { Vec2, ProjectionData, Vec3 } from "./utils/types";
+import { Vec2, Vec3, Side } from "./utils/types";
 
 
 export interface RotateAction {
@@ -9,8 +9,10 @@ export interface RotateAction {
 export interface TwistAction {
     type: 'twist',
     startCubeCoords: Vec3,
-    prevCubeCoords: Vec3,
     direction: null | Vec3,
+    side: Side,
+    axis: null | keyof Vec3,
+    torqueDirection: null | Vec3,
 }
 
 let action: RotateAction | TwistAction | null = null;
