@@ -7,6 +7,7 @@ import { makeDebugScreen } from './utils/debug';
 import { Face, Vec3 } from './utils/types';
 import * as boxRegistry from './boxRegistry';
 import { Mesh, MeshBasicMaterial } from 'three';
+import { setAction, getAction } from './action';
 
 
 function getInitialDecals(x: number,y: number,z: number) {
@@ -102,7 +103,10 @@ function mousedown() {
     }
 
     if (boxRegistry.isCenterSquare(data.boxRegistryNode)) {
-        console.log('CENTER');
+        setAction({
+            type: 'rotate',
+            from: screenCoords,
+        })
     }
 
     colorizeActive(new THREE.Color('black'));
@@ -118,8 +122,14 @@ function deselectCube() {
 function mouseup(){
     drain('mouseup');
     deselectCube();
+    setAction(null);
 }
 
 function mousemove(){
     const e = drain('mousemove');
+    const action = getAction();
+    if (!action) return;
+    if (action.type === 'rotate') {
+        console.log('trying to rotate');
+    }
 }
