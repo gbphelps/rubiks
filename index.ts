@@ -2,14 +2,11 @@ import { init as initGlobals, globals } from './globals';
 import cubeSpawn from './cubeSpawn';
 import * as THREE from 'three';
 import { rotate, getRotation, getProjectionOntoCube } from './rotation';
-import { init as initControls, controls } from './controls';
-import { makeMesh } from './utils/three';
+import { init as initControls, drain, peek, extractScreenCoords } from './events';
 import { makeDebugScreen } from './utils/debug';
-import { Face } from './utils/types';
+import { Face, Vec3 } from './utils/types';
 import * as boxRegistry from './boxRegistry';
 import { Mesh, MeshBasicMaterial } from 'three';
-
-
 
 
 function getInitialDecals(x: number,y: number,z: number) {
@@ -67,7 +64,9 @@ document.addEventListener('DOMContentLoaded',()=>{
         rotate(.008, 0.015, .01);
         cube.setRotationFromMatrix(getRotation());
         cube.updateMatrix();
-        if (controls.click) selectCube();
+        if (peek('mousedown')) mousedown();
+        if (peek('mouseup')) mouseup();
+        if (peek('mousemove')) mousemove();
         globals.render();
     }
 
@@ -89,13 +88,38 @@ function colorizeActive(color: THREE.Color) {
     material.needsUpdate = true;
 }
 
-function selectCube() {
-    if (!controls.click) throw new Error('controls.click is set to false');
-    const data = getProjectionOntoCube(controls.click);
-    colorizeActive(new THREE.Color('black'));
+function mousedown() {
+    const mousedown = drain('mousedown');
+    if (!mousedown) throw new Error('Event already drained!');
 
-    if (!data) return;
+    const screenCoords = extractScreenCoords(mousedown);
+    const data = getProjectionOntoCube(screenCoords);
+    
+    if (!data) {
+        deselectCube();
+        boxRegistry.setActiveBox(null);
+        return;
+    }
+
+    if (boxRegistry.isCenterSquare(data.boxRegistryNode)) {
+        console.log('CENTER');
+    }
+
+    colorizeActive(new THREE.Color('black'));
     boxRegistry.setActiveBox(data.boxRegistryNode);
     colorizeActive(new THREE.Color('magenta'));
-    controls.click = false;
+}
+
+function deselectCube() {
+    colorizeActive(new THREE.Color('black'));
+    boxRegistry.setActiveBox(null);
+}
+
+function mouseup(){
+    drain('mouseup');
+    deselectCube();
+}
+
+function mousemove(){
+    const e = drain('mousemove');
 }

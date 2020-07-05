@@ -38,3 +38,11 @@ export function getActiveBox(){
     if (!activeNode) return null;
     return getBox(activeNode);
 }
+
+export function isCenterSquare(node: Vec3) {
+    let ones = 0;
+    Object.values(node).forEach(val => {
+        if (val === 1) ones++;
+    });
+    return ones === 2;
+}
