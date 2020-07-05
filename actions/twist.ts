@@ -1,10 +1,11 @@
-import { setAction, TwistAction } from "../action";
+import { setAction, TwistAction, getAction } from "../action";
 import { extractScreenCoords } from "../events";
 import { getProjectionOntoSide } from "../cubeProjections";
 import { Vec3, getNormal_cubeSpace } from "../utils/types";
-import { XProd, X, Rx, Ry, Rz, Matrix2Tuple } from "../utils/matrix";
+import { XProd, X, Rx, Ry, Rz, Matrix2Tuple, unitVector } from "../utils/matrix";
 import { getTranche } from "../boxRegistry";
 import * as THREE from "three";
+import { globals } from "../globals";
 
 const THRESHHOLD = .1;
 
@@ -49,12 +50,38 @@ function scalarProjection(a: Vec3, b: Vec3){
     return adotb / bdotb; 
 }
 
+function getTorque(e: MouseEvent){
+    const action = getAction();
+    if (!action) throw new Error('No active action');
+    if (action.type !== 'twist') throw new Error('Torque can only be extracted when action type is `twist`');
+    if (!action.direction) throw new Error('No direction on action');
+    if (!action.unitTorque) throw new Error('No unitTorque on action');
+    
+    const { x: x1, y: y1, z: z1 } = action.startPosition.cubeCoords;
+    const screenCoords = extractScreenCoords(e);
+    const { cubeCoords: { x: x2, y: y2, z: z2 } } = getProjectionOntoSide(screenCoords, action.side);
+
+    const vec = {
+        x: x2 - x1,
+        y: y2 - y1,
+        z: z2 - z1,
+    };
+
+    const theta = scalarProjection(vec, action.direction);
+
+    return {
+        x: theta * action.unitTorque.x,
+        y: theta * action.unitTorque.y,
+        z: theta * action.unitTorque.z,
+    }
+}
+
 export default function applyTwist(e: MouseEvent, action: TwistAction){
     const screenCoords = extractScreenCoords(e);
     const { cubeCoords } = getProjectionOntoSide(screenCoords, action.side);
 
     const {x: x2, y: y2, z: z2} = cubeCoords;
-    const {x: x1, y: y1, z: z1} = action.startCubeCoords;
+    const {x: x1, y: y1, z: z1} = action.startPosition.cubeCoords;
 
     const vec = {
         x: x2 - x1,
@@ -71,13 +98,13 @@ export default function applyTwist(e: MouseEvent, action: TwistAction){
 
         if (dragDistance > THRESHHOLD){
             const direction = getCardinalDirection(vec);
-            const torqueDirection = XProd(direction, getNormal_cubeSpace(action.side));
+            const unitTorque = XProd(getNormal_cubeSpace(action.side),direction);
 
             const dims: (keyof Vec3)[] = ['x', 'y', 'z'];
             let axis: null | keyof Vec3 = null;
             for (let i=0; i<3; i++){
                 const dim = dims[i];
-                if (torqueDirection[dim] === 0) continue;
+                if (unitTorque[dim] === 0) continue;
                 axis = dim;
                 break;
             }
@@ -87,43 +114,33 @@ export default function applyTwist(e: MouseEvent, action: TwistAction){
             setAction({
                 ...action,
                 direction,
-                torqueDirection,
+                unitTorque,
                 axis,
             })
         }
     } else {
-        console.log('apply direction');
+        // apply direction
 
-        const vec = {
-            x: x2 - x1,
-            y: y2 - y1,
-            z: z2 - z1,
-        };
+        const torque = getTorque(e);
 
-        const theta = scalarProjection(vec, action.direction);
-
-        let m = [
-            [1,0,0,0],
-            [0,1,0,0],
-            [0,0,1,0],
-            [0,0,0,1],
-        ];
+        let m = unitVector();
 
         switch (action.axis) {
             case 'x':
-                m = X(Rx(theta), m);
+                m = X(Rx(torque.x), m);
                 break;
             case 'y':
-                m = X(Ry(theta), m);
+                m = X(Ry(torque.y), m);
                 break;
             case 'z':
-                m = X(Rz(theta), m);
+                m = X(Rz(torque.z), m);
                 break;
         }
        
         const tranche = getTranche();
         tranche.forEach(box => {
-            console.log(box);
+            if (!box) throw new Error('Tried to access unintialized box');
+
             const matrix = new THREE.Matrix4();
             matrix.set(...Matrix2Tuple(m));
             box.setRotationFromMatrix(matrix);

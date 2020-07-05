@@ -8,11 +8,15 @@ export interface RotateAction {
 
 export interface TwistAction {
     type: 'twist',
-    startCubeCoords: Vec3,
+    startPosition: {
+        cubeCoords: Vec3,
+        cameraCoords: Vec3,
+        screenCoords: Vec2,
+    },
     direction: null | Vec3,
     side: Side,
     axis: null | keyof Vec3,
-    torqueDirection: null | Vec3,
+    unitTorque: null | Vec3,
 }
 
 let action: RotateAction | TwistAction | null = null;

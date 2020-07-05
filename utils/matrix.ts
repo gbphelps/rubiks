@@ -46,11 +46,11 @@ export function XProd(v1: Vec3, v2: Vec3) {
 
 
 export function X(m1: Matrix, m2: Matrix): Matrix {
-    const result = [];
+    const result: Matrix = [];
     for (let i=0; i<m1.length; i++){
         const r = [];
         for (let j=0; j<m2[0].length; j++){
-            r.push(null);
+            r.push(0);
         }
         result.push(r);
     }
@@ -94,4 +94,13 @@ export function Rz(t: number){
         [0, 0, 1, 0],
         [0, 0, 0, 1],
     ]
+}
+
+export function unitVector() {
+    return [
+        [1,0,0,0],
+        [0,1,0,0],
+        [0,0,1,0],
+        [0,0,0,1],
+    ];
 }

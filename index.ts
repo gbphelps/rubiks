@@ -57,11 +57,10 @@ document.addEventListener('DOMContentLoaded',()=>{
         }
     }
     
-
-    globals.scene.add(cube);
+    globals.scene!.add(cube);
 
     const debug = makeDebugScreen();
-    globals.scene.add(debug);
+    globals.scene!.add(debug);
 
     function animate(){
         requestAnimationFrame(animate);
@@ -70,7 +69,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         if (peek('mousedown')) mousedown();
         if (peek('mouseup')) mouseup();
         if (peek('mousemove')) mousemove();
-        globals.render();
+        globals.render!();
     }
 
     animate();
@@ -104,7 +103,7 @@ function mousedown() {
         return;
     }
 
-    const { cubeCoords } = data;
+    const { cubeCoords, cameraCoords } = data;
     const boxRegistryNode = boxRegistry.getBoxRegistryNode(cubeCoords);
 
     if (boxRegistry.isCenterSquare(boxRegistryNode)) {
@@ -116,10 +115,14 @@ function mousedown() {
         setAction({
             type: 'twist',
             direction: null,
-            startCubeCoords: cubeCoords,
+            startPosition: {
+                cubeCoords,
+                cameraCoords,
+                screenCoords,
+            },
             side: data.side,
             axis: null,
-            torqueDirection: null,
+            unitTorque: null,
         })
     }
 
@@ -134,8 +137,14 @@ function deselectCube() {
 }
 
 function mouseup(){
-    drain('mouseup');
     deselectCube();
+    const e = drain('mouseup');
+    const action = getAction();
+    if (!action) return;
+
+    if (action.type === 'twist'){
+        console.log('endTwist')
+    }
     setAction(null);
 }
 

@@ -1,21 +1,11 @@
 import * as THREE from 'three';
-import { Side, Mx4, getNormal_cubeSpace } from './utils/types';
-import { X, Rx, Ry, Rz, Vec2Matrix, Matrix2Tuple } from './utils/matrix';
+import { Side, getNormal_cubeSpace } from './utils/types';
+import { X, Rx, Ry, Rz, Vec2Matrix, Matrix2Tuple, unitVector } from './utils/matrix';
 
 
 export const rotation = {
-    mx: [
-        [1,0,0,0],
-        [0,1,0,0],
-        [0,0,1,0],
-        [0,0,0,1],
-    ],
-    inv: [
-        [1,0,0,0],
-        [0,1,0,0],
-        [0,0,1,0],
-        [0,0,0,1],
-    ],
+    mx: unitVector(),
+    inv: unitVector(),
 }
 
 export function rotate(tx: number, ty: number, tz: number){

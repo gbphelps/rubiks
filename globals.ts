@@ -11,6 +11,9 @@ interface Globals {
     pixPerUnit: number,
 }
 
+
+
+
 export const globals: Globals = {
     canvas: null,
     scene: null,
@@ -57,19 +60,19 @@ export function init() {
 
 function resize() {
     const { camera, renderer, container } = globals;
-    const { height, width } = container.getBoundingClientRect();
+    const { height, width } = container!.getBoundingClientRect();
 
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    camera!.aspect = window.innerWidth / window.innerHeight;
+    camera!.updateProjectionMatrix();
 
-    const theta = camera.fov/180 * Math.PI;
+    const theta = camera!.fov/180 * Math.PI;
 
     // calculate z distance of camera screen in pixels (using height).
     const z = (height/2) / Math.tan(theta/2);
 
     // calculate ratio between z in pixels and z in scene units.
-    globals.pixPerUnit = z/camera.position.z;
+    globals.pixPerUnit = z/camera!.position.z;
 
-    renderer.setSize(width, height);
+    renderer!.setSize(width, height);
 }
 

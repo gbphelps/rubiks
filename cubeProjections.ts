@@ -1,11 +1,11 @@
 import { Vec2, ProjectionData, sides, Side } from "./utils/types";
 import { globals } from "./globals";
 import { getPlane, rotation } from "./rotation";
-import { X } from "./utils/matrix";
+import { X, Matrix2Vec } from "./utils/matrix";
 
 const ERR = 1e-8;
 
-export function getProjectionOntoCube(screen: Vec2){
+export function getProjectionOntoCube(screen: Vec2): null | ProjectionData {
     // Recovering 3D position from 2D input is a system of three equations:
     
     // Point must be on this plane: 
@@ -17,7 +17,7 @@ export function getProjectionOntoCube(screen: Vec2){
     //      y = screen.y * (cam.p.z - z)/cam.p.z;
 
     let best: null | ProjectionData = null;
-    const { camera: {position: { z: camZ } } } = globals;
+    const camZ = globals.camera!.position.z;
 
     sides.forEach(side => {
         const { cubeCoords, cameraCoords } = getProjectionOntoSide(screen, side);
@@ -51,7 +51,8 @@ export function getProjectionOntoCube(screen: Vec2){
 
 export function getProjectionOntoSide(screen: Vec2, side: Side){
     const { A, B, C, D } = getPlane(side);
-    const { camera: {position: { z: camZ } } } = globals;
+
+    const camZ = globals.camera!.position.z;
 
     const MM = -(A*screen.x + B*screen.y)/camZ + C;
     const BB = A*screen.x + B*screen.y + D;
@@ -59,14 +60,10 @@ export function getProjectionOntoSide(screen: Vec2, side: Side){
     const z = -BB/MM;
     const x = (camZ - z)/camZ * screen.x;
     const y = (camZ - z)/camZ * screen.y;
-    const vec = X(rotation.inv, [[x],[y],[z],[1]]);
+    const vectorMatrix = X(rotation.inv, [[x],[y],[z],[1]]);
 
     return {
-        cubeCoords: {
-            x: vec[0][0],
-            y: vec[1][0],
-            z: vec[2][0],
-        },
+        cubeCoords: Matrix2Vec(vectorMatrix),
         cameraCoords: {
             x, y, z
         }
