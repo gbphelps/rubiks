@@ -1,4 +1,4 @@
-import { Matrix, Vec3, Mx4 } from "./types";
+import { Matrix, Vec3, Mx4, Vec2 } from "./types";
 
 
 function flatten<T>(
@@ -44,6 +44,30 @@ export function XProd(v1: Vec3, v2: Vec3) {
     }
 }
 
+export function dotProd(v1: Vec2 | Vec3, v2: Vec2 | Vec3){
+    const a = {
+        z: 0,
+        ...v1,
+    };
+
+    const b = {
+        z: 0,
+        ...v2,
+    }
+
+    return a.x*b.x + a.y*b.y + a.z*b.z;
+}
+
+export function mag2(vec: Vec3){
+    return vec.x*vec.x + vec.y*vec.y + vec.z*vec.z;
+}
+
+export function vec3(vec: Vec2){
+    return {
+        ...vec,
+        z: 0,
+    }
+}
 
 export function X(m1: Matrix, m2: Matrix): Matrix {
     const result: Matrix = [];

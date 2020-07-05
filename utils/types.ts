@@ -14,6 +14,12 @@ export interface Vec2 {
     y: number,
 }
 
+export interface CoordTriad {
+    cubeCoords: Vec3,
+    cameraCoords: Vec3,
+    screenCoords: Vec2,
+}
+
 export interface ProjectionData {
     dist2: number, 
     side: Side, 

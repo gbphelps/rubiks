@@ -114,15 +114,13 @@ function mousedown() {
     } else {
         setAction({
             type: 'twist',
-            direction: null,
             startPosition: {
                 cubeCoords,
                 cameraCoords,
                 screenCoords,
             },
             side: data.side,
-            axis: null,
-            unitTorque: null,
+            torqueParams: null,
         })
     }
 

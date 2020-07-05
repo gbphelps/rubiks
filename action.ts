@@ -1,4 +1,4 @@
-import { Vec2, Vec3, Side } from "./utils/types";
+import { Vec2, Vec3, Side, CoordTriad } from "./utils/types";
 
 
 export interface RotateAction {
@@ -8,15 +8,14 @@ export interface RotateAction {
 
 export interface TwistAction {
     type: 'twist',
-    startPosition: {
-        cubeCoords: Vec3,
-        cameraCoords: Vec3,
-        screenCoords: Vec2,
-    },
-    direction: null | Vec3,
+    startPosition: CoordTriad,
     side: Side,
-    axis: null | keyof Vec3,
-    unitTorque: null | Vec3,
+    torqueParams: {
+        direction: Vec3,
+        axis: keyof Vec3,
+        unitTorque: Vec3,
+        screenDirection: Vec2,
+    } | null,
 }
 
 let action: RotateAction | TwistAction | null = null;

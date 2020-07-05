@@ -1,7 +1,7 @@
-import { Vec2, ProjectionData, sides, Side } from "./utils/types";
+import { Vec2, ProjectionData, sides, Side, Vec3 } from "./utils/types";
 import { globals } from "./globals";
 import { getPlane, rotation } from "./rotation";
-import { X, Matrix2Vec } from "./utils/matrix";
+import { X, Matrix2Vec, Vec2Matrix } from "./utils/matrix";
 
 const ERR = 1e-8;
 
@@ -67,5 +67,19 @@ export function getProjectionOntoSide(screen: Vec2, side: Side){
         cameraCoords: {
             x, y, z
         }
+    }
+}
+
+export function getCameraCoords(cubeCoords: Vec3){
+    return Matrix2Vec(X(rotation.mx, Vec2Matrix(cubeCoords)));
+}
+
+export function getScreenCoords(cameraCoords: Vec3){
+    const camZ = globals.camera!.position.z;
+    const { x, y, z } = cameraCoords;
+
+    return {
+        x: camZ / (camZ - z) * x,
+        y: camZ / (camZ - z) * y,
     }
 }
