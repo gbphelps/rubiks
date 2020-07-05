@@ -10,6 +10,10 @@ export const controls: Record<string, false | Vec2> = {
     mouse: false,
 }
 
+function getMode(){
+
+}
+
 function assign(key: string) {
     return function(e: MouseEvent) {
         const { container } = globals;

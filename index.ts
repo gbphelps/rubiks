@@ -1,13 +1,13 @@
 import { init as initGlobals, globals } from './globals';
 import cubeSpawn from './cubeSpawn';
 import * as THREE from 'three';
-import { rotate, getRotation } from './cubeGlobals';
+import { rotate, getRotation, getProjectionOntoCube } from './rotation';
 import { init as initControls, controls } from './controls';
 import { makeMesh } from './utils/three';
 import { makeDebugScreen } from './utils/debug';
 import { Face } from './utils/types';
-
-
+import * as boxRegistry from './boxRegistry';
+import { Mesh, MeshBasicMaterial } from 'three';
 
 
 
@@ -46,6 +46,11 @@ document.addEventListener('DOMContentLoaded',()=>{
             for (let z=-1; z<=1; z++){
                 const decals = getInitialDecals(x,y,z);
                 const box = cubeSpawn(decals,{ x, y, z, });
+                boxRegistry.registerBox({
+                    x: x + 1,
+                    y: y + 1,
+                    z: z + 1,
+                }, box);
                 cube.add(box);
             }
         }
@@ -62,7 +67,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         rotate(.008, 0.015, .01);
         cube.setRotationFromMatrix(getRotation());
         cube.updateMatrix();
-        if (controls.click) getClickedCube();
+        if (controls.click) selectCube();
         globals.render();
     }
 
@@ -72,8 +77,25 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 
 
-function getClickedCube() {
+/////////////////////////////////////////////////////////
+
+function colorizeActive(color: THREE.Color) {
+    const active = boxRegistry.getActiveBox();
+    if (!active) return;
+
+    const mesh = active.children[0] as Mesh;
+    const material = mesh.material as MeshBasicMaterial;
+    material.color = color;
+    material.needsUpdate = true;
+}
+
+function selectCube() {
     if (!controls.click) throw new Error('controls.click is set to false');
-    const { x, y } = controls.click;
-    console.log({x, y})
+    const data = getProjectionOntoCube(controls.click);
+    colorizeActive(new THREE.Color('black'));
+
+    if (!data) return;
+    boxRegistry.setActiveBox(data.boxRegistryNode);
+    colorizeActive(new THREE.Color('magenta'));
+    controls.click = false;
 }

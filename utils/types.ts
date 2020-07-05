@@ -8,3 +8,10 @@ export interface Vec3 {
     y: number,
     z: number
 }
+
+export interface Vec2 {
+    x: number,
+    y: number,
+}
+
+export const sides: Side[] = ['top', 'bottom', 'back', 'front', 'left', 'right'];
