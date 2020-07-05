@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     function animate(){
         requestAnimationFrame(animate);
-        rotate(.008, 0.015, .01);
         cube.setRotationFromMatrix(getRotation());
         cube.updateMatrix();
         if (peek('mousedown')) mousedown();
@@ -105,7 +104,7 @@ function mousedown() {
     if (boxRegistry.isCenterSquare(data.boxRegistryNode)) {
         setAction({
             type: 'rotate',
-            from: screenCoords,
+            screenCoords,
         })
     }
 
@@ -125,11 +124,29 @@ function mouseup(){
     setAction(null);
 }
 
+
+
+function applyRotation(e: MouseEvent){
+    const screenCoords = extractScreenCoords(e);
+    const { x: x2, y: y2 } = screenCoords;
+    const { x: x1, y: y1 } = getAction().screenCoords;
+    const delx = x2 - x1;
+    const dely = y2 - y1;
+    rotate(-dely*.5, delx*.5, 0);
+    setAction({
+        type: 'rotate',
+        screenCoords,
+    })
+}
+
 function mousemove(){
     const e = drain('mousemove');
+    if (!e) return;
+    
+    // const screenCoords = extractScreenCoords(e);
+    // const data = getProjectionOntoCube(screenCoords);
+
     const action = getAction();
     if (!action) return;
-    if (action.type === 'rotate') {
-        console.log('trying to rotate');
-    }
+    if (action.type === 'rotate') applyRotation(e);
 }
