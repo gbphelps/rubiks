@@ -14,4 +14,12 @@ export interface Vec2 {
     y: number,
 }
 
+export interface ProjectionData {
+    dist2: number, 
+    point: Vec3, 
+    side: Side, 
+    cubeCoords: Vec3,
+    boxRegistryNode: Vec3,
+}
+
 export const sides: Side[] = ['top', 'bottom', 'back', 'front', 'left', 'right'];

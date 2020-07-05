@@ -1,13 +1,25 @@
+import { Vec2, ProjectionData, Vec3 } from "./utils/types";
 
-interface Action extends Record<any, any>{};
 
-let action: Action | null = null;
+export interface RotateAction {
+    type: 'rotate',
+    prevScreenCoords: Vec2, 
+}
+
+export interface TwistAction {
+    type: 'twist',
+    startCubeCoords: Vec3,
+    prevCubeCoords: Vec3,
+    direction: null | Vec3,
+}
+
+let action: RotateAction | TwistAction | null = null;
 
 
 export function getAction() {
     return action;
 }
 
-export function setAction(incomingAction: Record<string, any> | null) {
+export function setAction(incomingAction: RotateAction | TwistAction | null) {
     action = incomingAction;
 }

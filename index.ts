@@ -7,7 +7,7 @@ import { makeDebugScreen } from './utils/debug';
 import { Face, Vec3 } from './utils/types';
 import * as boxRegistry from './boxRegistry';
 import { Mesh, MeshBasicMaterial } from 'three';
-import { setAction, getAction } from './action';
+import { setAction, getAction, RotateAction, TwistAction } from './action';
 
 
 function getInitialDecals(x: number,y: number,z: number) {
@@ -104,7 +104,14 @@ function mousedown() {
     if (boxRegistry.isCenterSquare(data.boxRegistryNode)) {
         setAction({
             type: 'rotate',
-            screenCoords,
+            prevScreenCoords: screenCoords,
+        })
+    } else {
+        setAction({
+            type: 'twist',
+            direction: null,
+            startCubeCoords: data.cubeCoords,
+            prevCubeCoords: data.cubeCoords,
         })
     }
 
@@ -126,17 +133,81 @@ function mouseup(){
 
 
 
-function applyRotation(e: MouseEvent){
+function applyRotation(e: MouseEvent, action: RotateAction){
+    if (action.type !== 'rotate') throw new Error('Action is not of type `rotate`');
+
     const screenCoords = extractScreenCoords(e);
     const { x: x2, y: y2 } = screenCoords;
-    const { x: x1, y: y1 } = getAction().screenCoords;
+    const { x: x1, y: y1 } = action.prevScreenCoords;
     const delx = x2 - x1;
     const dely = y2 - y1;
     rotate(-dely*.5, delx*.5, 0);
     setAction({
         type: 'rotate',
-        screenCoords,
+        prevScreenCoords: screenCoords,
     })
+}
+
+
+
+function getCardinalDirection(vec: Vec3){
+    let ordinate: null | keyof Vec3 = null;
+    let coords: (keyof Vec3)[] = ['x','y','z'];
+    
+    for (let i=0; i<3; i++){
+        const testDimension = coords[i];
+        if (!ordinate){
+            ordinate = coords[i];
+            continue;
+        } else if (Math.abs(vec[ordinate]) < Math.abs(vec[testDimension])) {
+            ordinate = testDimension;
+        }
+    }
+
+    const result: Vec3 = {
+        x: 0,
+        y: 0,
+        z: 0,
+    }
+
+    for (let i=0; i<3; i++){
+        const testDimension = coords[i];
+        if (testDimension === ordinate){
+            result[ordinate] = vec[ordinate] > 0 ? 1 : -1;
+        }
+    }
+    
+    return result;
+}
+
+function twist(e: MouseEvent, action: TwistAction){
+    const screenCoords = extractScreenCoords(e);
+    const { cubeCoords } = getProjectionOntoCube(screenCoords);
+
+    if (!action.direction) {
+        const {x: x2, y: y2, z: z2} = cubeCoords;
+        const {x: x1, y: y1, z: z1} = action.startCubeCoords;
+
+        const vec = {
+            x: x2 - x1,
+            y: y2 - y1,
+            z: z2 - z1,
+        };
+        const dist = Math.sqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
+        if (dist > .1){
+            setAction({
+                ...action,
+                direction: getCardinalDirection(vec),
+                prevCubeCoords: cubeCoords,
+            })
+        }
+    } else {
+        console.log('apply direction');
+        setAction({
+            ...action,
+            prevCubeCoords: cubeCoords,
+         })
+    }
 }
 
 function mousemove(){
@@ -147,6 +218,8 @@ function mousemove(){
     // const data = getProjectionOntoCube(screenCoords);
 
     const action = getAction();
+
     if (!action) return;
-    if (action.type === 'rotate') applyRotation(e);
+    if (action.type === 'rotate') applyRotation(e, action);
+    if (action.type === 'twist') twist(e, action);
 }

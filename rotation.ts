@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Side, Vec2, sides, Vec3 } from './utils/types';
+import { Side, Vec2, sides, Vec3, ProjectionData } from './utils/types';
 import { globals } from './globals';
 
 type Matrix = number[][];
@@ -166,14 +166,6 @@ function getBox(cubeCoords: Vec3){
         y: int('y'),
         z: int('z'),
     }
-}
-
-interface ProjectionData {
-    dist2: number, 
-    point: Vec3, 
-    side: Side, 
-    cubeCoords: Vec3,
-    boxRegistryNode: Vec3,
 }
 
 export function getProjectionOntoCube(screen: Vec2){
