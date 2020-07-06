@@ -7,9 +7,7 @@ import { getProjectionOntoSide, getCameraCoords, getScreenCoords } from '../cube
 import {
   getNormalCubeSpace, CoordTriad, Axis,
 } from '../utils/types';
-import {
-  XProd, Vec3toTHREE,
-} from '../utils/matrix';
+
 import { getTranche } from '../boxRegistry';
 import getUserTorque from '../getUserTorque';
 
@@ -127,37 +125,12 @@ export default function applyTwist(e: MouseEvent) {
     });
   }
 
-  const torque = getUserTorque(e);
-  // let m = unitVector();
-
-  // switch (torqueParams.axis) {
-  //   case 'x':
-  //     m = X(Rx(torque.x), m);
-  //     break;
-  //   case 'y':
-  //     m = X(Ry(torque.y), m);
-  //     break;
-  //   case 'z':
-  //     m = X(Rz(torque.z), m);
-  //     break;
-  // }
-
-  torqueParams.tranche.forEach((box) => {
+  const { unitTorque, tranche } = torqueParams;
+  tranche.forEach((box) => {
     if (!box) throw new Error('Tried to access unintialized box');
-    // const mx = new THREE.Vector3();
-    // mx.set(
-    //   torqueParams!.unitTorque.x,
-    //   torqueParams!.unitTorque.y,
-    //   torqueParams!.unitTorque.z,
-    // );
-
-    // const matrix = new THREE.Matrix4();
-    // matrix.set(...Matrix2Tuple(m));
-    // box.setRotationFromMatrix(matrix);
-    // box.updateMatrix();
-    const { x, y, z } = torqueParams!.unitTorque;
-    const v = new THREE.Vector3();
-    v.set(x, y, z);
-    box.setRotationFromAxisAngle(v, torque);
+    box.setRotationFromAxisAngle(
+      unitTorque,
+      getUserTorque(e),
+    );
   });
 }

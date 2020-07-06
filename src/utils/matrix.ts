@@ -3,25 +3,25 @@ import {
   Matrix, Mx4, Vec2,
 } from './types';
 
-function flatten<T>(
-  mx: (T | T[])[],
-): T[] {
-  return mx.reduce<T[]>((acc, el) => {
-    if (Array.isArray(el)) {
-      return acc.concat(flatten(el));
-    }
-    return acc.concat(el);
-  }, []);
-}
+// function flatten<T>(
+//   mx: (T | T[])[],
+// ): T[] {
+//   return mx.reduce<T[]>((acc, el) => {
+//     if (Array.isArray(el)) {
+//       return acc.concat(flatten(el));
+//     }
+//     return acc.concat(el);
+//   }, []);
+// }
 
-export function Matrix2Tuple(mx: Matrix) {
-  const typedValues: Mx4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  const values = flatten(mx);
-  for (let i = 0; i < values.length; i++) {
-    typedValues[i] = values[i];
-  }
-  return typedValues;
-}
+// export function Matrix2Tuple(mx: Matrix) {
+//   const typedValues: Mx4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//   const values = flatten(mx);
+//   for (let i = 0; i < values.length; i++) {
+//     typedValues[i] = values[i];
+//   }
+//   return typedValues;
+// }
 
 export function Matrix2Vec(mx: Matrix) {
   return {
@@ -95,30 +95,15 @@ export function X(m1: Matrix, m2: Matrix): Matrix {
 }
 
 export function Rx(t: number) {
-  return [
-    [1, 0, 0, 0],
-    [0, Math.cos(t), -Math.sin(t), 0],
-    [0, Math.sin(t), Math.cos(t), 0],
-    [0, 0, 0, 1],
-  ];
+  return (new THREE.Matrix4()).makeRotationX(t);
 }
 
 export function Ry(t: number) {
-  return [
-    [Math.cos(t), 0, Math.sin(t), 0],
-    [0, 1, 0, 0],
-    [-Math.sin(t), 0, Math.cos(t), 0],
-    [0, 0, 0, 1],
-  ];
+  return (new THREE.Matrix4()).makeRotationY(t);
 }
 
 export function Rz(t: number) {
-  return [
-    [Math.cos(t), -Math.sin(t), 0, 0],
-    [Math.sin(t), Math.cos(t), 0, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 1],
-  ];
+  return (new THREE.Matrix4()).makeRotationZ(t);
 }
 
 export function unitVector() {
@@ -129,15 +114,3 @@ export function unitVector() {
     [0, 0, 0, 1],
   ];
 }
-
-export function Vec3toTHREE(vec: THREE.Vector3) {
-  const v = new THREE.Vector3();
-  v.set(
-    vec.x,
-    vec.y,
-    vec.z,
-  );
-  return v;
-}
-
-export function Matrix3toTHREE() {}

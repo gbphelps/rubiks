@@ -5,7 +5,7 @@ import {
 import { globals } from './globals';
 import { getPlane, rotation } from './rotation';
 import {
-  X, Matrix2Vec, Vec2Matrix, Vec3toTHREE,
+  X, Matrix2Vec, Vec2Matrix,
 } from './utils/matrix';
 
 const ERR = 1e-8;
@@ -64,20 +64,17 @@ export function getProjectionOntoSide(screen: Vec2, side: Side) {
   const z = -BB / MM;
   const x = (camZ - z) / camZ * screen.x;
   const y = (camZ - z) / camZ * screen.y;
-  const vectorMatrix = X(rotation.inv, [[x], [y], [z], [1]]);
+
+  const vec = new THREE.Vector3(x, y, z);
 
   return {
-    cubeCoords: new THREE.Vector3(
-      vectorMatrix[0][0],
-      vectorMatrix[1][0],
-      vectorMatrix[2][0],
-    ),
-    cameraCoords: new THREE.Vector3(x, y, z),
+    cubeCoords: vec.clone().applyMatrix4(rotation.inv),
+    cameraCoords: vec,
   };
 }
 
 export function getCameraCoords(cubeCoords: THREE.Vector3) {
-  return Matrix2Vec(X(rotation.mx, Vec2Matrix(cubeCoords)));
+  return cubeCoords.clone().applyMatrix4(rotation.mx);
 }
 
 export function getScreenCoords(cameraCoords: THREE.Vector3) {
