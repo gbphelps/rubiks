@@ -28,6 +28,11 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'error',
     'no-useless-constructor': 'off',
     '@typescript-eslint/no-useless-constructor': 'error',
+    /// //////////////////////////////////////////
+    'no-use-before-define': 'off',
+    'no-plusplus': 'off',
+    'no-mixed-operators': 'off',
+    'no-continue': 'off',
   },
   settings: {
     // these are all needed to use ts with airbnb

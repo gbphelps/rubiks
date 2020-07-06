@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Side, getNormal_cubeSpace } from './utils/types';
+import { Side, getNormalCubeSpace } from './utils/types';
 import {
   X, Rx, Ry, Rz, Vec2Matrix, Matrix2Tuple, unitVector,
 } from './utils/matrix';
@@ -29,15 +29,15 @@ export function getRotation() {
 }
 
 export function getPlane(side: Side) {
-  const normal = Vec2Matrix(getNormal_cubeSpace(side));
-  const normal_camSpace = X(rotation.mx, normal);
+  const normal = Vec2Matrix(getNormalCubeSpace(side));
+  const normalCamSpace = X(rotation.mx, normal);
 
   const point = {
-    x: normal_camSpace[0][0] * 3 / 2,
-    y: normal_camSpace[1][0] * 3 / 2,
-    z: normal_camSpace[2][0] * 3 / 2,
+    x: normalCamSpace[0][0] * 3 / 2,
+    y: normalCamSpace[1][0] * 3 / 2,
+    z: normalCamSpace[2][0] * 3 / 2,
   };
-  const [[A], [B], [C]] = normal_camSpace;
+  const [[A], [B], [C]] = normalCamSpace;
   const D = -A * point.x + -B * point.y + -C * point.z;
   return {
     A, B, C, D,

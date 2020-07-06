@@ -38,7 +38,7 @@ export type Mx4 = [
     number, number, number, number,
 ];
 
-export function getNormal_cubeSpace(side: Side) {
+export function getNormalCubeSpace(side: Side) {
   let normal: Vec3 = { x: 0, y: 0, z: 0 };
 
   switch (side) {
@@ -64,26 +64,28 @@ export function getNormal_cubeSpace(side: Side) {
       };
       break;
     case 'top':
-      normal = normal = {
+      normal = {
         x: 0,
         y: 1,
         z: 0,
       };
       break;
     case 'left':
-      normal = normal = {
+      normal = {
         x: -1,
         y: 0,
         z: 0,
       };
       break;
     case 'right':
-      normal = normal = {
+      normal = {
         x: 1,
         y: 0,
         z: 0,
       };
       break;
+    default:
+      throw new Error();
   }
   return normal;
 }

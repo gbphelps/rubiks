@@ -1,4 +1,4 @@
-import { TwistAction, getAction } from './action';
+import { getAction } from './action';
 import { extractScreenCoords } from './events';
 import { dotProd } from './utils/matrix';
 

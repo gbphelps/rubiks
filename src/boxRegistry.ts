@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Vec3 } from './utils/types';
 import { getAction } from './action';
+import colorizeActive from './utils/uiEffects';
 
 type BoxRegistry = (THREE.Object3D | null)[][][];
 
@@ -31,7 +32,9 @@ export function getBox({ x, y, z }: Vec3) {
 }
 
 export function setActiveBox(node: Vec3 | null) {
+  colorizeActive(new THREE.Color('black'));
   activeNode = node;
+  colorizeActive(new THREE.Color('magenta'));
 }
 
 export function getActiveBox() {
@@ -84,4 +87,9 @@ export function getTranche(unitTorque: Vec3) {
   }
 
   return tranche;
+}
+
+export function deselectCube() {
+  colorizeActive(new THREE.Color('black'));
+  setActiveBox(null);
 }

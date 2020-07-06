@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 import {
-  setAction, TwistAction, getAction, RotateAction,
+  setAction, TwistAction, getAction,
 } from '../action';
 import { extractScreenCoords } from '../events';
 import { getProjectionOntoSide, getCameraCoords, getScreenCoords } from '../cubeProjections';
 import {
-  getNormal_cubeSpace, CoordTriad, Vec3, Vec2,
+  getNormalCubeSpace, CoordTriad, Vec3,
 } from '../utils/types';
 import {
-  XProd, X, Rx, Ry, Rz, Matrix2Tuple, unitVector, dotProd, vec3,
+  XProd, X, Rx, Ry, Rz, Matrix2Tuple, unitVector,
 } from '../utils/matrix';
 import { getTranche } from '../boxRegistry';
 import getUserTorque from '../getUserTorque';
@@ -91,7 +91,7 @@ function getTorqueParams(e: MouseEvent, action: TwistAction) {
   const direction = getCardinalDirection(vec);
   const screenDirection = getScreenDirection(action.startPosition, direction);
 
-  const unitTorque = XProd(getNormal_cubeSpace(action.side), direction);
+  const unitTorque = XProd(getNormalCubeSpace(action.side), direction);
 
   const dims: (keyof Vec3)[] = ['x', 'y', 'z'];
   let axis: null | keyof Vec3 = null;
@@ -112,7 +112,11 @@ function getTorqueParams(e: MouseEvent, action: TwistAction) {
   };
 }
 
-export default function applyTwist(e: MouseEvent, action: TwistAction) {
+export default function applyTwist(e: MouseEvent) {
+  const action = getAction();
+  if (!action) throw new Error();
+  if (action.type !== 'twist') throw new Error();
+
   let { torqueParams } = action;
   if (!torqueParams) {
     // When user first starts dragging, we don't have a good sense for

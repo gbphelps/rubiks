@@ -1,8 +1,10 @@
-import { RotateAction, setAction } from '../action';
+import { setAction, getAction } from '../action';
 import { extractScreenCoords } from '../events';
 import { rotate } from '../rotation';
 
-export default function applyRotate(e: MouseEvent, action: RotateAction) {
+export default function applyRotate(e: MouseEvent) {
+  const action = getAction();
+  if (!action) throw new Error();
   if (action.type !== 'rotate') throw new Error('Action is not of type `rotate`');
 
   const screenCoords = extractScreenCoords(e);

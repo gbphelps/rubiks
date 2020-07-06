@@ -1,7 +1,5 @@
 import { globals } from './globals';
 
-const action: false | any = false;
-
 const events: Record<string, false | MouseEvent> = {
   mousemove: false,
   mousedown: false,
@@ -9,7 +7,7 @@ const events: Record<string, false | MouseEvent> = {
 };
 
 function assign(key: string) {
-  return function (e: MouseEvent) {
+  return function enqueue(e: MouseEvent) {
     events[key] = e;
   };
 }
