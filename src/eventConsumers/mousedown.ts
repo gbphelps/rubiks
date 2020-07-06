@@ -1,9 +1,7 @@
-import * as THREE from 'three';
 import { drain, extractScreenCoords } from '../events';
 import { getProjectionOntoCube } from '../cubeProjections';
 import * as boxRegistry from '../boxRegistry';
 import { setAction } from '../action';
-import colorizeActive from '../utils/uiEffects';
 
 export default function mousedown() {
   const e = drain('mousedown');

@@ -3,14 +3,11 @@ import { init as initGlobals, globals } from './globals';
 import cubeSpawn from './cubeSpawn';
 import { getRotation } from './rotation';
 import {
-  init as initControls, drain, peek,
+  init as initControls, peek,
 } from './events';
 import makeDebugScreen from './utils/debug';
 import { Face } from './utils/types';
 import * as boxRegistry from './boxRegistry';
-import { getAction } from './action';
-import applyTwist from './actions/twist';
-import applyRotate from './actions/rotate';
 import autocorrectTwist from './actions/autocorrectTwist';
 import mouseup from './eventConsumers/mouseup';
 import mousedown from './eventConsumers/mousedown';
@@ -49,12 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let y = -1; y <= 1; y++) {
       for (let z = -1; z <= 1; z++) {
         const decals = getInitialDecals(x, y, z);
-        const box = cubeSpawn(decals, { x, y, z });
-        boxRegistry.registerBox({
-          x: x + 1,
-          y: y + 1,
-          z: z + 1,
-        }, box);
+        const box = cubeSpawn(decals, new THREE.Vector3(x, y, z));
+        boxRegistry.registerBox(
+          new THREE.Vector3(x + 1, y + 1, z + 1),
+          box,
+        );
         cube.add(box);
       }
     }

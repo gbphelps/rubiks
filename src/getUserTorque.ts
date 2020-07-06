@@ -10,7 +10,6 @@ export default function getUserTorque(e: MouseEvent) {
 
   if (!action.torqueParams) throw new Error();
   const {
-    unitTorque,
     screenDirection,
   } = action.torqueParams;
 
@@ -21,10 +20,6 @@ export default function getUserTorque(e: MouseEvent) {
     y: y2 - y1,
   };
 
-  const dot = dotProd(userDir, screenDirection);
-  return {
-    x: dot * unitTorque.x,
-    y: dot * unitTorque.y,
-    z: dot * unitTorque.z,
-  };
+  const magnitudeAsRotation = dotProd(userDir, screenDirection);
+  return magnitudeAsRotation;
 }

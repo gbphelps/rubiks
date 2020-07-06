@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import { makeMesh } from './utils/three';
-import { Side, Face, Vec3 } from './utils/types';
+import { Side, Face } from './utils/types';
 
 const INSET = 0.8;
 const BORDER_RADIUS = 0.12;
@@ -59,12 +59,16 @@ function makeDecal(color: THREE.Color, side: Side) {
     case 'back':
       pivot.rotateY(Math.PI);
       break;
+    case 'front':
+      break;
+    default:
+      throw new Error();
   }
 
   return pivot;
 }
 
-export default function cubeSpawn(faces: Face[], position: Vec3) {
+export default function cubeSpawn(faces: Face[], position: THREE.Vector3) {
   const box = makeMesh({
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: new THREE.MeshBasicMaterial({ color: 0x000000 }),

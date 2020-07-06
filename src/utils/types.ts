@@ -1,13 +1,15 @@
+import * as THREE from 'three';
+
 export type Side = 'bottom' | 'top' | 'left' | 'right' | 'back' | 'front';
 export interface Face {
     side: Side,
     color: THREE.Color,
 }
-export interface Vec3 {
-    x: number,
-    y: number,
-    z: number
-}
+// export interface Vec3 {
+//     x: number,
+//     y: number,
+//     z: number
+// }
 
 export interface Vec2 {
     x: number,
@@ -15,16 +17,16 @@ export interface Vec2 {
 }
 
 export interface CoordTriad {
-    cubeCoords: Vec3,
-    cameraCoords: Vec3,
+    cubeCoords: THREE.Vector3,
+    cameraCoords: THREE.Vector3,
     screenCoords: Vec2,
 }
 
 export interface ProjectionData {
     dist2: number,
     side: Side,
-    cubeCoords: Vec3,
-    cameraCoords: Vec3,
+    cubeCoords: THREE.Vector3,
+    cameraCoords: THREE.Vector3,
 }
 
 export const sides: Side[] = ['top', 'bottom', 'back', 'front', 'left', 'right'];
@@ -39,53 +41,22 @@ export type Mx4 = [
 ];
 
 export function getNormalCubeSpace(side: Side) {
-  let normal: Vec3 = { x: 0, y: 0, z: 0 };
-
   switch (side) {
     case 'front':
-      normal = {
-        x: 0,
-        y: 0,
-        z: 1,
-      };
-      break;
+      return new THREE.Vector3(0, 0, 1);
     case 'back':
-      normal = {
-        x: 0,
-        y: 0,
-        z: -1,
-      };
-      break;
+      return new THREE.Vector3(0, 0, -1);
     case 'bottom':
-      normal = {
-        x: 0,
-        y: -1,
-        z: 0,
-      };
-      break;
+      return new THREE.Vector3(0, -1, 0);
     case 'top':
-      normal = {
-        x: 0,
-        y: 1,
-        z: 0,
-      };
-      break;
+      return new THREE.Vector3(0, 1, 0);
     case 'left':
-      normal = {
-        x: -1,
-        y: 0,
-        z: 0,
-      };
-      break;
+      return new THREE.Vector3(-1, 0, 0);
     case 'right':
-      normal = {
-        x: 1,
-        y: 0,
-        z: 0,
-      };
-      break;
+      return new THREE.Vector3(1, 0, 0);
     default:
       throw new Error();
   }
-  return normal;
 }
+
+export type Axis = 'x' | 'y' | 'z';

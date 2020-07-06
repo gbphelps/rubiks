@@ -5,21 +5,21 @@ import {
 import { extractScreenCoords } from '../events';
 import { getProjectionOntoSide, getCameraCoords, getScreenCoords } from '../cubeProjections';
 import {
-  getNormalCubeSpace, CoordTriad, Vec3,
+  getNormalCubeSpace, CoordTriad, Axis,
 } from '../utils/types';
 import {
-  XProd, X, Rx, Ry, Rz, Matrix2Tuple, unitVector,
+  XProd, Vec3toTHREE,
 } from '../utils/matrix';
 import { getTranche } from '../boxRegistry';
 import getUserTorque from '../getUserTorque';
 
 const THRESHHOLD = 0.01;
 
-function getCardinalDirection(vec: Vec3) {
+function getCardinalDirection(vec: THREE.Vector3) {
   // Gives cardinal unit vector that most closely corresponds to vec.
 
-  let ordinate: null | keyof Vec3 = null;
-  const coords: (keyof Vec3)[] = ['x', 'y', 'z'];
+  let ordinate: null | Axis = null;
+  const coords: (Axis)[] = ['x', 'y', 'z'];
 
   for (let i = 0; i < 3; i++) {
     const testDimension = coords[i];
@@ -31,11 +31,7 @@ function getCardinalDirection(vec: Vec3) {
     }
   }
 
-  const result: Vec3 = {
-    x: 0,
-    y: 0,
-    z: 0,
-  };
+  const result = new THREE.Vector3(0, 0, 0);
 
   for (let i = 0; i < 3; i++) {
     const testDimension = coords[i];
@@ -47,14 +43,15 @@ function getCardinalDirection(vec: Vec3) {
   return result;
 }
 
-function getScreenDirection(startPosition: CoordTriad, direction: Vec3) {
+function getScreenDirection(startPosition: CoordTriad, direction: THREE.Vector3) {
   const cameraStart = startPosition.cameraCoords;
   const cameraDir = getCameraCoords(direction);
-  const end = {
-    x: cameraStart.x + cameraDir.x,
-    y: cameraStart.y + cameraDir.y,
-    z: cameraStart.z + cameraDir.z,
-  };
+  const end = new THREE.Vector3(
+    cameraStart.x + cameraDir.x,
+    cameraStart.y + cameraDir.y,
+    cameraStart.z + cameraDir.z,
+  );
+
   const screenEnd = getScreenCoords(end);
   const screenStart = startPosition.screenCoords;
   const r = {
@@ -79,22 +76,21 @@ function getTorqueParams(e: MouseEvent, action: TwistAction) {
   const screenCoords = extractScreenCoords(e);
   const { cubeCoords } = getProjectionOntoSide(screenCoords, action.side);
 
-  const { x: x2, y: y2, z: z2 } = cubeCoords;
-  const { x: x1, y: y1, z: z1 } = action.startPosition.cubeCoords;
-
-  const vec = {
-    x: x2 - x1,
-    y: y2 - y1,
-    z: z2 - z1,
-  };
+  const vec = (new THREE.Vector3()).subVectors(
+    cubeCoords,
+    action.startPosition.cubeCoords,
+  );
 
   const direction = getCardinalDirection(vec);
   const screenDirection = getScreenDirection(action.startPosition, direction);
 
-  const unitTorque = XProd(getNormalCubeSpace(action.side), direction);
+  const unitTorque = (new THREE.Vector3()).crossVectors(
+    getNormalCubeSpace(action.side),
+    direction,
+  );
 
-  const dims: (keyof Vec3)[] = ['x', 'y', 'z'];
-  let axis: null | keyof Vec3 = null;
+  const dims: Axis[] = ['x', 'y', 'z'];
+  let axis: null | Axis = null;
   for (let i = 0; i < 3; i++) {
     const dim = dims[i];
     if (unitTorque[dim] === 0) continue;
@@ -132,32 +128,36 @@ export default function applyTwist(e: MouseEvent) {
   }
 
   const torque = getUserTorque(e);
-  let m = unitVector();
+  // let m = unitVector();
 
-  switch (torqueParams.axis) {
-    case 'x':
-      m = X(Rx(torque.x), m);
-      break;
-    case 'y':
-      m = X(Ry(torque.y), m);
-      break;
-    case 'z':
-      m = X(Rz(torque.z), m);
-      break;
-  }
+  // switch (torqueParams.axis) {
+  //   case 'x':
+  //     m = X(Rx(torque.x), m);
+  //     break;
+  //   case 'y':
+  //     m = X(Ry(torque.y), m);
+  //     break;
+  //   case 'z':
+  //     m = X(Rz(torque.z), m);
+  //     break;
+  // }
 
   torqueParams.tranche.forEach((box) => {
     if (!box) throw new Error('Tried to access unintialized box');
-    const mx = new THREE.Vector3();
-    mx.set(
-      torqueParams!.unitTorque.x,
-      torqueParams!.unitTorque.y,
-      torqueParams!.unitTorque.z,
-    );
+    // const mx = new THREE.Vector3();
+    // mx.set(
+    //   torqueParams!.unitTorque.x,
+    //   torqueParams!.unitTorque.y,
+    //   torqueParams!.unitTorque.z,
+    // );
 
-    const matrix = new THREE.Matrix4();
-    matrix.set(...Matrix2Tuple(m));
-    box.setRotationFromMatrix(matrix);
-    box.updateMatrix();
+    // const matrix = new THREE.Matrix4();
+    // matrix.set(...Matrix2Tuple(m));
+    // box.setRotationFromMatrix(matrix);
+    // box.updateMatrix();
+    const { x, y, z } = torqueParams!.unitTorque;
+    const v = new THREE.Vector3();
+    v.set(x, y, z);
+    box.setRotationFromAxisAngle(v, torque);
   });
 }
