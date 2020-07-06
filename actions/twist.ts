@@ -105,6 +105,7 @@ function getTorqueParams(e: MouseEvent, action: TwistAction){
         screenDirection,
         unitTorque,
         axis,
+        tranche: getTranche(unitTorque),
     };
 }
 
@@ -138,8 +139,7 @@ export default function applyTwist(e: MouseEvent, action: TwistAction){
             break;
     }
     
-    const tranche = getTranche();
-    tranche.forEach(box => {
+    torqueParams.tranche.forEach(box => {
         if (!box) throw new Error('Tried to access unintialized box');
 
         const matrix = new THREE.Matrix4();

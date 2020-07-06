@@ -152,7 +152,12 @@ function mouseup(){
             z: Math.round(torque.z/quarterSlice)*quarterSlice,
         };
         console.log(target);
+        setAction({
+            type: 'twist-autocorrect',
+        });
+        return;
     }
+
     setAction(null);
 }
 

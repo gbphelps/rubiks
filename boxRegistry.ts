@@ -64,14 +64,8 @@ export function getBoxRegistryNode(cubeCoords: Vec3){
 
 
 
-export function getTranche(){
-    const action = getAction();
-    if (!action) throw new Error();
-    if (action.type !== 'twist') throw new Error();
-    if (!action.torqueParams) throw new Error();
+export function getTranche(unitTorque: Vec3){
     if (!activeNode) throw new Error();
-
-    const { torqueParams: { unitTorque } } = action;
 
     const tranche = [];
 
