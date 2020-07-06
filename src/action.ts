@@ -1,11 +1,12 @@
-import { Vec2, Vec3, Side, CoordTriad } from "./utils/types";
-
+import {
+  Vec2, Vec3, Side, CoordTriad,
+} from './utils/types';
 
 type Action = RotateAction | TwistAction | TwistAutocorrectAction;
 
 export interface RotateAction {
     type: 'rotate',
-    prevScreenCoords: Vec2, 
+    prevScreenCoords: Vec2,
 }
 
 export interface TwistAction {
@@ -34,9 +35,9 @@ export interface TwistAutocorrectAction {
 let action: Action | null = null;
 
 export function getAction() {
-    return action;
+  return action;
 }
 
 export function setAction(incomingAction: Action | null) {
-    action = incomingAction;
+  action = incomingAction;
 }
