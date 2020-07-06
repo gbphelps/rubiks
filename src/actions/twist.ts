@@ -148,6 +148,12 @@ export default function applyTwist(e: MouseEvent) {
 
   torqueParams.tranche.forEach((box) => {
     if (!box) throw new Error('Tried to access unintialized box');
+    const mx = new THREE.Vector3();
+    mx.set(
+      torqueParams!.unitTorque.x,
+      torqueParams!.unitTorque.y,
+      torqueParams!.unitTorque.z,
+    );
 
     const matrix = new THREE.Matrix4();
     matrix.set(...Matrix2Tuple(m));

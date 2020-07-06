@@ -2,7 +2,7 @@ import getUserTorque from '../getUserTorque';
 import { getAction, setAction } from '../action';
 import { progress } from '../utils/animation';
 
-const DURATION_MS = 500;
+const DURATION_MS = 300;
 
 export default function setAutocorrectTwist(e: MouseEvent) {
   const action = getAction();
