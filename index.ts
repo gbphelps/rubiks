@@ -7,11 +7,12 @@ import { init as initControls, drain, peek, extractScreenCoords } from './events
 import { makeDebugScreen } from './utils/debug';
 import { Face } from './utils/types';
 import * as boxRegistry from './boxRegistry';
-import { Mesh, MeshBasicMaterial } from 'three';
+import { Mesh, MeshBasicMaterial, Matrix4 } from 'three';
 import { setAction, getAction } from './action';
 import applyTwist from './actions/twist';
 import applyRotate from './actions/rotate';
 import getUserTorque from './getUserTorque';
+import { unitVector, Rx, X, Ry, Rz, Matrix2Tuple } from './utils/matrix';
 
 
 function getInitialDecals(x: number,y: number,z: number) {
@@ -67,6 +68,26 @@ document.addEventListener('DOMContentLoaded',()=>{
         requestAnimationFrame(animate);
         cube.setRotationFromMatrix(getRotation());
         cube.updateMatrix();
+        
+        const action = getAction();
+        if (action && action.type === 'twist-autocorrect'){
+            const p = action.params.progressFn();
+            let rotation = unitVector();
+            let from = action.params.fromTorque;
+            let to = action.params.toTorque;
+
+            rotation = X(Rx(lerp(p,from.x,to.x)), rotation);
+            rotation = X(Ry(lerp(p,from.y,to.y)), rotation);
+            rotation = X(Rz(lerp(p,from.z,to.z)), rotation);
+
+            action.params.tranche.forEach(box => {
+                if (!box) throw new Error();
+                const matrix = new THREE.Matrix4();
+                matrix.set(...Matrix2Tuple(rotation));
+                box.setRotationFromMatrix(matrix);
+            })
+        }
+
         if (peek('mousedown')) mousedown();
         if (peek('mouseup')) mouseup();
         if (peek('mousemove')) mousemove();
@@ -151,7 +172,9 @@ function mouseup(){
             y: Math.round(torque.y/quarterSlice)*quarterSlice,
             z: Math.round(torque.z/quarterSlice)*quarterSlice,
         };
-        
+
+        const tranche = action.torqueParams!.tranche;
+
         const t0 = Date.now();
         const millis = 2000;
         const progressFn = progress(t0, millis);
@@ -159,6 +182,9 @@ function mouseup(){
             type: 'twist-autocorrect',
             params: {
                 progressFn,
+                fromTorque: torque,
+                toTorque: target,
+                tranche,
             }
         });
         return;
@@ -184,9 +210,9 @@ function mousemove(){
 
 function easeInOut(x: number){
     if (x < .5){
-        return x*x;
+        return (x*x)*2;
     } else {
-        return 1-(x-1)*(x-1);
+        return 1-(2*x-2)*(2*x-2)/2;
     }
 }
 
@@ -199,4 +225,8 @@ function progress(t0: number,millis: number){
         }
         return easeInOut(x)
     }
+}
+
+function lerp(progress: number, from: number, to: number){
+    return from + (to-from)*progress;
 }

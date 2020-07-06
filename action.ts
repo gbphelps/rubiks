@@ -24,7 +24,10 @@ export interface TwistAction {
 export interface TwistAutocorrectAction {
     type: 'twist-autocorrect',
     params: {
-        progressFn: ()=>void,
+        progressFn: ()=>number,
+        fromTorque: Vec3,
+        toTorque: Vec3,
+        tranche: (THREE.Object3D | null)[],
     }
 }
 
