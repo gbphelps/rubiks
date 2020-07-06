@@ -23,6 +23,9 @@ export interface TwistAction {
 
 export interface TwistAutocorrectAction {
     type: 'twist-autocorrect',
+    params: {
+        progressFn: ()=>void,
+    }
 }
 
 let action: Action | null = null;

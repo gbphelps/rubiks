@@ -151,9 +151,15 @@ function mouseup(){
             y: Math.round(torque.y/quarterSlice)*quarterSlice,
             z: Math.round(torque.z/quarterSlice)*quarterSlice,
         };
-        console.log(target);
+        
+        const t0 = Date.now();
+        const millis = 2000;
+        const progressFn = progress(t0, millis);
         setAction({
             type: 'twist-autocorrect',
+            params: {
+                progressFn,
+            }
         });
         return;
     }
@@ -173,4 +179,24 @@ function mousemove(){
     if (!action) return;
     if (action.type === 'rotate') applyRotate(e, action);
     if (action.type === 'twist') applyTwist(e, action);
+}
+
+
+function easeInOut(x: number){
+    if (x < .5){
+        return x*x;
+    } else {
+        return 1-(x-1)*(x-1);
+    }
+}
+
+function progress(t0: number,millis: number){
+    return function(){
+        let x = (Date.now() - t0)/millis;
+        if (x >= 1){
+            setAction(null);
+            x = 1;
+        }
+        return easeInOut(x)
+    }
 }
