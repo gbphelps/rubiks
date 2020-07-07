@@ -1,5 +1,4 @@
 import { getAction } from '../action';
-import { flushEvents } from '../events';
 
 function lerp(p: number, from: number, to: number) {
   return from + (to - from) * p;
@@ -8,7 +7,8 @@ function lerp(p: number, from: number, to: number) {
 export default function autocorrectTwist() {
   const action = getAction();
   if (action && action.type === 'twist-autocorrect') {
-    flushEvents();
+    // TODO: consider making a module with userEventsForbidden()
+    // that can be toggled to `true` if animation is in progress
 
     const p = action.params.progressFn();
     const from = action.params.fromTorque;

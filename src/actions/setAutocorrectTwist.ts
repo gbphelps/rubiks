@@ -1,6 +1,7 @@
 import getUserTorque from '../getUserTorque';
 import { getAction, setAction } from '../action';
 import { progress } from '../utils/animation';
+import { setUserEventsEnabled } from '../../userEventsEnabled';
 
 const DURATION_MS = 300;
 
@@ -13,6 +14,9 @@ export default function setAutocorrectTwist(e: MouseEvent) {
     setAction(null);
     return;
   }
+
+  setUserEventsEnabled(false);
+
   const torque = getUserTorque(e);
   const quarterSlice = Math.PI / 2;
 
@@ -20,7 +24,11 @@ export default function setAutocorrectTwist(e: MouseEvent) {
 
   const { tranche, unitTorque } = action.torqueParams!;
 
-  const cleanup = () => setAction(null);
+  const cleanup = () => {
+    setAction(null);
+    setUserEventsEnabled(true);
+  };
+
   const progressFn = progress(DURATION_MS, cleanup);
   setAction({
     type: 'twist-autocorrect',

@@ -1,4 +1,5 @@
 import { globals } from './globals';
+import { getUserEventsEnabled } from '../userEventsEnabled';
 
 const events: Record<string, false | MouseEvent> = {
   mousemove: false,
@@ -8,7 +9,7 @@ const events: Record<string, false | MouseEvent> = {
 
 function assign(key: string) {
   return function enqueue(e: MouseEvent) {
-    events[key] = e;
+    if (getUserEventsEnabled()) events[key] = e;
   };
 }
 
