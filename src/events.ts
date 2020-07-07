@@ -1,5 +1,14 @@
 import { globals } from './globals';
-import { getUserEventsEnabled } from '../userEventsEnabled';
+
+let userEventsEnabled = true;
+
+export function getUserEventsEnabled() {
+  return userEventsEnabled;
+}
+
+export function setUserEventsEnabled(value: boolean) {
+  userEventsEnabled = value;
+}
 
 const events: Record<string, false | MouseEvent> = {
   mousemove: false,

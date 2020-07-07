@@ -1,7 +1,7 @@
 import getUserTorque from '../getUserTorque';
 import { getAction, setAction } from '../action';
 import { progress } from '../utils/animation';
-import { setUserEventsEnabled } from '../../userEventsEnabled';
+import { setUserEventsEnabled } from '../events';
 
 const DURATION_MS = 300;
 
