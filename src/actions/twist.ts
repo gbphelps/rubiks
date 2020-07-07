@@ -8,7 +8,7 @@ import {
   getNormalCubeSpace, CoordTriad, Axis,
 } from '../utils/types';
 
-import { getTranche } from '../boxRegistry';
+import { getTranche, getActiveNode } from '../boxRegistry';
 import getUserTorque from '../getUserTorque';
 
 const THRESHHOLD = 0.01;
@@ -87,22 +87,15 @@ function getTorqueParams(e: MouseEvent, action: TwistAction) {
     direction,
   );
 
-  const dims: Axis[] = ['x', 'y', 'z'];
-  let axis: null | Axis = null;
-  for (let i = 0; i < 3; i++) {
-    const dim = dims[i];
-    if (unitTorque[dim] === 0) continue;
-    axis = dim;
-    break;
-  }
+  const activeNode = getActiveNode();
+  if (!activeNode) throw new Error();
 
-  if (!axis) throw new Error('Axis not found!');
   return {
     direction,
     screenDirection,
     unitTorque,
-    axis,
     tranche: getTranche(unitTorque),
+    activeNode,
   };
 }
 

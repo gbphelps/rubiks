@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import colorizeActive from './utils/uiEffects';
+import { getAction } from './action';
+import { axes, Axis } from './utils/types';
 
 type BoxRegistry = (THREE.Object3D | null)[][][];
 
@@ -29,10 +31,24 @@ export function getBox({ x, y, z }: THREE.Vector3) {
   return boxRegistry[x][y][z];
 }
 
+export function getActiveNode() {
+  return activeNode;
+}
+
 export function setActiveBox(node: THREE.Vector3 | null) {
-  colorizeActive(new THREE.Color('black'));
+  if (activeNode) {
+    colorizeActive(
+      getBox(activeNode),
+      new THREE.Color('black'),
+    );
+  }
   activeNode = node;
-  colorizeActive(new THREE.Color('magenta'));
+  if (activeNode) {
+    colorizeActive(
+      getBox(activeNode),
+      new THREE.Color('magenta'),
+    );
+  }
 }
 
 export function getActiveBox() {
@@ -84,6 +100,40 @@ export function getTranche(unitTorque: THREE.Vector3) {
 }
 
 export function deselectCube() {
-  colorizeActive(new THREE.Color('black'));
+  if (activeNode) {
+    colorizeActive(
+      getBox(activeNode),
+      new THREE.Color('black'),
+    );
+  }
   setActiveBox(null);
+}
+
+type AxisDirection = {
+  axis: Axis,
+  direction: number,
+} | null;
+
+export function updateRegistryAfterTwist() {
+  const action = getAction();
+  if (!action) throw new Error();
+  if (action.type !== 'twist-autocorrect') throw new Error();
+  const { unitTorque, toTorque, activeNode: node } = action.params;
+  const turns = Math.round(toTorque / (Math.PI / 2));
+
+  const { axis, direction } = axes
+    .reduce<AxisDirection>((ans, axis) => (
+      unitTorque[axis]
+        ? { axis, direction: unitTorque[axis] } : ans), null) || {};
+
+  if (!direction || !axis) throw new Error();
+
+  rotateTrancheInRegistry(turns * direction, axis, node);
+}
+
+export function rotateTrancheInRegistry(
+  turns: number, axis: Axis, node: THREE.Vector3,
+) {
+  const layer = node[axis];
+  console.log({ turns, axis, layer });
 }

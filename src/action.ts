@@ -1,5 +1,5 @@
 import {
-  Vec2, Side, CoordTriad,
+  Vec2, Side, CoordTriad, Axis,
 } from './utils/types';
 
 type Action = RotateAction | TwistAction | TwistAutocorrectAction;
@@ -16,6 +16,7 @@ export interface TwistAction {
     torqueParams: {
         direction: THREE.Vector3,
         unitTorque: THREE.Vector3,
+        activeNode: THREE.Vector3,
         screenDirection: Vec2,
         tranche: (THREE.Object3D | null)[],
     } | null,
@@ -29,6 +30,7 @@ export interface TwistAutocorrectAction {
         toTorque: number,
         unitTorque: THREE.Vector3,
         tranche: (THREE.Object3D | null)[],
+        activeNode: THREE.Vector3,
     }
 }
 

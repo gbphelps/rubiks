@@ -2,6 +2,7 @@ import getUserTorque from '../getUserTorque';
 import { getAction, setAction } from '../action';
 import { progress } from '../utils/animation';
 import { setUserEventsEnabled } from '../events';
+import { updateRegistryAfterTwist } from '../boxRegistry';
 
 const DURATION_MS = 300;
 
@@ -22,14 +23,18 @@ export default function setAutocorrectTwist(e: MouseEvent) {
 
   const target = Math.round(torque / quarterSlice) * quarterSlice;
 
-  const { tranche, unitTorque } = action.torqueParams!;
+  const {
+    tranche, unitTorque, activeNode,
+  } = action.torqueParams!;
 
   const cleanup = () => {
+    updateRegistryAfterTwist();
     setAction(null);
     setUserEventsEnabled(true);
   };
 
   const progressFn = progress(DURATION_MS, cleanup);
+
   setAction({
     type: 'twist-autocorrect',
     params: {
@@ -38,6 +43,7 @@ export default function setAutocorrectTwist(e: MouseEvent) {
       toTorque: target,
       tranche,
       unitTorque,
+      activeNode,
     },
   });
 }

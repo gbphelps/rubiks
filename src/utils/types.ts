@@ -60,3 +60,14 @@ export function getNormalCubeSpace(side: Side) {
 }
 
 export type Axis = 'x' | 'y' | 'z';
+
+export const axes: Axis[] = ['x', 'y', 'z'];
+
+export function axisToOrdinal(axis: Axis) {
+  const lookup: Record<Axis, number> = {
+    x: 0,
+    y: 1,
+    z: 2,
+  };
+  return lookup[axis];
+}
