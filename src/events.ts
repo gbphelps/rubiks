@@ -37,6 +37,12 @@ export function drain(key: string) {
   return result;
 }
 
+export function flushEvents() {
+  Object.keys(events).forEach((key) => {
+    events[key] = false;
+  });
+}
+
 export function peek(key: string) {
   return !!events[key];
 }

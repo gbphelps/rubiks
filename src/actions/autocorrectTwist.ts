@@ -1,4 +1,5 @@
 import { getAction } from '../action';
+import { flushEvents } from '../events';
 
 function lerp(p: number, from: number, to: number) {
   return from + (to - from) * p;
@@ -7,6 +8,8 @@ function lerp(p: number, from: number, to: number) {
 export default function autocorrectTwist() {
   const action = getAction();
   if (action && action.type === 'twist-autocorrect') {
+    flushEvents();
+
     const p = action.params.progressFn();
     const from = action.params.fromTorque;
     const to = action.params.toTorque;

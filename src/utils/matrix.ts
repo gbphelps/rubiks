@@ -1,27 +1,7 @@
 import * as THREE from 'three';
 import {
-  Matrix, Mx4, Vec2,
+  Matrix, Vec2,
 } from './types';
-
-// function flatten<T>(
-//   mx: (T | T[])[],
-// ): T[] {
-//   return mx.reduce<T[]>((acc, el) => {
-//     if (Array.isArray(el)) {
-//       return acc.concat(flatten(el));
-//     }
-//     return acc.concat(el);
-//   }, []);
-// }
-
-// export function Matrix2Tuple(mx: Matrix) {
-//   const typedValues: Mx4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-//   const values = flatten(mx);
-//   for (let i = 0; i < values.length; i++) {
-//     typedValues[i] = values[i];
-//   }
-//   return typedValues;
-// }
 
 export function Matrix2Vec(mx: Matrix) {
   return {

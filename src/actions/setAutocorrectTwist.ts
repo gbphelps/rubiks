@@ -15,11 +15,7 @@ export default function setAutocorrectTwist(e: MouseEvent) {
   }
   const torque = getUserTorque(e);
   const quarterSlice = Math.PI / 2;
-  //   const target = {
-  //     x: Math.round(torque.x / quarterSlice) * quarterSlice,
-  //     y: Math.round(torque.y / quarterSlice) * quarterSlice,
-  //     z: Math.round(torque.z / quarterSlice) * quarterSlice,
-  //   };
+
   const target = Math.round(torque / quarterSlice) * quarterSlice;
 
   const { tranche, unitTorque } = action.torqueParams!;
