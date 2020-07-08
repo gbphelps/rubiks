@@ -34,6 +34,7 @@ module.exports = {
     'no-mixed-operators': 'off',
     'no-continue': 'off',
     'no-shadow': 'warn',
+    'no-param-reassign': 'warn',
   },
   settings: {
     // these are all needed to use ts with airbnb
