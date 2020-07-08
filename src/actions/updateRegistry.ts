@@ -39,13 +39,17 @@ function rotateChild(child: THREE.Object3D, axis: Axis, rotation: number) {
   roundRotation(child);
 }
 
+function mod(x: number, m: number) {
+  if (x % m >= 0) return Math.abs(x % m); return m + x % m;
+}
+
 function roundRotation(obj: THREE.Object3D) {
   // note: THREEjs already takes the 2pi modulus for angles over 2pi
   for (let i = 0; i < 3; i++) {
     const axis = axes[i];
     const oneRotation = Math.PI / 2;
-    console.log(obj.rotation[axis]);
-    obj.rotation[axis] = Math.round(obj.rotation[axis] / oneRotation) * oneRotation;
+    const turns = Math.round(obj.rotation[axis] / oneRotation);
+    obj.rotation[axis] = mod(turns, 4) * oneRotation;
   }
 }
 
