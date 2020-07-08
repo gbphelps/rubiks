@@ -2,7 +2,6 @@ import getUserTorque from '../getUserTorque';
 import { getAction, setAction } from '../action';
 import { progress } from '../utils/animation';
 import { setUserEventsEnabled } from '../events';
-import { updateRegistryAfterTwist } from '../boxRegistry';
 
 const DURATION_MS = 300;
 
@@ -28,9 +27,14 @@ export default function setAutocorrectTwist(e: MouseEvent) {
   } = action.torqueParams!;
 
   const cleanup = () => {
-    updateRegistryAfterTwist();
-    setAction(null);
-    setUserEventsEnabled(true);
+    setAction({
+      type: 'updateRegistry',
+      params: {
+        tranche,
+        unitTorque,
+        toTorque: target,
+      },
+    });
   };
 
   const progressFn = progress(DURATION_MS, cleanup);

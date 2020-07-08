@@ -6,20 +6,16 @@ function lerp(p: number, from: number, to: number) {
 
 export default function autocorrectTwist() {
   const action = getAction();
-  if (action && action.type === 'twist-autocorrect') {
-    // TODO: consider making a module with userEventsForbidden()
-    // that can be toggled to `true` if animation is in progress
+  if (!action || action.type !== 'twist-autocorrect') return;
+  const p = action.params.progressFn();
+  const from = action.params.fromTorque;
+  const to = action.params.toTorque;
 
-    const p = action.params.progressFn();
-    const from = action.params.fromTorque;
-    const to = action.params.toTorque;
-
-    action.params.tranche.forEach((box) => {
-      if (!box) throw new Error();
-      box.setRotationFromAxisAngle(
-        action.params.unitTorque,
-        lerp(p, from, to),
-      );
-    });
-  }
+  action.params.tranche.forEach((box) => {
+    if (!box) throw new Error();
+    box.setRotationFromAxisAngle(
+      action.params.unitTorque,
+      lerp(p, from, to),
+    );
+  });
 }

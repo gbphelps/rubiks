@@ -1,7 +1,5 @@
 import * as THREE from 'three';
 import colorizeActive from './utils/uiEffects';
-import { getAction } from './action';
-import { axes, Axis, axisToOrdinal } from './utils/types';
 
 type BoxRegistry = (THREE.Object3D | null)[][][];
 
@@ -107,100 +105,24 @@ export function deselectCube() {
   setActiveBox(null);
 }
 
-type AxisDirection = {
-  axis: Axis,
-  direction: number,
-} | null;
+// function inPlaceRotate(arr: number[][]) {
+//   if (arr.length !== arr[0].length) throw new Error(
+//    'cannot in-place rotate array of mixed dimensions'
+//   );
+//   const l = arr.length;
 
-export function updateRegistryAfterTwist() {
-  const action = getAction();
-  if (!action) throw new Error();
-  if (action.type !== 'twist-autocorrect') throw new Error();
-  const { unitTorque, toTorque, activeNode: node } = action.params;
-  const turns = Math.round(toTorque / (Math.PI / 2));
-
-  const { axis, direction } = axes
-    .reduce<AxisDirection>((ans, axis) => (
-      unitTorque[axis]
-        ? { axis, direction: unitTorque[axis] } : ans), null) || {};
-
-  if (!direction || !axis) throw new Error();
-
-  rotateTrancheInRegistry(turns * direction, axis, node);
-}
-
-export function rotateTrancheInRegistry(
-  turns: number, axis: Axis, node: THREE.Vector3,
-) {
-  const layer = node[axis];
-  console.log({ turns, axis, layer });
-
-  // for (let i = 0; i < 3; i++) {
-  //   for (let j = 0; j < 3; j++) {
-  //     case
-  //   }
-  // }
-}
-
-function inPlaceRotate(arr: number[][]) {
-  if (arr.length !== arr[0].length) throw new Error('cannot in-place rotate array of mixed dimensions');
-  const l = arr.length;
-
-  for (let i = 0; i < Math.floor(arr.length / 2); i++) {
-    for (let j = 0; j <= Math.floor(arr.length / 2 - i); j++) {
-      const c = [i, i + j];
-      const store = arr[c[0]][c[1]];
-      for (let k = 0; k < 3; k++) {
-        arr[c[0]][c[1]] = arr[l - 1 - c[1]][c[0]];
-        const store = c[0];
-        c[0] = l - 1 - c[1];
-        c[1] = store;
-      }
-      arr[c[0]][c[1]] = store;
-    }
-  }
-  return arr;
-}
-
-// function getIdxs(
-//   axis: Axis, layer: number, nonfixed: [number, number],
-// ) {
-//   const axisNum = axisToOrdinal(axis);
-//   const r = [];
-//   let nonfixedIdx = 0;
-//   for (let i = 0; i < 3; i++) {
-//     r.push(axisNum === i ? layer : nonfixed[nonfixedIdx++]);
-//   }
-//   return r;
-// }
-
-// function assign(idxs: any, val: any) {
-//   let item: any = boxRegistry;
-//   for (let i = 0; i < idxs.length - 1; i++) {
-//     item = item[idxs[i]];
-//   }
-//   item[idxs[idxs.length - 1]] = val;
-// }
-
-// function get(idxs: any) {
-//   return idxs.reduce((acc: any, el: any) => acc[el], boxRegistry);
-// }
-
-// function IPR(axis: any, layer: any) {
-//   const l = 3;
-
-//   for (let i = 0; i < Math.floor(l / 2); i++) {
-//     for (let j = 0; j <= Math.floor(l / 2 - i); j++) {
-//       const c: [number, number] = [i, i + j];
-//       const i1 = () => getIdxs(axis, layer, c);
-//       const store = get(i1());
-
+//   for (let i = 0; i < Math.floor(arr.length / 2); i++) {
+//     for (let j = 0; j <= Math.floor(arr.length / 2 - i); j++) {
+//       const c = [i, i + j];
+//       const store = arr[c[0]][c[1]];
 //       for (let k = 0; k < 3; k++) {
-//         const c2: [number, number] = [l - 1 - c[1], c[0]];
-//         const i2 = getIdxs(axis, layer, c2);
-//         assign(i1(), get(i2));
+//         arr[c[0]][c[1]] = arr[l - 1 - c[1]][c[0]];
+//         const store = c[0];
+//         c[0] = l - 1 - c[1];
+//         c[1] = store;
 //       }
-//       assign(i1(), store);
+//       arr[c[0]][c[1]] = store;
 //     }
 //   }
+//   return arr;
 // }

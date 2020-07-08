@@ -12,6 +12,7 @@ import autocorrectTwist from './actions/autocorrectTwist';
 import mouseup from './eventConsumers/mouseup';
 import mousedown from './eventConsumers/mousedown';
 import mousemove from './eventConsumers/mousemove';
+import updateRegistry from './actions/updateRegistry';
 
 function getInitialDecals(x: number, y: number, z: number) {
   const decals: Face[] = [];
@@ -66,7 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
       cube.setRotationFromMatrix(getRotation());
       cube.updateMatrix();
 
-      autocorrectTwist(); // todo disable other actions while this is happening.
+      autocorrectTwist();
+      updateRegistry();
 
       if (peek('mousedown')) mousedown();
       if (peek('mouseup')) mouseup();

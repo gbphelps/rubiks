@@ -1,8 +1,8 @@
 import {
-  Vec2, Side, CoordTriad, Axis,
+  Vec2, Side, CoordTriad,
 } from './utils/types';
 
-type Action = RotateAction | TwistAction | TwistAutocorrectAction;
+type Action = RotateAction | TwistAction | TwistAutocorrectAction | UpdateRegistryAction;
 
 export interface RotateAction {
     type: 'rotate',
@@ -32,6 +32,15 @@ export interface TwistAutocorrectAction {
         tranche: (THREE.Object3D | null)[],
         activeNode: THREE.Vector3,
     }
+}
+
+export interface UpdateRegistryAction {
+  type: 'updateRegistry',
+  params: {
+      tranche: (THREE.Object3D | null)[],
+      unitTorque: THREE.Vector3,
+      toTorque: number,
+  }
 }
 
 let action: Action | null = null;
