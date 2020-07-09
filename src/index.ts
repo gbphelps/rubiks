@@ -5,7 +5,7 @@ import { getRotation } from './rotation';
 import {
   init as initControls, peek,
 } from './events';
-import makeDebugScreen from './utils/debug';
+// import makeDebugScreen from './utils/debug';
 import { Face } from './utils/types';
 import * as boxRegistry from './boxRegistry';
 import autocorrectTwist from './actions/autocorrectTwist';
@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     globals.scene!.add(cube);
 
-    const debug = makeDebugScreen();
-    globals.scene!.add(debug);
+    // const debug = makeDebugScreen();
+    // globals.scene!.add(debug);
 
     function animate() {
       requestAnimationFrame(animate);
