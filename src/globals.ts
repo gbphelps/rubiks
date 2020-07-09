@@ -8,6 +8,12 @@ interface Globals {
     render: (() => void) | null,
     container: HTMLDivElement | null,
     pixPerUnit: number,
+    lights: null | {
+      ambientLight: THREE.AmbientLight,
+      pointLightLeft: THREE.PointLight,
+      pointLightRight: THREE.PointLight,
+      pointLightFront: THREE.PointLight,
+    }
 }
 
 export const globals: Globals = {
@@ -17,6 +23,7 @@ export const globals: Globals = {
   renderer: null,
   render: null,
   container: null,
+  lights: null,
   pixPerUnit: 0,
 };
 
@@ -41,12 +48,33 @@ export function init() {
 
   const scene = new THREE.Scene();
 
+  const ambientLight = new THREE.AmbientLight('white', 0.4);
+  scene.add(ambientLight);
+
+  const pointLightFront = new THREE.PointLight('white', 1, 0, 2);
+  pointLightFront.position.set(0, 3, 10);
+  scene.add(pointLightFront);
+
+  const pointLightLeft = new THREE.PointLight('white', 0.6, 0, 2);
+  pointLightLeft.position.set(-10, 0, -camera.position.z);
+  scene.add(pointLightLeft);
+
+  const pointLightRight = new THREE.PointLight('white', 0.6, 0, 2);
+  pointLightRight.position.set(10, 0, -camera.position.z);
+  scene.add(pointLightRight);
+
   Object.assign(globals, {
     container,
     canvas,
     scene,
     camera,
     renderer,
+    lights: {
+      ambientLight,
+      pointLightFront,
+      pointLightLeft,
+      pointLightRight,
+    },
     render: () => renderer.render(scene, camera),
   });
 

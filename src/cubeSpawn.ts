@@ -28,7 +28,7 @@ function makeDecal(color: THREE.Color, side: Side) {
 
   const decal = makeMesh({
     geometry: new THREE.ShapeGeometry(decalShape),
-    material: new THREE.MeshBasicMaterial({
+    material: new THREE.MeshLambertMaterial({
       color,
       polygonOffset: true,
       polygonOffsetFactor: -1,
@@ -71,7 +71,7 @@ function makeDecal(color: THREE.Color, side: Side) {
 export default function cubeSpawn(faces: Face[], position: THREE.Vector3) {
   const box = makeMesh({
     geometry: new THREE.BoxGeometry(1, 1, 1),
-    material: new THREE.MeshBasicMaterial({ color: 0x000000 }),
+    material: new THREE.MeshLambertMaterial({ color: 0x101010 }),
   });
 
   faces.forEach(({ color, side }: Face) => {
