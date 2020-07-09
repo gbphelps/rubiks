@@ -11,7 +11,7 @@ import {
 import { getTranche, getActiveNode } from '../boxRegistry';
 import getUserTorque from '../getUserTorque';
 
-const THRESHHOLD = 0.01;
+const THRESHHOLD = 0.1;
 
 function getCardinalDirection(vec: THREE.Vector3) {
   // Gives cardinal unit vector that most closely corresponds to vec.

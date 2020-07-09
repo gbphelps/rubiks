@@ -12,7 +12,7 @@ import autocorrectTwist from './actions/autocorrectTwist';
 import mouseup from './eventConsumers/mouseup';
 import mousedown from './eventConsumers/mousedown';
 import mousemove from './eventConsumers/mousemove';
-import updateRegistry from './actions/updateRegistry';
+import updateRegistry, { shuffle } from './actions/updateRegistry';
 
 function getInitialDecals(x: number, y: number, z: number) {
   const decals: Face[] = [];
@@ -56,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+
+  shuffle(50);
 
     globals.scene!.add(cube);
 

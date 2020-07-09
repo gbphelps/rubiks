@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { getAction, setAction } from '../action';
 import { Axis, axes } from '../utils/types';
 import { setUserEventsEnabled } from '../events';
-import { registerBox } from '../boxRegistry';
+import { registerBox, getTrancheStatic } from '../boxRegistry';
 
 export default function updateRegistry() {
   const action = getAction();
@@ -83,4 +83,26 @@ function getRotationMatrix(axis: Axis, rotation: number) {
   const mx = new THREE.Matrix4();
   mx[rotations[axis]](rotation);
   return mx;
+}
+
+export function shuffle(times: number) {
+  for (let i = 0; i < times; i++) {
+    const axis = Math.floor(Math.random() * 3);
+    const rotation = (Math.floor(Math.random() * 3) + 1) * Math.PI / 2;
+    const layer = Math.floor(Math.random() * 3);
+    const tranche = getTrancheStatic(axis, layer);
+    const rotMx = getRotationMatrix(axes[axis], rotation);
+    tranche.forEach((box) => {
+      if (!box) throw new Error();
+      const child = box.children[0];
+      rotateChild(child, axes[axis], rotation);
+
+      child.position.applyMatrix4(rotMx);
+      roundPosition(child);
+      child.updateMatrix();
+
+      const { x, y, z } = child.position;
+      registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
+    });
+  }
 }

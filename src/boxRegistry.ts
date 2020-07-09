@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import colorizeActive from './utils/uiEffects';
+import { axes } from './utils/types';
 
 type BoxRegistry = (THREE.Object3D | null)[][][];
 
@@ -76,9 +77,8 @@ export function getTranche(unitTorque: THREE.Vector3) {
   const tranche = [];
 
   const bounds: Record<string, number[]> = {};
-  const dims: ('x' | 'y' | 'z')[] = ['x', 'y', 'z'];
   for (let i = 0; i < 3; i++) {
-    const dim = dims[i];
+    const dim = axes[i];
     bounds[dim] = unitTorque[dim]
       ? [activeNode[dim], activeNode[dim]]
       : [0, 2];
@@ -103,6 +103,30 @@ export function deselectCube() {
     );
   }
   setActiveBox(null);
+}
+
+export function getTrancheStatic(axis: number, layer: number) {
+  const tranche = [];
+
+  const bounds: Record<string, number[]> = {};
+
+  for (let i = 0; i < 3; i++) {
+    bounds[axes[i]] = (
+      axis === i
+        ? [layer, layer]
+        : [0, 2]
+    );
+  }
+
+  for (let x: number = bounds.x[0]; x <= bounds.x[1]; x++) {
+    for (let y = bounds.y[0]; y <= bounds.y[1]; y++) {
+      for (let z = bounds.z[0]; z <= bounds.z[1]; z++) {
+        tranche.push(boxRegistry[x][y][z]);
+      }
+    }
+  }
+
+  return tranche;
 }
 
 // function inPlaceRotate(arr: number[][]) {
