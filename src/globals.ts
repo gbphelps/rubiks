@@ -27,6 +27,8 @@ export const globals: Globals = {
   pixPerUnit: 0,
 };
 
+const UNIT = 10;
+
 export function init() {
   const canvas = document.createElement('canvas');
 
@@ -44,23 +46,24 @@ export function init() {
 
   const { height, width } = container.getBoundingClientRect();
   const camera = new THREE.PerspectiveCamera(30, width / height);
-  camera.position.z = 10;
+
+  camera.position.z = UNIT;
 
   const scene = new THREE.Scene();
 
-  const ambientLight = new THREE.AmbientLight('white', 0.35);
+  const ambientLight = new THREE.AmbientLight('white', 0.25);
   scene.add(ambientLight);
 
   const pointLightFront = new THREE.PointLight('white', 1, 0, 2);
-  pointLightFront.position.set(0, 3, 10);
+  pointLightFront.position.set(0, UNIT * 0.5, UNIT);
   scene.add(pointLightFront);
 
   const pointLightLeft = new THREE.PointLight('white', 0.6, 0, 2);
-  pointLightLeft.position.set(-10, 0, -camera.position.z);
+  pointLightLeft.position.set(-UNIT, -UNIT * 5, -UNIT * 0.5);
   scene.add(pointLightLeft);
 
   const pointLightRight = new THREE.PointLight('white', 0.6, 0, 2);
-  pointLightRight.position.set(10, 0, -camera.position.z);
+  pointLightRight.position.set(UNIT, -UNIT * 0.5, -UNIT * 0.5);
   scene.add(pointLightRight);
 
   Object.assign(globals, {

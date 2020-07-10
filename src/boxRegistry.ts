@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import colorizeActive from './utils/uiEffects';
-import { axes } from './utils/types';
+import { axes, getNormalCubeSpace, Side } from './utils/types';
 
 type BoxRegistry = (THREE.Object3D | null)[][][];
 
@@ -128,6 +128,44 @@ export function getTrancheStatic(axis: number, layer: number) {
 
   return tranche;
 }
+
+// function extractSide(side: Side) {
+//   const normal = getNormalCubeSpace(side);
+//   let dimension;
+//   let index;
+
+//   for (let i = 0; i < 3; i++) {
+//     if (!normal[axes[i]]) continue;
+//     dimension = i;
+//     index = normal[axes[i]] + 1;
+//   }
+//   if (
+//     dimension === undefined
+//     || index === undefined
+//   ) throw new Error();
+
+//   const face: (THREE.Object3D | null)[][] = [];
+//   for (let i = 0; i < 3; i++) {
+//     for (let j = 0; j < 3; j++) {
+//       const idxs = getIndices(dimension, index, [i, j]);
+//       const box = boxRegistry[idxs[1]][idxs[2]][idxs[3]];
+//       // rotate box into front view ( but don't save that rotation to the box )
+//     }
+//   }
+
+//   console.log(index, dimension);
+// }
+
+// function getIndices(axis: number, fixed: number, others: number[]) {
+//   const indices: number[] = [];
+//   let othersIndex = 0;
+//   for (let i = 0; i < 3; i++) {
+//     indices.push(axis === i ? fixed : others[othersIndex++]);
+//   }
+//   return indices;
+// }
+
+/// ///////////////////////////////////////////////////////////
 
 // function inPlaceRotate(arr: number[][]) {
 //   if (arr.length !== arr[0].length) throw new Error(
