@@ -48,7 +48,7 @@ export function init() {
 
   const scene = new THREE.Scene();
 
-  const ambientLight = new THREE.AmbientLight('white', 0.4);
+  const ambientLight = new THREE.AmbientLight('white', 0.35);
   scene.add(ambientLight);
 
   const pointLightFront = new THREE.PointLight('white', 1, 0, 2);

@@ -28,8 +28,10 @@ function makeDecal(color: THREE.Color, side: Side) {
 
   const decal = makeMesh({
     geometry: new THREE.ShapeGeometry(decalShape),
-    material: new THREE.MeshLambertMaterial({
+    material: new THREE.MeshStandardMaterial({
       color,
+      roughness: 1,
+      metalness: 0,
       polygonOffset: true,
       polygonOffsetFactor: -1,
       polygonOffsetUnits: -1,

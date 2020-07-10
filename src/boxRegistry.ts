@@ -38,7 +38,7 @@ export function setActiveBox(node: THREE.Vector3 | null) {
   if (activeNode) {
     colorizeActive(
       getBox(activeNode),
-      new THREE.Color('black'),
+      new THREE.Color(0x101010),
     );
   }
   activeNode = node;
