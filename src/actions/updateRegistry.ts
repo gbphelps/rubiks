@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { getAction, setAction } from '../action';
 import { Axis, axes } from '../utils/types';
 import { setUserEventsEnabled } from '../events';
-import { registerBox, getTrancheStatic } from '../boxRegistry';
+import { registerBox, getTrancheStatic, extractSide } from '../boxRegistry';
 
 export default function updateRegistry() {
   const action = getAction();
@@ -105,4 +105,5 @@ export function shuffle(times: number) {
       registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
     });
   }
+  extractSide('left');
 }

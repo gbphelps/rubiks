@@ -38,12 +38,16 @@ function makeDecal(color: THREE.Color, side: Side) {
     }),
   });
 
+  const decalPivot = new THREE.Object3D();
+  decalPivot.position.z = 0.5;
+
   decal.position.x = -INSET / 2;
   decal.position.y = -INSET / 2;
-  decal.position.z = 0.5;
+
+  decalPivot.add(decal);
 
   const pivot = new THREE.Object3D();
-  pivot.add(decal);
+  pivot.add(decalPivot);
 
   switch (side) {
     case 'bottom':

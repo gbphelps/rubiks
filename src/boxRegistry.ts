@@ -129,32 +129,94 @@ export function getTrancheStatic(axis: number, layer: number) {
   return tranche;
 }
 
-// function extractSide(side: Side) {
-//   const normal = getNormalCubeSpace(side);
-//   let dimension;
-//   let index;
+function getRotationToFront(side: Side) {
+  switch (side) {
+    case 'front':
+      return new THREE.Matrix4();
+    case 'left':
+      return (new THREE.Matrix4()).makeRotationY(Math.PI / 2);
+    case 'right':
+      return (new THREE.Matrix4()).makeRotationY(-Math.PI / 2);
+    case 'top':
+      return (new THREE.Matrix4()).makeRotationX(Math.PI / 2);
+    case 'bottom':
+      return (new THREE.Matrix4()).makeRotationY(-Math.PI / 2);
+    case 'back':
+      return (new THREE.Matrix4()).makeRotationY(Math.PI);
+    default:
+      throw new Error();
+  }
+}
 
-//   for (let i = 0; i < 3; i++) {
-//     if (!normal[axes[i]]) continue;
-//     dimension = i;
-//     index = normal[axes[i]] + 1;
-//   }
-//   if (
-//     dimension === undefined
-//     || index === undefined
-//   ) throw new Error();
+// todo: this can be hardcoded into a lookup to save a ton of calculations.
+export function extractSide(side: Side) {
+  const normal = getNormalCubeSpace(side);
+  let dimension;
+  let index;
 
-//   const face: (THREE.Object3D | null)[][] = [];
-//   for (let i = 0; i < 3; i++) {
-//     for (let j = 0; j < 3; j++) {
-//       const idxs = getIndices(dimension, index, [i, j]);
-//       const box = boxRegistry[idxs[1]][idxs[2]][idxs[3]];
-//       // rotate box into front view ( but don't save that rotation to the box )
-//     }
-//   }
+  for (let i = 0; i < 3; i++) {
+    if (!normal[axes[i]]) continue;
+    dimension = i;
+    index = normal[axes[i]] + 1;
+  }
+  if (
+    dimension === undefined
+    || index === undefined
+  ) throw new Error();
 
-//   console.log(index, dimension);
-// }
+  const tranche = getTrancheStatic(dimension, index);
+  const rotation = getRotationToFront(side);
+
+  const face: (THREE.Object3D | null)[][] = [
+    [null, null, null],
+    [null, null, null],
+    [null, null, null],
+  ];
+  tranche.forEach((box) => {
+    if (!box) throw new Error();
+    const child = box.children[0] as THREE.Mesh;
+    const position = child.position.clone().applyMatrix4(rotation);
+    roundVector(position);
+    face[position.x + 1][position.y + 1] = box;
+  });
+
+  const faceColors = face.map((row) => (
+    row.map((box) => {
+      if (!box) throw new Error();
+      const child = box.children[0] as THREE.Mesh;
+      const decals = child.children;
+      for (let i = 0; i < decals.length; i++) {
+        const decal = decals[i].children[0];
+        decals[i].updateMatrix();
+        child.updateMatrix();
+        const pos = decal.position.clone()
+          .applyMatrix4(decals[i].matrix)
+          .applyEuler(child.rotation)
+          .applyMatrix4(rotation);
+        if (Math.round(pos.z * 2) === 1) {
+          const mesh = decal.children[0] as THREE.Mesh;
+          const material = mesh.material as THREE.MeshStandardMaterial;
+          return material.color;
+        }
+      }
+      throw new Error();
+    })
+  ));
+  faceColors.forEach((row, x) => {
+    row.forEach((color, y) => {
+      console.log({
+        x, y, color,
+      });
+    });
+  });
+  return faceColors;
+}
+
+function roundVector(v: THREE.Vector3) {
+  v.x = Math.round(v.x);
+  v.y = Math.round(v.y);
+  v.z = Math.round(v.z);
+}
 
 // function getIndices(axis: number, fixed: number, others: number[]) {
 //   const indices: number[] = [];
