@@ -1,13 +1,16 @@
 import * as THREE from 'three';
 
 import { makeMesh } from './utils/three';
-import { Side, Face } from './utils/types';
+import { Side, Face, colors } from './utils/types';
 
 const INSET = 0.8;
 const BORDER_RADIUS = 0.12;
 
-function makeDecal(color: THREE.Color, side: Side) {
+function makeDecal(color: string | number, side: Side) {
+  const threeColor = new THREE.Color(colors[color]);
+
   const decalShape = new THREE.Shape();
+
   decalShape.moveTo(BORDER_RADIUS, 0);
 
   decalShape.lineTo(INSET - BORDER_RADIUS, 0); // line
@@ -29,7 +32,7 @@ function makeDecal(color: THREE.Color, side: Side) {
   const decal = makeMesh({
     geometry: new THREE.ShapeGeometry(decalShape),
     material: new THREE.MeshStandardMaterial({
-      color,
+      color: threeColor,
       roughness: 1,
       metalness: 0,
       polygonOffset: true,
@@ -37,6 +40,8 @@ function makeDecal(color: THREE.Color, side: Side) {
       polygonOffsetUnits: -1,
     }),
   });
+
+  decal.userData.color = color;
 
   const decalPivot = new THREE.Object3D();
   decalPivot.position.z = 0.5;

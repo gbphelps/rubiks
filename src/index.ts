@@ -17,21 +17,21 @@ import updateRegistry, { shuffle } from './actions/updateRegistry';
 function getInitialDecals(x: number, y: number, z: number) {
   const decals: Face[] = [];
   if (z === 1) {
-    decals.push({ side: 'front', color: new THREE.Color('lime') });
+    decals.push({ side: 'front', color: 'green' });
   } else if (z === -1) {
-    decals.push({ side: 'back', color: new THREE.Color('yellow') });
+    decals.push({ side: 'back', color: 'yellow' });
   }
 
   if (x === 1) {
-    decals.push({ side: 'right', color: new THREE.Color('red') });
+    decals.push({ side: 'right', color: 'red' });
   } else if (x === -1) {
-    decals.push({ side: 'left', color: new THREE.Color('orange') });
+    decals.push({ side: 'left', color: 'orange' });
   }
 
   if (y === 1) {
-    decals.push({ side: 'top', color: new THREE.Color('white') });
+    decals.push({ side: 'top', color: 'white' });
   } else if (y === -1) {
-    decals.push({ side: 'bottom', color: new THREE.Color('blue') });
+    decals.push({ side: 'bottom', color: 'blue' });
   }
 
   return decals;

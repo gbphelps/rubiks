@@ -3,13 +3,22 @@ import * as THREE from 'three';
 export type Side = 'bottom' | 'top' | 'left' | 'right' | 'back' | 'front';
 export interface Face {
     side: Side,
-    color: THREE.Color,
+    color: string | number,
 }
 // export interface Vec3 {
 //     x: number,
 //     y: number,
 //     z: number
 // }
+
+export const colors: Record<string, string | number> = {
+  green: 'lime',
+  yellow: 'yellow',
+  red: 'red',
+  blue: 'blue',
+  orange: 0xff8000,
+  white: 'white',
+};
 
 export interface Vec2 {
     x: number,
