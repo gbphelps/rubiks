@@ -5,7 +5,6 @@
     <style>
         * {
             flex-shrink: 0;
-            outline: 1px solid red;
         }
 
         body, html {
@@ -36,11 +35,52 @@
             height: 100%; 
             width: 100%;
         }
+
+        .black {
+            height: 20px;
+            width: 20px;
+            background: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .face{
+            display: flex;
+            width: 60px;
+            flex-wrap: wrap;
+            margin: 8px;
+        }
+
+        .decal{
+            height: 16px;
+            width: 16px;
+            border-radius: 2px;
+        }
          
     </style>
     <body>
         <div class="flex-container">
-            <div id="panel-left">hello world</div>
+            <div id="panel-left">
+                <div>Left</div>
+                <div id="left" class="face">
+                </div>
+                <div>Right</div>
+                <div id="right" class="face">
+                </div>
+                <div>Top</div>
+                <div id="top" class="face">
+                </div>
+                <div>Bottom</div>
+                <div id="bottom" class="face">
+                </div>
+                <div>Front</div>
+                <div id="front" class="face">
+                </div>
+                <div>Back</div>
+                <div id="back" class="face">
+                </div>
+            </div>
             <div id="container">
                 <canvas id="canvas"></canvas>
             </div>

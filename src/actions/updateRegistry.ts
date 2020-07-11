@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { getAction, setAction } from '../action';
 import { Axis, axes } from '../utils/types';
 import { setUserEventsEnabled } from '../events';
-import { registerBox, getTrancheStatic, extractSide } from '../boxRegistry';
+import { registerBox, getTrancheStatic } from '../boxRegistry';
+import faceManager from '../faceManager';
 
 export default function updateRegistry() {
   const action = getAction();
@@ -27,6 +28,7 @@ export default function updateRegistry() {
     registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
   });
 
+  faceManager.updateFaces();
   setAction(null);
   setUserEventsEnabled(true);
 }
@@ -105,5 +107,6 @@ export function shuffle(times: number) {
       registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
     });
   }
-  extractSide('left');
+
+  faceManager.updateFaces();
 }

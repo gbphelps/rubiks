@@ -5,11 +5,6 @@ export interface Face {
     side: Side,
     color: string | number,
 }
-// export interface Vec3 {
-//     x: number,
-//     y: number,
-//     z: number
-// }
 
 export const colors: Record<string, string | number> = {
   green: 'lime',

@@ -140,9 +140,9 @@ function getRotationToFront(side: Side) {
     case 'top':
       return (new THREE.Matrix4()).makeRotationX(Math.PI / 2);
     case 'bottom':
-      return (new THREE.Matrix4()).makeRotationY(-Math.PI / 2);
+      return (new THREE.Matrix4()).makeRotationX(-Math.PI / 2);
     case 'back':
-      return (new THREE.Matrix4()).makeRotationY(Math.PI);
+      return (new THREE.Matrix4()).makeRotationX(Math.PI);
     default:
       throw new Error();
   }
@@ -195,20 +195,13 @@ export function extractSide(side: Side) {
           .applyMatrix4(rotation);
         if (Math.round(pos.z * 2) === 1) {
           const mesh = decal.children[0] as THREE.Mesh;
-          const material = mesh.material as THREE.MeshStandardMaterial;
-          return material.color;
+          return mesh.userData.color;
         }
       }
       throw new Error();
     })
   ));
-  faceColors.forEach((row, x) => {
-    row.forEach((color, y) => {
-      console.log({
-        x, y, color,
-      });
-    });
-  });
+
   return faceColors;
 }
 
