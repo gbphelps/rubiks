@@ -30,13 +30,8 @@ export const globals: Globals = {
 const UNIT = 10;
 
 export function init() {
-  const canvas = document.createElement('canvas');
-
-  const container = document.createElement('div');
-  container.id = 'container';
-
-  document.body.appendChild(container);
-  container.appendChild(canvas);
+  const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+  const container = document.getElementById('container') as HTMLDivElement;
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
@@ -51,19 +46,19 @@ export function init() {
 
   const scene = new THREE.Scene();
 
-  const ambientLight = new THREE.AmbientLight('white', 0.25);
+  const ambientLight = new THREE.AmbientLight('white', 0.2);
   scene.add(ambientLight);
 
   const pointLightFront = new THREE.PointLight('white', 1, 0, 2);
-  pointLightFront.position.set(0, UNIT * 0.5, UNIT);
+  pointLightFront.position.set(0, 0.5 * UNIT, 1 * UNIT);
   scene.add(pointLightFront);
 
-  const pointLightLeft = new THREE.PointLight('white', 0.6, 0, 2);
-  pointLightLeft.position.set(-UNIT, -UNIT * 5, -UNIT * 0.5);
+  const pointLightLeft = new THREE.PointLight('white', 0.4, 0, 2);
+  pointLightLeft.position.set(-2 * UNIT, -UNIT, -UNIT * 0.5);
   scene.add(pointLightLeft);
 
-  const pointLightRight = new THREE.PointLight('white', 0.6, 0, 2);
-  pointLightRight.position.set(UNIT, -UNIT * 0.5, -UNIT * 0.5);
+  const pointLightRight = new THREE.PointLight('white', 0.4, 0, 2);
+  pointLightRight.position.set(2 * UNIT, -UNIT, -UNIT * 0.5);
   scene.add(pointLightRight);
 
   Object.assign(globals, {
@@ -86,19 +81,21 @@ export function init() {
 }
 
 function resize() {
-  const { camera, renderer, container } = globals;
+  const {
+    camera, renderer, container,
+  } = globals;
   const { height, width } = container!.getBoundingClientRect();
 
-    camera!.aspect = window.innerWidth / window.innerHeight;
-    camera!.updateProjectionMatrix();
+  camera!.aspect = width / height;
+  camera!.updateProjectionMatrix();
 
-    const theta = camera!.fov / 180 * Math.PI;
+  const theta = camera!.fov / 180 * Math.PI;
 
-    // calculate z distance of camera screen in pixels (using height).
-    const z = (height / 2) / Math.tan(theta / 2);
+  // calculate z distance of camera screen in pixels (using height).
+  const z = (height / 2) / Math.tan(theta / 2);
 
-    // calculate ratio between z in pixels and z in scene units.
-    globals.pixPerUnit = z / camera!.position.z;
+  // calculate ratio between z in pixels and z in scene units.
+  globals.pixPerUnit = z / camera!.position.z;
 
-    renderer!.setSize(width, height);
+  renderer!.setSize(width, height);
 }

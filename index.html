@@ -3,13 +3,47 @@
         <script src="bundle.js"></script>
     </head>
     <style>
-        body, html, #container {
+        * {
+            flex-shrink: 0;
+            outline: 1px solid red;
+        }
+
+        body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             width: 100%;
         }
+
+        #container {
+            height: 100%;
+            width: 0;
+            flex-grow: 1;
+            position: relative;
+        }
+
+        #canvas {
+            height: 100%;
+            width: 100%;
+        }
+
+        #panel-left {
+            width: 200px;
+        }
+
+        .flex-container {
+            display: flex;
+            height: 100%; 
+            width: 100%;
+        }
+         
     </style>
     <body>
+        <div class="flex-container">
+            <div id="panel-left">hello world</div>
+            <div id="container">
+                <canvas id="canvas"></canvas>
+            </div>
+        </div>
     </body>
 </html>
