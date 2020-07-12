@@ -1,19 +1,11 @@
 <html>
     <head>
         <script src="bundle.js"></script>
-        <link rel="stylesheet" href="dist/bundle.css">
     </head>
     <body>
-        <div style="display: flex; flex-direction: column; height: 100%; width: 100%">
-            <div class="flex-container">
+        <div class="all-container">
+            <div class="top-container">
                 <div id="panel-left">
-                </div>
-                <div id="container">
-                    <canvas id="canvas"></canvas>
-                </div>
-            </div>
-            <div>
-                <div class="bottom-panel">
                     <div>
                         <div style="display: flex">
                             <div class="face">
@@ -28,8 +20,6 @@
                             </div>
                             <div id="right" class="face">
                             </div>
-                            <div id="back" class="face">
-                            </div>
                         </div>
                         <div style="display: flex">
                             <div class="face">
@@ -37,7 +27,20 @@
                             <div id="bottom" class="face">
                             </div>
                         </div>
+                        <div style="display: flex">
+                            <div class="face">
+                            </div>
+                            <div id="back" class="face">
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div id="container">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+            <div>
+                <div class="bottom-panel">
                 </div>
             </div>
         </div>

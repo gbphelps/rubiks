@@ -1,9 +1,11 @@
 @use './params.scss';
 
+$bottom-panel-height: 200px;
+
 * {
     flex-shrink: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    outline: 1px solid red;
+    // outline: 1px solid red;
     position: relative;
 }
 
@@ -28,12 +30,12 @@ body, html {
     width: 200px;
 }
 
-.flex-container {
+.top-container {
     display: flex;
     width: 100%;
+    height: calc(100% - 200px);
     position: relative;
     align-items: stretch;
-    flex-grow: 1;
 }
 
 .black {
@@ -60,6 +62,14 @@ body, html {
 
 .bottom-panel {
     display: flex; 
-    height: 200px; 
-    align-items: center
+    height: $bottom-panel-height; 
+    align-items: center;
+    overflow: hidden;
+}
+
+.all-container {
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+    width: 100%;
 }
