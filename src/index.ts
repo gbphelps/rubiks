@@ -14,6 +14,7 @@ import mousedown from './eventConsumers/mousedown';
 import mousemove from './eventConsumers/mousemove';
 import updateRegistry, { shuffle } from './actions/updateRegistry';
 import faceManager from './faceManager';
+import '../index.scss';
 
 function getInitialDecals(x: number, y: number, z: number) {
   const decals: Face[] = [];

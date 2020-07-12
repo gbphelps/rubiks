@@ -137,12 +137,12 @@ function getRotationToFront(side: Side) {
       return (new THREE.Matrix4()).makeRotationY(Math.PI / 2);
     case 'right':
       return (new THREE.Matrix4()).makeRotationY(-Math.PI / 2);
+    case 'back':
+      return (new THREE.Matrix4()).makeRotationY(Math.PI);
     case 'top':
       return (new THREE.Matrix4()).makeRotationX(Math.PI / 2);
     case 'bottom':
       return (new THREE.Matrix4()).makeRotationX(-Math.PI / 2);
-    case 'back':
-      return (new THREE.Matrix4()).makeRotationX(Math.PI);
     default:
       throw new Error();
   }

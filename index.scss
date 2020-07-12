@@ -1,0 +1,65 @@
+@use './params.scss';
+
+* {
+    flex-shrink: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    outline: 1px solid red;
+    position: relative;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+#container {
+    width: 0;
+    flex-grow: 1;
+}
+
+#canvas {
+    height: 100%;
+    width: 100%;
+}
+
+#panel-left {
+    width: 200px;
+}
+
+.flex-container {
+    display: flex;
+    width: 100%;
+    position: relative;
+    align-items: stretch;
+    flex-grow: 1;
+}
+
+.black {
+    height: params.$side;
+    width: params.$side;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.face{
+    display: flex;
+    width: params.$side * 3;
+    flex-wrap: wrap;
+    margin: 8px;
+}
+
+.decal{
+    height: params.$side - 6px;
+    width: params.$side - 6px;
+    border-radius: 2px;
+}
+
+.bottom-panel {
+    display: flex; 
+    height: 200px; 
+    align-items: center
+}
