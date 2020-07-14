@@ -90,6 +90,8 @@ export default function cubeSpawn(faces: Face[], position: THREE.Vector3) {
     box.add(decal);
   });
 
+  // box.castShadow = true;
+
   const pivot = new THREE.Object3D();
   pivot.add(box);
   box.position.x = position.x;

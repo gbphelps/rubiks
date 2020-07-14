@@ -39,6 +39,9 @@ export function init() {
     alpha: true,
   });
 
+  // renderer.shadowMap.enabled = true;
+  // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
   const { height, width } = container.getBoundingClientRect();
   const camera = new THREE.PerspectiveCamera(30, width / height);
 
@@ -51,6 +54,10 @@ export function init() {
 
   const pointLightFront = new THREE.PointLight('white', 1, 0, 2);
   pointLightFront.position.set(0, 0.5 * UNIT, 1 * UNIT);
+  // pointLightFront.castShadow = true;
+  // pointLightFront.shadow.mapSize.width = 1500;
+  // pointLightFront.shadow.mapSize.height = 1500;
+  // pointLightFront.shadow.radius = 2;
   scene.add(pointLightFront);
 
   const pointLightLeft = new THREE.PointLight('white', 0.4, 0, 2);
@@ -60,6 +67,17 @@ export function init() {
   const pointLightRight = new THREE.PointLight('white', 0.4, 0, 2);
   pointLightRight.position.set(2 * UNIT, -UNIT, -UNIT * 0.5);
   scene.add(pointLightRight);
+
+  // const pivot = new THREE.Object3D();
+  // const planeGeometry = new THREE.PlaneBufferGeometry(50, 50, 200, 200);
+  // const planeMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+  // const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+  // plane.position.z = -10;
+  // pivot.rotation.x = -Math.PI / 2 + 0.4;
+
+  // plane.receiveShadow = true;
+  // pivot.add(plane);
+  // scene.add(pivot);
 
   Object.assign(globals, {
     container,

@@ -16,6 +16,8 @@ import updateRegistry, { shuffle } from './actions/updateRegistry';
 import faceManager from './faceManager';
 import '../index.scss';
 
+// TODO: add circular slider for z rotation surrounding the cube.
+
 function getInitialDecals(x: number, y: number, z: number) {
   const decals: Face[] = [];
   if (z === 1) {

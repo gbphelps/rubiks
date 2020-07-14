@@ -1,4 +1,5 @@
 @use './params.scss';
+@use './app.scss';
 
 $bottom-panel-height: 200px;
 
@@ -14,6 +15,7 @@ body, html {
     padding: 0;
     height: 100%;
     width: 100%;
+    background: app.$gray;
 }
 
 #container {
@@ -27,7 +29,8 @@ body, html {
 }
 
 #panel-left {
-    width: 200px;
+    width: 300px;
+    background: app.$gray;
 }
 
 .top-container {
@@ -52,6 +55,10 @@ body, html {
     width: params.$side * 3;
     flex-wrap: wrap;
     margin: 8px;
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: 0 1px 0 0 rgba(white,.1);
+    &.empty { box-shadow: none; }
 }
 
 .decal{
@@ -65,6 +72,7 @@ body, html {
     height: $bottom-panel-height; 
     align-items: center;
     overflow: hidden;
+    background: app.$gray;
 }
 
 .all-container {
