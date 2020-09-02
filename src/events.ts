@@ -35,10 +35,9 @@ export function extractScreenCoords(e: MouseEvent) {
 }
 
 export function init() {
-  const { container } = globals;
-    container!.addEventListener('mousemove', assign('mousemove'));
-    container!.addEventListener('mousedown', assign('mousedown'));
-    container!.addEventListener('mouseup', assign('mouseup'));
+  document.addEventListener('mousemove', assign('mousemove'));
+  document.addEventListener('mousedown', assign('mousedown'));
+  document.addEventListener('mouseup', assign('mouseup'));
 }
 
 export function drain(key: string) {
