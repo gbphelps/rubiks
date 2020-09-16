@@ -1,6 +1,6 @@
 import { setAction } from './action';
 import { makeProgressFn } from './actions/setAutocorrectTwist';
-import { setUserEventsEnabled } from './events';
+import { getUserEventsEnabled, setUserEventsEnabled } from './events';
 
 type TwistMove = {
     type: 'twist',
@@ -15,13 +15,16 @@ type TwistMove = {
 type MoveLog = TwistMove;
 
 let moveManifest: MoveLog[] = [];
-
 let manifestIndex = 0;
+let eventsWereEnabled = true;
 
 export function init() {
   const undoBtn = document.getElementById('undo');
   undoBtn!.addEventListener('click', undo);
-  undoBtn!.addEventListener('mousedown', () => setUserEventsEnabled(false));
+  undoBtn!.addEventListener('mousedown', () => {
+    eventsWereEnabled = getUserEventsEnabled();
+    setUserEventsEnabled(false);
+  });
 }
 
 export function push(moveLog: any): void {
@@ -32,12 +35,13 @@ export function push(moveLog: any): void {
 }
 
 export function undo(): void {
+  if (!eventsWereEnabled) return;
+
   manifestIndex--;
   const {
     unitTorque, toTorque, tranche, activeNode,
   } = moveManifest[manifestIndex].params;
 
-  console.log(toTorque);
   setAction({
     type: 'twist-autocorrect',
     params: {
@@ -56,5 +60,5 @@ export function undo(): void {
 }
 
 export function getManifest() {
-  console.log(moveManifest);
+  return moveManifest;
 }
