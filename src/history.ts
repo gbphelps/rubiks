@@ -25,7 +25,7 @@ export function init() {
 }
 
 export function push(moveLog: any): void {
-  moveManifest = moveManifest.slice(0, manifestIndex + 1);
+  moveManifest = moveManifest.slice(0, manifestIndex);
   moveManifest.push(moveLog);
   manifestIndex++;
   getManifest();
