@@ -7,6 +7,7 @@ type Action = RotateAction | TwistAction | TwistAutocorrectAction | UpdateRegist
 export interface RotateAction {
     type: 'rotate',
     prevScreenCoords: Vec2,
+    startRotation: THREE.Quaternion,
 }
 
 export interface TwistAction {

@@ -5,6 +5,9 @@ import { getRotation } from './rotation';
 import {
   init as initControls, peek,
 } from './events';
+import {
+  init as initHistory,
+} from './history';
 // import makeDebugScreen from './utils/debug';
 import { Face } from './utils/types';
 import * as boxRegistry from './boxRegistry';
@@ -44,6 +47,7 @@ function getInitialDecals(x: number, y: number, z: number) {
 document.addEventListener('DOMContentLoaded', () => {
   initGlobals();
   initControls();
+  initHistory();
   faceManager.init();
 
   const cube = new THREE.Object3D();

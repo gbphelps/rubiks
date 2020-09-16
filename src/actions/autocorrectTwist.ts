@@ -7,6 +7,7 @@ function lerp(p: number, from: number, to: number) {
 export default function autocorrectTwist() {
   const action = getAction();
   if (!action || action.type !== 'twist-autocorrect') return;
+  console.log(action);
   const p = action.params.progressFn();
   const from = action.params.fromTorque;
   const to = action.params.toTorque;

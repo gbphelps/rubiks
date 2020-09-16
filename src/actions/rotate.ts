@@ -16,5 +16,6 @@ export default function applyRotate(e: MouseEvent) {
   setAction({
     type: 'rotate',
     prevScreenCoords: screenCoords,
+    startRotation: action.startRotation,
   });
 }

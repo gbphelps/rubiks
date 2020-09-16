@@ -5,10 +5,28 @@ import { setUserEventsEnabled } from '../events';
 
 const DURATION_MS = 300;
 
+interface ProgressFunctionParams {
+  tranche: (THREE.Object3D | null)[],
+  unitTorque: THREE.Vector3,
+  toTorque: number,
+}
+
+export function makeProgressFn({ tranche, unitTorque, toTorque }: ProgressFunctionParams) {
+  return progress(DURATION_MS, () => {
+    setAction({
+      type: 'updateRegistry',
+      params: {
+        tranche,
+        unitTorque,
+        toTorque,
+      },
+    });
+  });
+}
+
 export default function setAutocorrectTwist(e: MouseEvent) {
   const action = getAction();
-  if (!action) throw new Error();
-  if (action.type !== 'twist') throw new Error();
+  if (action?.type !== 'twist') throw new Error();
   if (!action.torqueParams) {
     // no twisting has been applied - no need for cleanup.
     setAction(null);
@@ -20,31 +38,22 @@ export default function setAutocorrectTwist(e: MouseEvent) {
   const torque = getUserTorque(e);
   const quarterSlice = Math.PI / 2;
 
-  const target = Math.round(torque / quarterSlice) * quarterSlice;
+  const toTorque = Math.round(torque / quarterSlice) * quarterSlice;
 
   const {
     tranche, unitTorque, activeNode,
   } = action.torqueParams!;
 
-  const cleanup = () => {
-    setAction({
-      type: 'updateRegistry',
-      params: {
-        tranche,
-        unitTorque,
-        toTorque: target,
-      },
-    });
-  };
-
-  const progressFn = progress(DURATION_MS, cleanup);
-
   setAction({
     type: 'twist-autocorrect',
     params: {
-      progressFn,
+      progressFn: makeProgressFn({
+        tranche,
+        unitTorque,
+        toTorque,
+      }),
       fromTorque: torque,
-      toTorque: target,
+      toTorque,
       tranche,
       unitTorque,
       activeNode,

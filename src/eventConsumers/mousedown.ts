@@ -1,7 +1,9 @@
+import * as THREE from 'three';
 import { drain, extractScreenCoords } from '../events';
 import { getProjectionOntoCube } from '../cubeProjections';
 import * as boxRegistry from '../boxRegistry';
 import { setAction } from '../action';
+import { getRotation } from '../rotation';
 
 export default function mousedown() {
   const e = drain('mousedown');
@@ -23,6 +25,7 @@ export default function mousedown() {
     setAction({
       type: 'rotate',
       prevScreenCoords: screenCoords,
+      startRotation: new THREE.Quaternion().setFromRotationMatrix(getRotation()),
     });
   } else {
     setAction({
