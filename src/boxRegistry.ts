@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { colorize, decolorize } from './utils/uiEffects';
 import { axes, getNormalCubeSpace, Side } from './utils/types';
+import { getUserEventsEnabled } from './events';
 
 type BoxRegistry = (THREE.Object3D | null)[][][];
 
@@ -240,3 +241,7 @@ function roundVector(v: THREE.Vector3) {
 //   }
 //   return arr;
 // }
+
+document.addEventListener('click', () => {
+  console.log(getUserEventsEnabled());
+});

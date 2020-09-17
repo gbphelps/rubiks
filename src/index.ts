@@ -85,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const action = getAction();
       if (action?.type === 'twist-autocorrect') action.params.progressFn();
-      if (action?.type === 'updateRegistry') updateRegistry(action);
       if (action?.type === 'rotate-autocorrect') action.params.progressFn();
 
       if (peek('mousedown')) mousedown();

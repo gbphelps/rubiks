@@ -2,6 +2,7 @@ import getUserTorque from '../getUserTorque';
 import { getAction, setAction } from '../action';
 import { progress, easeInOut, lerp } from '../utils/animation';
 import { setUserEventsEnabled } from '../events';
+import updateRegistry from './updateRegistry';
 
 interface ProgressFunctionParams {
   tranche: (THREE.Object3D | null)[],
@@ -22,24 +23,20 @@ export function makeProgressFn({
       const from = fromTorque;
       const to = toTorque;
 
+      const degrees = lerp(p, from, to);
+      console.log(degrees);
       tranche.forEach((box) => {
         if (!box) throw new Error();
         box.setRotationFromAxisAngle(
           unitTorque,
-          lerp(p, from, to),
+          degrees,
         );
       });
     },
     () => {
+      updateRegistry(unitTorque, toTorque, tranche);
+      setUserEventsEnabled(true);
       if (addlCleanup) addlCleanup();
-      setAction({
-        type: 'updateRegistry',
-        params: {
-          tranche,
-          unitTorque,
-          toTorque,
-        },
-      });
     },
   );
 }

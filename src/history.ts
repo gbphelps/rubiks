@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { Quaternion } from 'three';
 import { setAction } from './action';
 import { makeProgressFn } from './actions/setAutocorrectTwist';
-import { getUserEventsEnabled, setUserEventsEnabled } from './events';
+import { setUserEventsEnabled } from './events';
 import { setRotation } from './rotation';
 import { easeInOut, progress } from './utils/animation';
 
@@ -33,7 +33,6 @@ type MoveLog = TwistMove | RotateMove;
 
 let manifest: MoveLog[] = [];
 let manifestIndex = 0;
-let eventsWereEnabled = true;
 let lastDir = -1;
 let undoBtn: any;
 let redoBtn: any;
@@ -51,21 +50,12 @@ export function init() {
   undoBtn = document.getElementById('undo');
   redoBtn = document.getElementById('redo');
   history = document.getElementById('history-list');
-  historyPointer = document.getElementById('history-pointer');
+  historyPointer = document.getElementById('history-pointer-container');
   setButtonsEnabled();
   setPointer();
 
-  undoBtn!.addEventListener('click', doFunc(-1));
-  undoBtn!.addEventListener('mousedown', () => {
-    eventsWereEnabled = getUserEventsEnabled();
-    setUserEventsEnabled(false);
-  });
-
-  redoBtn!.addEventListener('click', doFunc(1));
-  redoBtn!.addEventListener('mousedown', () => {
-    eventsWereEnabled = getUserEventsEnabled();
-    setUserEventsEnabled(false);
-  });
+  undoBtn!.addEventListener('click', () => doFunc(-1));
+  redoBtn!.addEventListener('click', () => doFunc(1));
 }
 
 export function push(moveLog: TwistMove | RotateMove): void {
@@ -77,7 +67,7 @@ export function push(moveLog: TwistMove | RotateMove): void {
   setHistory();
 }
 
-function doTwist(move: TwistMove, dir: number) {
+function doTwist(move: TwistMove, dir: number, cb: () => void) {
   const {
     unitTorque, toTorque, tranche,
   } = move.params;
@@ -91,7 +81,10 @@ function doTwist(move: TwistMove, dir: number) {
         toTorque: dir * toTorque,
         fromTorque: 0,
         duration: 500,
-        addlCleanup: setButtonsEnabled,
+        addlCleanup: () => {
+          setButtonsEnabled();
+          cb();
+        },
       }),
       tranche,
       unitTorque,
@@ -109,7 +102,7 @@ function makeWorkerFn(fromQuaternion: Quaternion, toQuaternion: Quaternion) {
   };
 }
 
-function doRotate(move: RotateMove, dir: number) {
+function doRotate(move: RotateMove, dir: number, cb: () => void) {
   const fQ = new THREE.Quaternion().setFromRotationMatrix(move.params.endRotation.mx);
   const tQ = new THREE.Quaternion().setFromRotationMatrix(move.params.startRotation.mx);
   setAction({
@@ -124,16 +117,16 @@ function doRotate(move: RotateMove, dir: number) {
           setButtonsEnabled();
           setRotation({ inv: (dir === -1 ? move.params.startRotation : move.params.endRotation).inv });
           setAction(null);
+          cb();
         },
       ),
     },
   });
 }
 
+let queue = Promise.resolve();
 function doFunc(dir: number) {
-  return function doing() {
-    if (!eventsWereEnabled) return;
-
+  const makePromise: () => Promise<void> = () => new Promise((resolve) => {
     if (lastDir === dir) {
       manifestIndex += dir;
     }
@@ -143,11 +136,12 @@ function doFunc(dir: number) {
     const move = manifest[manifestIndex];
 
     if (move.type === 'twist') {
-      doTwist(move, dir);
+      doTwist(move, dir, resolve);
     } else if (move.type === 'rotate') {
-      doRotate(move, dir);
+      doRotate(move, dir, resolve);
     }
-  };
+  });
+  queue = queue.then(makePromise);
 }
 
 function setHistory() {

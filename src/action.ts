@@ -6,8 +6,7 @@ type Action = |
   RotateAction |
   TwistAction |
   TwistAutocorrectAction |
-  RotateAutocorrectAction |
-  UpdateRegistryAction;
+  RotateAutocorrectAction;
 
 export interface RotateAction {
     type: 'rotate',
@@ -45,15 +44,6 @@ export interface RotateAutocorrectAction {
   type: 'rotate-autocorrect',
   params: {
       progressFn: ()=>void,
-  }
-}
-
-export interface UpdateRegistryAction {
-  type: 'updateRegistry',
-  params: {
-      tranche: (THREE.Object3D | null)[],
-      unitTorque: THREE.Vector3,
-      toTorque: number,
   }
 }
 

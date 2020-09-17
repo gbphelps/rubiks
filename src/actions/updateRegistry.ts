@@ -1,13 +1,15 @@
 import * as THREE from 'three';
-import { setAction, UpdateRegistryAction } from '../action';
+import { setAction } from '../action';
 import { Axis, axes } from '../utils/types';
 import { setUserEventsEnabled } from '../events';
 import { registerBox, getTrancheStatic } from '../boxRegistry';
 import faceManager from '../faceManager';
 
-export default function updateRegistry(action: UpdateRegistryAction) {
-  const { unitTorque, toTorque, tranche } = action.params;
-
+export default function updateRegistry(
+  unitTorque: THREE.Vector3,
+  toTorque: number,
+  tranche: (THREE.Object3D | null)[],
+) {
   const { axis, rotation } = getAxisAndRotation(unitTorque, toTorque);
   const rotMx = getRotationMatrix(axis, rotation);
 
@@ -27,7 +29,6 @@ export default function updateRegistry(action: UpdateRegistryAction) {
 
   faceManager.updateFaces();
   setAction(null);
-  setUserEventsEnabled(true);
 }
 
 function rotateChild(child: THREE.Object3D, axis: Axis, rotation: number) {

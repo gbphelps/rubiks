@@ -78,16 +78,18 @@ body, html {
 .bottom-panel {
     display: flex; 
     height: $bottom-panel-height; 
-    align-items: center;
     flex-shrink: 0;
     align-items: stretch;
     padding-bottom: $padding;
     padding-right: $padding;
+
 }
 
 .bottom-card {
     width: 0;
     flex-grow: 1;
+    display: flex;
+    align-items: center;
 }
 
 .all-container {
@@ -142,18 +144,17 @@ body, html {
     box-shadow: inset 0 1px white;
 }
 
-#history-pointer {
-    margin-top: 11px;
+
+
+#history-pointer-container {
     top: 0;
     left: 0;
-    height: 20px;
+    margin-top: 11px;
     position: absolute;
-    z-index: 1;
-    display: block;
     transform: translateY(-50%);
     transition: top .5s, opacity .5s;
-    fill: rgb(221, 34, 34);
-    stroke: rgb(black, .3);
+    z-index: 1;
+    width: 100%;
 }
 
 #history-list {
@@ -162,4 +163,45 @@ body, html {
     padding-left: 20px;
     padding-right: 20px;
     min-height: 100%;
+}
+
+
+$history-fill: rgb(3, 71, 103);
+.history-pointer {
+    height: 20px;
+    display: block;
+    fill: $history-fill;
+}
+
+.divider {
+    height: 1px;
+    width: calc(100% - 50px);
+    border-bottom: 1px solid $history-fill;
+    top: -10px;
+    margin-left: 30px;
+}
+
+#clock {
+    font-size: 36px;
+    font-weight: 700;
+    text-shadow: 0 2px white;
+    color: rgb(126, 139, 158);
+}
+
+button {
+    background: linear-gradient(
+        to bottom,
+        lighten($history-fill, 15%),
+        $history-fill,
+    );
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 8px;
+    cursor: pointer;
+
+    &:disabled {
+        background: #ddd;
+        cursor: not-allowed;
+    }
 }

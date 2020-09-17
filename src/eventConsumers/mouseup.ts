@@ -1,9 +1,8 @@
-import { Quaternion } from 'three';
 import { drain } from '../events';
 import { getAction, setAction } from '../action';
 import setAutocorrectTwist from '../actions/setAutocorrectTwist';
 import { deselectCube } from '../boxRegistry';
-import { getRotation, getRotationAndInverse } from '../rotation';
+import { getRotationAndInverse } from '../rotation';
 import * as history from '../history';
 
 export default function mouseup() {
@@ -55,8 +54,5 @@ export default function mouseup() {
       },
     };
     history.push(moveLog);
-    return;
   }
-
-  setAction(null);
 }
