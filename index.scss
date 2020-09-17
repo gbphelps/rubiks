@@ -15,7 +15,7 @@ body, html {
     padding: 0;
     height: 100%;
     width: 100%;
-    background: white;
+    background: #f4f4fa;
 }
 
 #container {
@@ -57,7 +57,7 @@ body, html {
     margin: 8px;
     border-radius: 3px;
     overflow: hidden;
-    box-shadow: 0 1px 0 0 rgba(white,.1);
+    box-shadow: 0 5px 5px 0 rgba(0,0,80, .1);
     &.empty { box-shadow: none; }
 }
 
@@ -82,10 +82,18 @@ body, html {
 }
 
 .face-topology {
-    box-shadow: 0 2px 20px 0 rgba(0,0,0,.2); 
-    border-radius: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.card {
     padding: 20px;
+    background: #fafafc;
+    box-shadow: 0 5px 5px 0 rgba(0,0,80,.05), 
+        0 10px 25px 0 rgba(0,0,100,.2),
+        inset 0 1px white,
+        inset 0 -2px rgba(0,0, 80, .02);
+    border-radius: 5px;
+    margin-bottom: 16px;
 }

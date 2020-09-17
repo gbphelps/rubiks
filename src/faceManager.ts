@@ -23,6 +23,13 @@ function makeFace(id: string) {
   return face;
 }
 
+function getHex(color: string | number) {
+  if (typeof color === 'string') return color;
+  let str = color.toString(16);
+  while (str.length < 6) str = `0${str}`;
+  return `#${str}`;
+}
+
 class FaceManager {
     left: HTMLDivElement[][];
 
@@ -46,8 +53,7 @@ class FaceManager {
       for (let x = 0; x < 3; x++) {
         for (let y = 0; y < 3; y++) {
           const threeColor = colors[colorNames[x][y]];
-          const color = typeof threeColor === 'number'
-            ? `#${threeColor.toString(16)}` : threeColor;
+          const color = getHex(threeColor);
           this[side][2 - y][x].style.background = color;
         }
       }

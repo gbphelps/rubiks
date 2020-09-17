@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import colorizeActive from './utils/uiEffects';
+import { colorize, decolorize } from './utils/uiEffects';
 import { axes, getNormalCubeSpace, Side } from './utils/types';
 
 type BoxRegistry = (THREE.Object3D | null)[][][];
@@ -36,16 +36,14 @@ export function getActiveNode() {
 
 export function setActiveBox(node: THREE.Vector3 | null) {
   if (activeNode) {
-    colorizeActive(
+    decolorize(
       getBox(activeNode),
-      new THREE.Color(0x101010),
     );
   }
   activeNode = node;
   if (activeNode) {
-    colorizeActive(
+    colorize(
       getBox(activeNode),
-      new THREE.Color('magenta'),
     );
   }
 }
@@ -97,9 +95,8 @@ export function getTranche(unitTorque: THREE.Vector3) {
 
 export function deselectCube() {
   if (activeNode) {
-    colorizeActive(
+    decolorize(
       getBox(activeNode),
-      new THREE.Color('black'),
     );
   }
   setActiveBox(null);
