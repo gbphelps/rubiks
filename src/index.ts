@@ -8,6 +8,9 @@ import {
 import {
   init as initHistory,
 } from './history';
+import {
+  init as initClock, setClock,
+} from './clock';
 // import makeDebugScreen from './utils/debug';
 import { Face } from './utils/types';
 import * as boxRegistry from './boxRegistry';
@@ -48,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initGlobals();
   initControls();
   initHistory();
+  initClock();
   faceManager.init();
 
   const cube = new THREE.Object3D();
@@ -75,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animate() {
       requestAnimationFrame(animate);
+      setClock();
       cube.setRotationFromMatrix(getRotation());
       cube.updateMatrix();
 
