@@ -64,6 +64,7 @@ function undoTwist(move: TwistMove) {
         unitTorque,
         toTorque: -toTorque,
         fromTorque: 0,
+        duration: 500,
       }),
       tranche,
       unitTorque,
@@ -88,7 +89,7 @@ function undoRotate(move: RotateMove) {
     type: 'rotate-autocorrect',
     params: {
       progressFn: progress(
-        300,
+        500,
         easeInOut,
         makeWorkerFn(fQ, tQ),
         () => {

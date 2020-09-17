@@ -3,20 +3,19 @@ import { getAction, setAction } from '../action';
 import { progress, easeInOut, lerp } from '../utils/animation';
 import { setUserEventsEnabled } from '../events';
 
-const DURATION_MS = 300;
-
 interface ProgressFunctionParams {
   tranche: (THREE.Object3D | null)[],
   unitTorque: THREE.Vector3,
   fromTorque: number,
   toTorque: number,
+  duration: number,
 }
 
 export function makeProgressFn({
-  tranche, unitTorque, toTorque, fromTorque,
+  tranche, unitTorque, toTorque, fromTorque, duration,
 }: ProgressFunctionParams) {
   return progress(
-    DURATION_MS,
+    duration,
     easeInOut,
     (p: number) => {
       const from = fromTorque;
@@ -71,6 +70,7 @@ export default function setAutocorrectTwist(e: MouseEvent) {
         unitTorque,
         toTorque,
         fromTorque: torque,
+        duration: 300,
       }),
       tranche,
       unitTorque,

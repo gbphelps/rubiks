@@ -30,7 +30,7 @@ body, html {
 
 #panel-left {
     width: 300px;
-    background: app.$gray;
+    padding: 20px;
 }
 
 .top-container {
@@ -72,7 +72,6 @@ body, html {
     height: $bottom-panel-height; 
     align-items: center;
     overflow: hidden;
-    background: app.$gray;
 }
 
 .all-container {
@@ -80,4 +79,13 @@ body, html {
     flex-direction: column; 
     height: 100%; 
     width: 100%;
+}
+
+.face-topology {
+    box-shadow: 0 2px 20px 0 rgba(0,0,0,.2); 
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
 }
