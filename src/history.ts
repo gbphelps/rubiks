@@ -37,6 +37,9 @@ let eventsWereEnabled = true;
 let lastDir = -1;
 let undoBtn: any;
 let redoBtn: any;
+let history: any;
+let historyPointer: any;
+const LOG_HEIGHT = 40;
 
 function setButtonsEnabled() {
   undoBtn.disabled = manifestIndex <= 0 && lastDir === -1;
@@ -47,6 +50,8 @@ function setButtonsEnabled() {
 export function init() {
   undoBtn = document.getElementById('undo');
   redoBtn = document.getElementById('redo');
+  history = document.getElementById('history-list');
+  historyPointer = document.getElementById('history-pointer');
   setButtonsEnabled();
 
   undoBtn!.addEventListener('click', doFunc(-1));
@@ -63,11 +68,12 @@ export function init() {
 }
 
 export function push(moveLog: TwistMove | RotateMove): void {
-  console.log('push');
   manifest = manifest.slice(0, manifestIndex + (lastDir === -1 ? 0 : 1));
   manifest.push(moveLog);
   manifestIndex++;
+  setPointer();
   setButtonsEnabled();
+  setHistory();
 }
 
 function doTwist(move: TwistMove, dir: number) {
@@ -127,8 +133,11 @@ function doFunc(dir: number) {
   return function doing() {
     if (!eventsWereEnabled) return;
 
-    if (lastDir === dir) manifestIndex += dir;
+    if (lastDir === dir) {
+      manifestIndex += dir;
+    }
     lastDir = dir;
+    setPointer();
 
     const move = manifest[manifestIndex];
 
@@ -138,6 +147,21 @@ function doFunc(dir: number) {
       doRotate(move, dir);
     }
   };
+}
+
+function setHistory() {
+  history.innerHTML = '';
+  for (let i = 0; i < manifest.length; i++) {
+    const child = document.createElement('div');
+    child.classList.add('history-log');
+    child.style.height = `${LOG_HEIGHT}px`;
+    child.innerHTML = manifest[i].type;
+    history.appendChild(child);
+  }
+}
+
+function setPointer() {
+  historyPointer.style.top = `${(LOG_HEIGHT - 1) * (manifestIndex - (lastDir === -1 ? 1 : 0) + 1)}px`;
 }
 
 export function getManifest() {
