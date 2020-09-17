@@ -1,7 +1,10 @@
 @use './params.scss';
 @use './app.scss';
 
-$bottom-panel-height: 200px;
+$bottom-panel-height: 150px;
+$left-panel-width: 300px;
+
+
 
 * {
     flex-shrink: 0;
@@ -20,7 +23,7 @@ body, html {
 }
 
 #container {
-    width: 0;
+    height: 0;
     flex-grow: 1;
 }
 
@@ -30,16 +33,20 @@ body, html {
 }
 
 #panel-left {
-    width: 300px;
+    width: $left-panel-width;
     padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .top-container {
     display: flex;
-    width: 100%;
-    height: calc(100% - 200px);
+    width: 0;
+    height: 100%;
     position: relative;
-    align-items: stretch;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .black {
@@ -72,12 +79,11 @@ body, html {
     display: flex; 
     height: $bottom-panel-height; 
     align-items: center;
-    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .all-container {
     display: flex; 
-    flex-direction: column; 
     height: 100%; 
     width: 100%;
 }
@@ -107,6 +113,10 @@ body, html {
     border-radius: 3px;
     border: 1px solid #eee;
     border-bottom: none;
+}
+
+.history-card {
+    flex-grow: 1;
 }
 
 .history-log {
