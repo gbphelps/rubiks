@@ -39,11 +39,15 @@ let undoBtn: any;
 let redoBtn: any;
 
 function setButtonsEnabled() {
+  undoBtn.disabled = manifestIndex <= 0 && lastDir === -1;
+  redoBtn.disabled = (manifestIndex >= manifest.length - 1 && lastDir === 1)
+    || (lastDir === -1 && manifestIndex === manifest.length);
 }
 
 export function init() {
   undoBtn = document.getElementById('undo');
   redoBtn = document.getElementById('redo');
+  setButtonsEnabled();
 
   undoBtn!.addEventListener('click', doFunc(-1));
   undoBtn!.addEventListener('mousedown', () => {
@@ -59,7 +63,7 @@ export function init() {
 }
 
 export function push(moveLog: TwistMove | RotateMove): void {
-  console.log(manifestIndex);
+  console.log('push');
   manifest = manifest.slice(0, manifestIndex + (lastDir === -1 ? 0 : 1));
   manifest.push(moveLog);
   manifestIndex++;
@@ -110,6 +114,7 @@ function doRotate(move: RotateMove, dir: number) {
         dir === -1 ? makeWorkerFn(fQ, tQ) : makeWorkerFn(tQ, fQ),
         () => {
           setUserEventsEnabled(true);
+          setButtonsEnabled();
           setRotation({ inv: (dir === -1 ? move.params.startRotation : move.params.endRotation).inv });
           setAction(null);
         },
