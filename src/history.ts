@@ -35,10 +35,15 @@ let manifest: MoveLog[] = [];
 let manifestIndex = 0;
 let eventsWereEnabled = true;
 let lastDir = -1;
+let undoBtn: any;
+let redoBtn: any;
+
+function setButtonsEnabled() {
+}
 
 export function init() {
-  const undoBtn = document.getElementById('undo');
-  const redoBtn = document.getElementById('redo');
+  undoBtn = document.getElementById('undo');
+  redoBtn = document.getElementById('redo');
 
   undoBtn!.addEventListener('click', doFunc(-1));
   undoBtn!.addEventListener('mousedown', () => {
@@ -54,10 +59,11 @@ export function init() {
 }
 
 export function push(moveLog: TwistMove | RotateMove): void {
-  manifest = manifest.slice(0, manifestIndex);
+  console.log(manifestIndex);
+  manifest = manifest.slice(0, manifestIndex + (lastDir === -1 ? 0 : 1));
   manifest.push(moveLog);
   manifestIndex++;
-  getManifest();
+  setButtonsEnabled();
 }
 
 function doTwist(move: TwistMove, dir: number) {
@@ -74,6 +80,7 @@ function doTwist(move: TwistMove, dir: number) {
         toTorque: dir * toTorque,
         fromTorque: 0,
         duration: 500,
+        addlCleanup: setButtonsEnabled,
       }),
       tranche,
       unitTorque,

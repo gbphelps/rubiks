@@ -9,10 +9,11 @@ interface ProgressFunctionParams {
   fromTorque: number,
   toTorque: number,
   duration: number,
+  addlCleanup?: () => void,
 }
 
 export function makeProgressFn({
-  tranche, unitTorque, toTorque, fromTorque, duration,
+  tranche, unitTorque, toTorque, fromTorque, duration, addlCleanup,
 }: ProgressFunctionParams) {
   return progress(
     duration,
@@ -30,6 +31,7 @@ export function makeProgressFn({
       });
     },
     () => {
+      if (addlCleanup) addlCleanup();
       setAction({
         type: 'updateRegistry',
         params: {
