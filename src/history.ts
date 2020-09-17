@@ -34,16 +34,20 @@ type MoveLog = TwistMove | RotateMove;
 let manifest: MoveLog[] = [];
 let manifestIndex = 0;
 let lastDir = -1;
+const virtual = {
+  lastDir: -1,
+  manifestIndex: 0,
+};
 let undoBtn: any;
 let redoBtn: any;
 let history: any;
 let historyPointer: any;
 const LOG_HEIGHT = 40;
 
-function setButtonsEnabled() {
-  undoBtn.disabled = manifestIndex <= 0 && lastDir === -1;
-  redoBtn.disabled = (manifestIndex >= manifest.length - 1 && lastDir === 1)
-    || (lastDir === -1 && manifestIndex === manifest.length);
+function setButtonsEnabled(idx: number, dir: number) {
+  undoBtn.disabled = idx <= 0 && dir === -1;
+  redoBtn.disabled = (idx >= manifest.length - 1 && dir === 1)
+    || (dir === -1 && idx === manifest.length);
 }
 
 export function init() {
@@ -51,7 +55,7 @@ export function init() {
   redoBtn = document.getElementById('redo');
   history = document.getElementById('history-list');
   historyPointer = document.getElementById('history-pointer-container');
-  setButtonsEnabled();
+  setButtonsEnabled(manifestIndex, lastDir);
   setPointer();
 
   undoBtn!.addEventListener('click', () => doFunc(-1));
@@ -62,8 +66,9 @@ export function push(moveLog: TwistMove | RotateMove): void {
   manifest = manifest.slice(0, manifestIndex + (lastDir === -1 ? 0 : 1));
   manifest.push(moveLog);
   manifestIndex++;
+  virtual.manifestIndex = manifestIndex;
   setPointer();
-  setButtonsEnabled();
+  setButtonsEnabled(manifestIndex, lastDir);
   setHistory();
 }
 
@@ -71,7 +76,7 @@ function doTwist(move: TwistMove, dir: number, cb: () => void) {
   const {
     unitTorque, toTorque, tranche,
   } = move.params;
-
+  setUserEventsEnabled(false);
   setAction({
     type: 'twist-autocorrect',
     params: {
@@ -82,7 +87,6 @@ function doTwist(move: TwistMove, dir: number, cb: () => void) {
         fromTorque: 0,
         duration: 500,
         addlCleanup: () => {
-          setButtonsEnabled();
           cb();
         },
       }),
@@ -114,7 +118,6 @@ function doRotate(move: RotateMove, dir: number, cb: () => void) {
         dir === -1 ? makeWorkerFn(fQ, tQ) : makeWorkerFn(tQ, fQ),
         () => {
           setUserEventsEnabled(true);
-          setButtonsEnabled();
           setRotation({ inv: (dir === -1 ? move.params.startRotation : move.params.endRotation).inv });
           setAction(null);
           cb();
@@ -126,6 +129,12 @@ function doRotate(move: RotateMove, dir: number, cb: () => void) {
 
 let queue = Promise.resolve();
 function doFunc(dir: number) {
+  if (virtual.lastDir === dir) {
+    virtual.manifestIndex += dir;
+  }
+  virtual.lastDir = dir;
+  setButtonsEnabled(virtual.manifestIndex, virtual.lastDir);
+
   const makePromise: () => Promise<void> = () => new Promise((resolve) => {
     if (lastDir === dir) {
       manifestIndex += dir;
