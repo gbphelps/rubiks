@@ -164,7 +164,7 @@ function setHistory() {
 function setPointer() {
   historyPointer.style.visibility = manifest.length ? 'visible' : 'hidden';
   historyPointer.style.opacity = manifest.length ? 1 : 0;
-  historyPointer.style.top = `${(LOG_HEIGHT) * (manifestIndex - (lastDir === -1 ? 1 : 0) + 1)}px`;
+  historyPointer.style.top = `${(LOG_HEIGHT - 1) * (manifestIndex - (lastDir === -1 ? 1 : 0) + 1)}px`;
 }
 
 export function getManifest() {
