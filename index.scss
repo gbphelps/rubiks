@@ -2,7 +2,8 @@
 @use './app.scss';
 
 $bottom-panel-height: 150px;
-$left-panel-width: 300px;
+$left-panel-width: 340px;
+$padding: 8px;
 
 
 
@@ -34,8 +35,7 @@ body, html {
 
 #panel-left {
     width: $left-panel-width;
-    padding: 20px;
-    height: 100%;
+    padding: $padding 0 $padding $padding;
     display: flex;
     flex-direction: column;
 }
@@ -80,6 +80,14 @@ body, html {
     height: $bottom-panel-height; 
     align-items: center;
     flex-shrink: 0;
+    align-items: stretch;
+    padding-bottom: $padding;
+    padding-right: $padding;
+}
+
+.bottom-card {
+    width: 0;
+    flex-grow: 1;
 }
 
 .all-container {
@@ -102,7 +110,7 @@ body, html {
         inset 0 1px white,
         inset 0 -2px rgba(0,0, 80, .02);
     border-radius: 5px;
-    margin-bottom: 16px;
+    margin: 8px;
 }
 
 
@@ -118,6 +126,8 @@ body, html {
 .history-card {
     flex-grow: 1;
 }
+
+
 
 .history-log {
     padding: 12px;
