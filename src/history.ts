@@ -1,18 +1,35 @@
+import * as THREE from 'three';
+import { Quaternion } from 'three';
 import { setAction } from './action';
 import { makeProgressFn } from './actions/setAutocorrectTwist';
 import { getUserEventsEnabled, setUserEventsEnabled } from './events';
+import { setRotation } from './rotation';
+import { easeInOut, progress } from './utils/animation';
 
-type TwistMove = {
+export type TwistMove = {
     type: 'twist',
     params: {
         unitTorque: THREE.Vector3,
         toTorque: number,
         tranche: (THREE.Object3D | null)[],
-        activeNode: THREE.Vector3,
     }
 }
 
-type MoveLog = TwistMove;
+export type RotateMove = {
+  type: 'rotate',
+  params: {
+    endRotation: {
+      mx: THREE.Matrix4,
+      inv: THREE.Matrix4
+    },
+    startRotation: {
+      mx: THREE.Matrix4,
+      inv: THREE.Matrix4
+    },
+  }
+}
+
+type MoveLog = TwistMove | RotateMove;
 
 let moveManifest: MoveLog[] = [];
 let manifestIndex = 0;
@@ -27,20 +44,17 @@ export function init() {
   });
 }
 
-export function push(moveLog: any): void {
+export function push(moveLog: TwistMove | RotateMove): void {
   moveManifest = moveManifest.slice(0, manifestIndex);
   moveManifest.push(moveLog);
   manifestIndex++;
   getManifest();
 }
 
-export function undo(): void {
-  if (!eventsWereEnabled) return;
-
-  manifestIndex--;
+function undoTwist(move: TwistMove) {
   const {
-    unitTorque, toTorque, tranche, activeNode,
-  } = moveManifest[manifestIndex].params;
+    unitTorque, toTorque, tranche,
+  } = move.params;
 
   setAction({
     type: 'twist-autocorrect',
@@ -49,14 +63,55 @@ export function undo(): void {
         tranche,
         unitTorque,
         toTorque: -toTorque,
+        fromTorque: 0,
       }),
-      fromTorque: 0,
-      toTorque: -toTorque,
       tranche,
       unitTorque,
-      activeNode,
+      toTorque: -toTorque,
     },
   });
+}
+
+function makeWorkerFn(fromQuaternion: Quaternion, toQuaternion: Quaternion) {
+  return function worker(p: number) {
+    const quaternion = fromQuaternion.slerp(toQuaternion, p);
+    setRotation({
+      mx: new THREE.Matrix4().makeRotationFromQuaternion(quaternion),
+    });
+  };
+}
+
+function undoRotate(move: RotateMove) {
+  const fQ = new THREE.Quaternion().setFromRotationMatrix(move.params.endRotation.mx);
+  const tQ = new THREE.Quaternion().setFromRotationMatrix(move.params.startRotation.mx);
+  setAction({
+    type: 'rotate-autocorrect',
+    params: {
+      progressFn: progress(
+        300,
+        easeInOut,
+        makeWorkerFn(fQ, tQ),
+        () => {
+          setUserEventsEnabled(true);
+          setRotation({ inv: move.params.startRotation.inv });
+          setAction(null);
+        },
+      ),
+    },
+  });
+}
+
+export function undo(): void {
+  if (!eventsWereEnabled) return;
+
+  manifestIndex--;
+  const move = moveManifest[manifestIndex];
+
+  if (move.type === 'twist') {
+    undoTwist(move);
+  } else if (move.type === 'rotate') {
+    undoRotate(move);
+  }
 }
 
 export function getManifest() {

@@ -9,6 +9,15 @@ export const rotation = {
   inv: new THREE.Matrix4(),
 };
 
+export function setRotation(
+  rotationData: {
+    mx?: THREE.Matrix4,
+    inv?: THREE.Matrix4
+  },
+) {
+  Object.assign(rotation, rotationData);
+}
+
 export function rotate(tx: number, ty: number, tz: number) {
   rotation.mx = Rx(tx).multiply(
     Ry(ty).multiply(
@@ -25,6 +34,13 @@ export function rotate(tx: number, ty: number, tz: number) {
 
 export function getRotation() {
   return rotation.mx;
+}
+
+export function getRotationAndInverse() {
+  return {
+    mx: rotation.mx.clone(),
+    inv: rotation.inv.clone(),
+  };
 }
 
 export function getPlane(side: Side) {

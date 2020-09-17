@@ -2,12 +2,20 @@ import {
   Vec2, Side, CoordTriad,
 } from './utils/types';
 
-type Action = RotateAction | TwistAction | TwistAutocorrectAction | UpdateRegistryAction;
+type Action = |
+  RotateAction |
+  TwistAction |
+  TwistAutocorrectAction |
+  RotateAutocorrectAction |
+  UpdateRegistryAction;
 
 export interface RotateAction {
     type: 'rotate',
     prevScreenCoords: Vec2,
-    startRotation: THREE.Quaternion,
+    startRotation: {
+      mx: THREE.Matrix4,
+      inv: THREE.Matrix4,
+    },
 }
 
 export interface TwistAction {
@@ -26,13 +34,18 @@ export interface TwistAction {
 export interface TwistAutocorrectAction {
     type: 'twist-autocorrect',
     params: {
-        progressFn: ()=>number,
-        fromTorque: number,
-        toTorque: number,
-        unitTorque: THREE.Vector3,
+        progressFn: ()=>void,
         tranche: (THREE.Object3D | null)[],
-        activeNode: THREE.Vector3,
+        unitTorque: THREE.Vector3,
+        toTorque: number,
     }
+}
+
+export interface RotateAutocorrectAction {
+  type: 'rotate-autocorrect',
+  params: {
+      progressFn: ()=>void,
+  }
 }
 
 export interface UpdateRegistryAction {

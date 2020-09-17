@@ -1,14 +1,11 @@
 import * as THREE from 'three';
-import { getAction, setAction } from '../action';
+import { setAction, UpdateRegistryAction } from '../action';
 import { Axis, axes } from '../utils/types';
 import { setUserEventsEnabled } from '../events';
 import { registerBox, getTrancheStatic } from '../boxRegistry';
 import faceManager from '../faceManager';
 
-export default function updateRegistry() {
-  const action = getAction();
-  if (!action || action.type !== 'updateRegistry') return;
-
+export default function updateRegistry(action: UpdateRegistryAction) {
   const { unitTorque, toTorque, tranche } = action.params;
 
   const { axis, rotation } = getAxisAndRotation(unitTorque, toTorque);

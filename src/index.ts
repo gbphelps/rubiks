@@ -11,13 +11,13 @@ import {
 // import makeDebugScreen from './utils/debug';
 import { Face } from './utils/types';
 import * as boxRegistry from './boxRegistry';
-import autocorrectTwist from './actions/autocorrectTwist';
 import mouseup from './eventConsumers/mouseup';
 import mousedown from './eventConsumers/mousedown';
 import mousemove from './eventConsumers/mousemove';
 import updateRegistry, { shuffle } from './actions/updateRegistry';
 import faceManager from './faceManager';
 import '../index.scss';
+import { getAction } from './action';
 
 // TODO: add circular slider for z rotation surrounding the cube.
 
@@ -78,8 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
       cube.setRotationFromMatrix(getRotation());
       cube.updateMatrix();
 
-      autocorrectTwist();
-      updateRegistry();
+      const action = getAction();
+      if (action?.type === 'twist-autocorrect') action.params.progressFn();
+      if (action?.type === 'updateRegistry') updateRegistry(action);
+      if (action?.type === 'rotate-autocorrect') action.params.progressFn();
 
       if (peek('mousedown')) mousedown();
       if (peek('mouseup')) mouseup();

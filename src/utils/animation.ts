@@ -5,14 +5,24 @@ export function easeInOut(x: number) {
   return 1 - (1 * x - 1) * (2 * x - 2);
 }
 
-export function progress(millis: number, cleanup: () => void) {
+export function lerp(p: number, from: number, to: number) {
+  return from + (to - from) * p;
+}
+
+export function progress(
+  millis: number,
+  ease: (x: number) => number,
+  worker: (p: number) => void,
+  cleanup: () => void,
+) {
   const t0 = Date.now();
   return function getProgress() {
-    let x = (Date.now() - t0) / millis;
-    if (x >= 1) {
+    const x = (Date.now() - t0) / millis;
+    let p = ease(x);
+    if (x >= 1) p = 1;
+    worker(p);
+    if (p === 1) {
       cleanup();
-      x = 1;
     }
-    return easeInOut(x);
   };
 }

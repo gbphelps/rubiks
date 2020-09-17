@@ -3,7 +3,7 @@ import { drain } from '../events';
 import { getAction, setAction } from '../action';
 import setAutocorrectTwist from '../actions/setAutocorrectTwist';
 import { deselectCube } from '../boxRegistry';
-import { getRotation } from '../rotation';
+import { getRotation, getRotationAndInverse } from '../rotation';
 import * as history from '../history';
 
 export default function mouseup() {
@@ -16,13 +16,18 @@ export default function mouseup() {
   if (!action) return;
 
   if (action.type === 'rotate') {
-    const moveLog = {
-      type: 'rotation',
-      startRotation: action.startRotation,
-      endRotation: new Quaternion().setFromRotationMatrix(getRotation()),
+    const endRotation = getRotationAndInverse();
+    const { startRotation } = action;
+
+    const moveLog: history.RotateMove = {
+      type: 'rotate',
+      params: {
+        endRotation,
+        startRotation,
+      },
     };
 
-    if (!moveLog.startRotation.equals(moveLog.endRotation)) {
+    if (!startRotation.mx.equals(endRotation.mx)) {
       history.push(moveLog);
     }
 
@@ -36,18 +41,17 @@ export default function mouseup() {
     if (newAction?.type !== 'twist-autocorrect') return; // NOTE: this condition is encountered if user clicks without dragging
 
     const {
-      unitTorque, toTorque, tranche, activeNode,
+      unitTorque, toTorque, tranche,
     } = newAction.params;
 
     if (toTorque === 0) return;
 
-    const moveLog = {
+    const moveLog: history.TwistMove = {
       type: 'twist',
       params: {
         unitTorque,
         toTorque,
         tranche,
-        activeNode,
       },
     };
     history.push(moveLog);
