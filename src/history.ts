@@ -31,27 +31,36 @@ export type RotateMove = {
 
 type MoveLog = TwistMove | RotateMove;
 
-let moveManifest: MoveLog[] = [];
+let manifest: MoveLog[] = [];
 let manifestIndex = 0;
 let eventsWereEnabled = true;
+let lastDir = -1;
 
 export function init() {
   const undoBtn = document.getElementById('undo');
-  undoBtn!.addEventListener('click', undo);
+  const redoBtn = document.getElementById('redo');
+
+  undoBtn!.addEventListener('click', doFunc(-1));
   undoBtn!.addEventListener('mousedown', () => {
+    eventsWereEnabled = getUserEventsEnabled();
+    setUserEventsEnabled(false);
+  });
+
+  redoBtn!.addEventListener('click', doFunc(1));
+  redoBtn!.addEventListener('mousedown', () => {
     eventsWereEnabled = getUserEventsEnabled();
     setUserEventsEnabled(false);
   });
 }
 
 export function push(moveLog: TwistMove | RotateMove): void {
-  moveManifest = moveManifest.slice(0, manifestIndex);
-  moveManifest.push(moveLog);
+  manifest = manifest.slice(0, manifestIndex);
+  manifest.push(moveLog);
   manifestIndex++;
   getManifest();
 }
 
-function undoTwist(move: TwistMove) {
+function doTwist(move: TwistMove, dir: number) {
   const {
     unitTorque, toTorque, tranche,
   } = move.params;
@@ -62,13 +71,13 @@ function undoTwist(move: TwistMove) {
       progressFn: makeProgressFn({
         tranche,
         unitTorque,
-        toTorque: -toTorque,
+        toTorque: dir * toTorque,
         fromTorque: 0,
         duration: 500,
       }),
       tranche,
       unitTorque,
-      toTorque: -toTorque,
+      toTorque: dir * toTorque,
     },
   });
 }
@@ -82,7 +91,7 @@ function makeWorkerFn(fromQuaternion: Quaternion, toQuaternion: Quaternion) {
   };
 }
 
-function undoRotate(move: RotateMove) {
+function doRotate(move: RotateMove, dir: number) {
   const fQ = new THREE.Quaternion().setFromRotationMatrix(move.params.endRotation.mx);
   const tQ = new THREE.Quaternion().setFromRotationMatrix(move.params.startRotation.mx);
   setAction({
@@ -91,10 +100,10 @@ function undoRotate(move: RotateMove) {
       progressFn: progress(
         500,
         easeInOut,
-        makeWorkerFn(fQ, tQ),
+        dir === -1 ? makeWorkerFn(fQ, tQ) : makeWorkerFn(tQ, fQ),
         () => {
           setUserEventsEnabled(true);
-          setRotation({ inv: move.params.startRotation.inv });
+          setRotation({ inv: (dir === -1 ? move.params.startRotation : move.params.endRotation).inv });
           setAction(null);
         },
       ),
@@ -102,19 +111,23 @@ function undoRotate(move: RotateMove) {
   });
 }
 
-export function undo(): void {
-  if (!eventsWereEnabled) return;
+function doFunc(dir: number) {
+  return function doing() {
+    if (!eventsWereEnabled) return;
 
-  manifestIndex--;
-  const move = moveManifest[manifestIndex];
+    if (lastDir === dir) manifestIndex += dir;
+    lastDir = dir;
 
-  if (move.type === 'twist') {
-    undoTwist(move);
-  } else if (move.type === 'rotate') {
-    undoRotate(move);
-  }
+    const move = manifest[manifestIndex];
+
+    if (move.type === 'twist') {
+      doTwist(move, dir);
+    } else if (move.type === 'rotate') {
+      doRotate(move, dir);
+    }
+  };
 }
 
 export function getManifest() {
-  return moveManifest;
+  return manifest;
 }
