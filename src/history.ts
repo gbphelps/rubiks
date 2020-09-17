@@ -109,6 +109,7 @@ function makeWorkerFn(fromQuaternion: Quaternion, toQuaternion: Quaternion) {
 function doRotate(move: RotateMove, dir: number, cb: () => void) {
   const fQ = new THREE.Quaternion().setFromRotationMatrix(move.params.endRotation.mx);
   const tQ = new THREE.Quaternion().setFromRotationMatrix(move.params.startRotation.mx);
+  setUserEventsEnabled(false);
   setAction({
     type: 'rotate-autocorrect',
     params: {

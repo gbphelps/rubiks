@@ -189,6 +189,7 @@ $history-fill: rgb(3, 71, 103);
 }
 
 button {
+    outline: none;
     background: linear-gradient(
         to bottom,
         lighten($history-fill, 15%),

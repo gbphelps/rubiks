@@ -3,6 +3,7 @@ import { init as initGlobals, globals } from './globals';
 import cubeSpawn from './cubeSpawn';
 import { getRotation } from './rotation';
 import {
+  getUserEventsEnabled,
   init as initControls, peek,
 } from './events';
 import {
@@ -17,7 +18,7 @@ import * as boxRegistry from './boxRegistry';
 import mouseup from './eventConsumers/mouseup';
 import mousedown from './eventConsumers/mousedown';
 import mousemove from './eventConsumers/mousemove';
-import updateRegistry, { shuffle } from './actions/updateRegistry';
+import { shuffle } from './actions/updateRegistry';
 import faceManager from './faceManager';
 import '../index.scss';
 import { getAction } from './action';
