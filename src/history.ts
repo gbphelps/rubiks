@@ -5,6 +5,7 @@ import { makeProgressFn } from './actions/setAutocorrectTwist';
 import { setUserEventsEnabled } from './events';
 import { setRotation } from './rotation';
 import { easeInOut, progress } from './utils/animation';
+import rubiksSVG from './assets/rubiks.svg';
 
 export type TwistMove = {
     type: 'twist',
@@ -51,12 +52,14 @@ function setButtonsEnabled(idx: number, dir: number) {
 }
 
 export function init() {
+  document.getElementById('history-bg')!.innerHTML = rubiksSVG;
   undoBtn = document.getElementById('undo');
   redoBtn = document.getElementById('redo');
   history = document.getElementById('history-list');
   historyPointer = document.getElementById('history-pointer-container');
   setButtonsEnabled(manifestIndex, lastDir);
   setPointer();
+  setHistory();
 
   undoBtn!.addEventListener('click', () => doFunc(-1));
   redoBtn!.addEventListener('click', () => doFunc(1));

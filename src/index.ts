@@ -3,7 +3,6 @@ import { init as initGlobals, globals } from './globals';
 import cubeSpawn from './cubeSpawn';
 import { getRotation } from './rotation';
 import {
-  getUserEventsEnabled,
   init as initControls, peek,
 } from './events';
 import {

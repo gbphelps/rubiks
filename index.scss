@@ -206,3 +206,17 @@ button {
         cursor: not-allowed;
     }
 }
+
+.rubiks-svg {
+    fill: rgba(0,0,80,.04);
+    height: 100%;
+}
+
+#history-bg {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
