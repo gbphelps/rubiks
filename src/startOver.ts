@@ -4,8 +4,10 @@ import { shuffle } from './actions/updateRegistry';
 import { setRotation } from './rotation';
 import { reset as resetClock } from './clock';
 import { setAction } from './action';
+import { setUserEventsEnabled } from './events';
 
 export function startOver() {
+  setUserEventsEnabled(true);
   setAction(null);
   resetClock();
   clearHistory();
