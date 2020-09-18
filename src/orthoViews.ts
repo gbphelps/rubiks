@@ -66,8 +66,8 @@ export function init() {
         params: {
           startRotation: getRotationAndInverse(),
           endRotation: {
-            mx: matrix[side].clone(),
-            inv: inv[side].clone(),
+            mx: matrix[side],
+            inv: inv[side],
           },
         },
       });
@@ -78,8 +78,8 @@ export function init() {
         toQ,
         fromQ,
         matrixData: {
-          mx: matrix[side].clone(),
-          inv: inv[side].clone(),
+          mx: matrix[side],
+          inv: inv[side],
         },
         cb: () => {
           setUserEventsEnabled(true);

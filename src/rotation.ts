@@ -10,12 +10,13 @@ export const rotation = {
 };
 
 export function setRotation(
-  rotationData: {
+  { mx, inv }: {
     mx?: THREE.Matrix4,
     inv?: THREE.Matrix4
   },
 ) {
-  Object.assign(rotation, rotationData);
+  if (mx) rotation.mx = mx.clone();
+  if (inv) rotation.inv = inv.clone();
 }
 
 export function rotate(tx: number, ty: number, tz: number) {
