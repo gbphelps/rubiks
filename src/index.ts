@@ -16,6 +16,9 @@ import {
   init as initModal,
   reset as resetModal,
 } from './modal/instructionsModal';
+import {
+  init as initOrthoViews,
+} from './orthoViews';
 
 // import makeDebugScreen from './utils/debug';
 import { Face } from './utils/types';
@@ -59,6 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initHistory();
   initClock();
   initModal();
+  initOrthoViews();
+
   document.getElementById('help-button')!.addEventListener('click', () => {
     resetModal();
     stopClock();
