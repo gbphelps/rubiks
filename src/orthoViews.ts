@@ -61,10 +61,15 @@ export function init() {
     const faceElement = document.getElementById(side)!;
     faceElement.addEventListener('click', () => {
       if (!getUserEventsEnabled()) return;
+      const currentRotationData = getRotationAndInverse();
+
+      // if already rotated to side, do nothing
+      if (currentRotationData.mx.equals(matrix[side])) return;
+
       pushToHistory({
         type: 'rotate',
         params: {
-          startRotation: getRotationAndInverse(),
+          startRotation: currentRotationData,
           endRotation: {
             mx: matrix[side],
             inv: inv[side],
