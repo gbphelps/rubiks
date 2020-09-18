@@ -1,9 +1,21 @@
 let t0 = 0;
 let clock: any;
+let sum = 0;
+let stopped = true;
+
+export function stop() {
+  stopped = true;
+  sum += Date.now() - t0;
+}
+
+export function start() {
+  stopped = false;
+  t0 = Date.now();
+}
 
 export function init() {
-  t0 = Date.now();
   clock = document.getElementById('clock');
+  setClock();
 }
 
 function leadingZeros(num: number, len: number) {
@@ -15,8 +27,7 @@ function leadingZeros(num: number, len: number) {
 }
 
 function getTime() {
-  const now = Date.now();
-  let del = now - t0;
+  let del = sum + (stopped ? 0 : Date.now() - t0);
   const millis = del % 1000;
   del -= millis;
   del /= 1000;

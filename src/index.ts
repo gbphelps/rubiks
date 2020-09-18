@@ -10,6 +10,7 @@ import {
 } from './history';
 import {
   init as initClock, setClock,
+  stop as stopClock,
 } from './clock';
 import {
   init as initModal,
@@ -58,7 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initHistory();
   initClock();
   initModal();
-  document.getElementById('help-button')!.addEventListener('click', resetModal);
+  document.getElementById('help-button')!.addEventListener('click', () => {
+    resetModal();
+    stopClock();
+  });
 
   faceManager.init();
 

@@ -1,4 +1,5 @@
 import './modal.scss';
+import { start as startClock } from '../clock';
 
 const cursor = document.createElement('div');
 cursor.id = 'cursor';
@@ -21,13 +22,6 @@ function multiply(a, b) {
 
   return ans;
 }
-
-const Rz = (theta) => [
-  [Math.cos(theta), -Math.sin(theta), 0, 0],
-  [Math.sin(theta), Math.cos(theta), 0, 0],
-  [0, 0, 1, 0],
-  [0, 0, 0, 1],
-];
 
 const Ry = (theta) => [
   [Math.cos(theta), 0, Math.sin(theta), 0],
@@ -226,6 +220,7 @@ function gotIt() {
     m.style.animationName = 'none';
     screen.style.visibility = 'hidden';
     cancelAnimationFrame(frame);
+    startClock();
   }, { once: true });
 }
 
