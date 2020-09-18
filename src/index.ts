@@ -30,6 +30,7 @@ import { shuffle } from './actions/updateRegistry';
 import faceManager from './faceManager';
 import '../index.scss';
 import { getAction } from './action';
+import { startOver } from './startOver';
 
 // TODO: add circular slider for z rotation surrounding the cube.
 
@@ -68,6 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
     resetModal();
     stopClock();
   });
+
+  document.getElementById('start-over')!.addEventListener('click', startOver);
 
   faceManager.init();
 

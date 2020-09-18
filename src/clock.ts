@@ -3,6 +3,11 @@ let clock: any;
 let sum = 0;
 let stopped = true;
 
+export function reset() {
+  sum = 0;
+  start();
+}
+
 export function stop() {
   stopped = true;
   sum += Date.now() - t0;
