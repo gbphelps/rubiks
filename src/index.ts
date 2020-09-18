@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (peek('mousedown')) mousedown();
       if (peek('mouseup')) mouseup();
       if (peek('mousemove')) mousemove();
-        globals.render!();
+      globals.render!();
     }
 
     animate();

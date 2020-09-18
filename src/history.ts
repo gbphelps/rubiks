@@ -1,11 +1,9 @@
 import * as THREE from 'three';
-import { Quaternion } from 'three';
 import { setAction } from './action';
-import { makeProgressFn } from './actions/setAutocorrectTwist';
 import { setUserEventsEnabled } from './events';
-import { setRotation } from './rotation';
-import { easeInOut, progress } from './utils/animation';
 import rubiksSVG from './assets/rubiks.svg';
+import { makeTwistProgressFn } from './utils/animation/TwistProgressFunction';
+import { makeQuaternionProgressFn } from './utils/animation/QuaternionProgressFunction';
 
 export type TwistMove = {
     type: 'twist',
@@ -83,7 +81,7 @@ function doTwist(move: TwistMove, dir: number, cb: () => void) {
   setAction({
     type: 'twist-autocorrect',
     params: {
-      progressFn: makeProgressFn({
+      progressFn: makeTwistProgressFn({
         tranche,
         unitTorque,
         toTorque: dir * toTorque,
@@ -100,33 +98,19 @@ function doTwist(move: TwistMove, dir: number, cb: () => void) {
   });
 }
 
-function makeWorkerFn(fromQuaternion: Quaternion, toQuaternion: Quaternion) {
-  return function worker(p: number) {
-    const quaternion = fromQuaternion.slerp(toQuaternion, p);
-    setRotation({
-      mx: new THREE.Matrix4().makeRotationFromQuaternion(quaternion),
-    });
-  };
-}
-
 function doRotate(move: RotateMove, dir: number, cb: () => void) {
-  const fQ = new THREE.Quaternion().setFromRotationMatrix(move.params.endRotation.mx);
-  const tQ = new THREE.Quaternion().setFromRotationMatrix(move.params.startRotation.mx);
+  const fromQ = new THREE.Quaternion().setFromRotationMatrix(move.params.endRotation.mx);
+  const toQ = new THREE.Quaternion().setFromRotationMatrix(move.params.startRotation.mx);
   setUserEventsEnabled(false);
   setAction({
     type: 'rotate-autocorrect',
     params: {
-      progressFn: progress(
-        500,
-        easeInOut,
-        dir === -1 ? makeWorkerFn(fQ, tQ) : makeWorkerFn(tQ, fQ),
-        () => {
-          setUserEventsEnabled(true);
-          setRotation({ inv: (dir === -1 ? move.params.startRotation : move.params.endRotation).inv });
-          setAction(null);
-          cb();
-        },
-      ),
+      progressFn: makeQuaternionProgressFn({
+        fromQ: dir === -1 ? fromQ : toQ,
+        toQ: dir === -1 ? toQ : fromQ,
+        invMatrix: (dir === -1 ? move.params.startRotation : move.params.endRotation).inv,
+        cb,
+      }),
     },
   });
 }

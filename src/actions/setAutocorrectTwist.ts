@@ -1,45 +1,7 @@
 import getUserTorque from '../getUserTorque';
 import { getAction, setAction } from '../action';
-import { progress, easeInOut, lerp } from '../utils/animation';
 import { setUserEventsEnabled } from '../events';
-import updateRegistry from './updateRegistry';
-
-interface ProgressFunctionParams {
-  tranche: (THREE.Object3D | null)[],
-  unitTorque: THREE.Vector3,
-  fromTorque: number,
-  toTorque: number,
-  duration: number,
-  addlCleanup?: () => void,
-}
-
-export function makeProgressFn({
-  tranche, unitTorque, toTorque, fromTorque, duration, addlCleanup,
-}: ProgressFunctionParams) {
-  return progress(
-    duration,
-    easeInOut,
-    (p: number) => {
-      const from = fromTorque;
-      const to = toTorque;
-
-      const degrees = lerp(p, from, to);
-
-      tranche.forEach((box) => {
-        if (!box) throw new Error();
-        box.setRotationFromAxisAngle(
-          unitTorque,
-          degrees,
-        );
-      });
-    },
-    () => {
-      updateRegistry(unitTorque, toTorque, tranche);
-      setUserEventsEnabled(true);
-      if (addlCleanup) addlCleanup();
-    },
-  );
-}
+import { makeTwistProgressFn } from '../utils/animation/TwistProgressFunction';
 
 export default function setAutocorrectTwist(e: MouseEvent) {
   const action = getAction();
@@ -64,7 +26,7 @@ export default function setAutocorrectTwist(e: MouseEvent) {
   setAction({
     type: 'twist-autocorrect',
     params: {
-      progressFn: makeProgressFn({
+      progressFn: makeTwistProgressFn({
         tranche,
         unitTorque,
         toTorque,
