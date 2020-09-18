@@ -241,7 +241,3 @@ function roundVector(v: THREE.Vector3) {
 //   }
 //   return arr;
 // }
-
-document.addEventListener('click', () => {
-  console.log(getUserEventsEnabled());
-});

@@ -205,9 +205,9 @@ function next() {
   resetFaceRotation();
   i = 0;
   animate2();
-  document.getElementById('demo-next').removeEventListener('click', shrink);
-  document.getElementById('demo-next').addEventListener('click', gotIt);
-  document.getElementById('demo-next').innerHTML = 'Got it';
+  document.getElementById('demo-next-button').removeEventListener('click', shrink);
+  document.getElementById('demo-next-button').addEventListener('click', gotIt);
+  document.getElementById('demo-next-button').innerHTML = 'Got it';
 }
 
 function gotIt() {
@@ -215,6 +215,12 @@ function gotIt() {
   const screen = document.getElementById('modal-screen');
   m.style.transform = 'scale(.5)';
   m.style.opacity = 0;
+
+  const inst2 = document.getElementById('demo-instruction2');
+  inst2.style.visibility = 'hidden';
+  inst2.style.transform = 'translateY(60%)';
+  inst2.style.opacity = '0';
+
   m.addEventListener('transitionend', () => {
     m.style.visibility = 'hidden';
     m.style.animationName = 'none';
@@ -225,6 +231,11 @@ function gotIt() {
 }
 
 export function reset() {
+  const inst1 = document.getElementById('demo-instruction1');
+  inst1.style.visibility = 'visible';
+  inst1.style.transform = 'scale(1)';
+  inst1.style.opacity = 1;
+
   const m = document.getElementById('modal');
   const screen = document.getElementById('modal-screen');
   screen.style.visibility = 'visible';
@@ -236,9 +247,9 @@ export function reset() {
   cursor.style.transform = '';
   resetMx();
   document.getElementById('demo-cube').style.transform = `matrix3D(${mxToCSS(mx)})translateZ(${130 / 2}px)`;
-  document.getElementById('demo-next').removeEventListener('click', gotIt);
-  document.getElementById('demo-next').addEventListener('click', shrink);
-  document.getElementById('demo-next').innerHTML = 'Next<span>&nbsp;&#8250;</span>';
+  document.getElementById('demo-next-button').removeEventListener('click', gotIt);
+  document.getElementById('demo-next-button').addEventListener('click', shrink);
+  document.getElementById('demo-next-button').innerHTML = 'Next<span>&nbsp;&#8250;</span>';
 
   i = 0;
   animate();
@@ -327,6 +338,6 @@ export const init = () => {
   cursor.style.top = '40px';
   cursor.style.left = '-20px';
 
-  document.getElementById('demo-next').addEventListener('click', shrink);
-  document.getElementById('demo-next').addEventListener('transitionend', (e) => e.stopPropagation());
+  document.getElementById('demo-next-button').addEventListener('click', shrink);
+  document.getElementById('demo-next-button').addEventListener('transitionend', (e) => e.stopPropagation());
 };

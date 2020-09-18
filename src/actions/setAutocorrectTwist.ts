@@ -24,7 +24,7 @@ export function makeProgressFn({
       const to = toTorque;
 
       const degrees = lerp(p, from, to);
-      console.log(degrees);
+
       tranche.forEach((box) => {
         if (!box) throw new Error();
         box.setRotationFromAxisAngle(
