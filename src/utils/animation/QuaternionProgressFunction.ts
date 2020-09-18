@@ -15,11 +15,14 @@ function makeWorkerFn(fromQuaternion: Quaternion, toQuaternion: Quaternion) {
 }
 
 export function makeQuaternionProgressFn({
-  fromQ, toQ, invMatrix, cb,
+  fromQ, toQ, matrixData, cb,
 }: {
     fromQ: THREE.Quaternion,
     toQ: THREE.Quaternion,
-    invMatrix: THREE.Matrix4,
+    matrixData: {
+      mx: THREE.Matrix4,
+      inv: THREE.Matrix4,
+    },
     cb: () => void,
   }) {
   return progress(
@@ -28,7 +31,7 @@ export function makeQuaternionProgressFn({
     makeWorkerFn(fromQ, toQ),
     () => {
       setUserEventsEnabled(true);
-      setRotation({ inv: invMatrix });
+      setRotation(matrixData);
       setAction(null);
       cb();
     },

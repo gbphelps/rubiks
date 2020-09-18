@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { setAction } from '../action';
 import { Axis, axes } from '../utils/types';
-import { setUserEventsEnabled } from '../events';
 import { registerBox, getTrancheStatic } from '../boxRegistry';
 import faceManager from '../faceManager';
 
@@ -69,7 +68,7 @@ function getAxisAndRotation(unitTorque: THREE.Vector3, magnitude: number) {
     axis = axes[i];
     break;
   }
-  if (!axis) throw new Error();
+  if (!axis) throw new Error('Axis not defined?');
 
   return { axis, rotation };
 }

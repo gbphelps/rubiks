@@ -66,8 +66,8 @@ export function init() {
         params: {
           startRotation: getRotationAndInverse(),
           endRotation: {
-            mx: matrix[side],
-            inv: inv[side],
+            mx: matrix[side].clone(),
+            inv: inv[side].clone(),
           },
         },
       });
@@ -77,8 +77,13 @@ export function init() {
       const progressFn = makeQuaternionProgressFn({
         toQ,
         fromQ,
-        invMatrix: inv[side],
-        cb: () => { setUserEventsEnabled(true); },
+        matrixData: {
+          mx: matrix[side].clone(),
+          inv: inv[side].clone(),
+        },
+        cb: () => {
+          setUserEventsEnabled(true);
+        },
       });
 
       setAction({

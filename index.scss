@@ -255,3 +255,7 @@ button {
         color: rgb(3, 71, 103);
     }
 }
+
+#front, #back, #left, #right, #top, #bottom {
+    cursor: pointer;
+}

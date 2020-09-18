@@ -108,7 +108,7 @@ function doRotate(move: RotateMove, dir: number, cb: () => void) {
       progressFn: makeQuaternionProgressFn({
         fromQ: dir === -1 ? fromQ : toQ,
         toQ: dir === -1 ? toQ : fromQ,
-        invMatrix: (dir === -1 ? move.params.startRotation : move.params.endRotation).inv,
+        matrixData: dir === -1 ? move.params.startRotation : move.params.endRotation,
         cb,
       }),
     },
