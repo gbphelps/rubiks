@@ -16,6 +16,7 @@ module.exports = {
   ],
   rules: {
     // this is some nonsense for getting airbnb to stop complaining about ts imports
+    'import/prefer-default-export': 'off',
     'import/no-webpack-loader-syntax': 'off',
     'import/extensions': ['error', 'ignorePackages', {
       js: 'never',

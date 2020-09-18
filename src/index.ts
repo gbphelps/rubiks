@@ -11,6 +11,11 @@ import {
 import {
   init as initClock, setClock,
 } from './clock';
+import {
+  init as initModal,
+  reset as resetModal,
+} from './modal/instructionsModal';
+
 // import makeDebugScreen from './utils/debug';
 import { Face } from './utils/types';
 import * as boxRegistry from './boxRegistry';
@@ -52,6 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initControls();
   initHistory();
   initClock();
+  initModal();
+  document.getElementById('help-button')!.addEventListener('click', resetModal);
+
   faceManager.init();
 
   const cube = new THREE.Object3D();
