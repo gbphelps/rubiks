@@ -158,7 +158,14 @@ function doFunc(dir: number) {
 }
 
 function setHistory() {
+  const bg = document.getElementById('history-bg')!;
   history.innerHTML = '';
+  if (!manifest.length) {
+    bg.style.opacity = '1';
+    history.innerHTML = "<div class='no-history'><div>No history...yet</div><div>Get crackin&rsquo;!</div></div>";
+    return;
+  }
+  bg.style.opacity = '0';
   for (let i = 0; i < manifest.length; i++) {
     const child = document.createElement('div');
     child.classList.add('history-log');
