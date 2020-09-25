@@ -9,5 +9,5 @@
       "allowJs": true,
       "strictNullChecks": true,
     },
-    "include": ["./**/*.ts"]
+    "include": ["./**/*.ts", "src/instructionsModal.js"]
 }

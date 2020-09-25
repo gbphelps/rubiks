@@ -212,7 +212,7 @@ function next() {
 
 function gotIt() {
   const m = document.getElementById('modal');
-  const screen = document.getElementById('modal-screen');
+  // const screen = document.getElementById('modal-screen');
   m.style.transform = 'scale(.5)';
   m.style.opacity = 0;
 
@@ -224,7 +224,7 @@ function gotIt() {
   m.addEventListener('transitionend', () => {
     m.style.visibility = 'hidden';
     m.style.animationName = 'none';
-    screen.style.visibility = 'hidden';
+    // screen.style.visibility = 'hidden';
     cancelAnimationFrame(frame);
     startClock();
   }, { once: true });
@@ -237,8 +237,8 @@ export function reset() {
   inst1.style.opacity = 1;
 
   const m = document.getElementById('modal');
-  const screen = document.getElementById('modal-screen');
-  screen.style.visibility = 'visible';
+  // const screen = document.getElementById('modal-screen');
+  // screen.style.visibility = 'visible';
   m.style.visibility = 'visible';
   m.style.opacity = 1;
   m.style.transform = '';
