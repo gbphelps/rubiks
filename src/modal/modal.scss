@@ -1,4 +1,4 @@
-$s: 130px;
+$s: 150px;
 
 
 
@@ -12,6 +12,7 @@ $s: 130px;
 }
 
 #modal {
+  flex-direction: column;
   display: flex;
   justify-content: center;
   height: 100%;
@@ -67,7 +68,6 @@ animation-iteration-count: infinite;
 
 #demo-instruction1, #demo-instruction2{
   transition: .3s;
-  position: absolute;
   color: #5a5a5a;
 }
 
@@ -101,10 +101,9 @@ animation-iteration-count: infinite;
   display: block;
   height: 85%;
   width: 85%;
-  background: rgba(255,255,255,.2);
+  background: black;
   border-radius: 4px;
   backface-visibility: hidden;
-  transform: translateZ(.1px);
   border: 1px solid transparent;
 }
 
@@ -157,8 +156,8 @@ animation-iteration-count: infinite;
 .demo-limelight {
   height: 250px; 
   width: 250px; 
-  background: linear-gradient(to bottom, #555, black);
-  box-shadow: 0 0 5px 1px rgba(0,0,0,.4);
+  // background: linear-gradient(to bottom, #555, black);
+  // box-shadow: 0 0 5px 1px rgba(0,0,0,.4);
   align-self: center; 
   border-radius: 50%
 }

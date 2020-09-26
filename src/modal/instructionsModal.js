@@ -1,5 +1,10 @@
 import './modal.scss';
 import { start as startClock } from '../clock';
+import { setUserEventsEnabled } from '../events';
+
+const s = 150;
+const ROTATE_RADIUS = s * 0.6;
+const DRAG_DISTANCE = s * 0.6;
 
 const cursor = document.createElement('div');
 cursor.id = 'cursor';
@@ -114,7 +119,7 @@ function animate() {
   }
   if (i >= unit * 2 && i < unit * 3) {
     const progress = 0.5 - 0.5 * Math.cos((i - unit * 2) / unit * Math.PI);
-    cursor.style.transform = `translateX(${progress * 75}px)translateY(${progress * 75 * Math.tan(Math.PI / 6)}px)`;
+    cursor.style.transform = `translateX(${progress * DRAG_DISTANCE}px)translateY(${progress * DRAG_DISTANCE * Math.tan(Math.PI / 6)}px)`;
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         pips.top[i][j].style.transform = `rotateY(${progress * 90}deg)${tform.top}`;
@@ -148,7 +153,7 @@ function animate() {
       pips.top[i][0].style.transform = `rotateX(${-progress * 90}deg)${tform.top}`;
       pips.back[i][2].style.transform = `rotateX(${-progress * 90}deg)${tform.back}`;
     }
-    cursor.style.transform = `translateY(${progress * 70}px)`;
+    cursor.style.transform = `translateY(${progress * DRAG_DISTANCE}px)`;
   }
   if (i >= unit * 7) {
     for (let i = 0; i < 3; i++) {
@@ -199,8 +204,8 @@ function next() {
   });
   cancelAnimationFrame(frame);
   cursor.style.transform = '';
-  cursor.style.top = `${90}px`;
-  cursor.style.left = `${8}px`;
+  cursor.style.top = `${s * 2 / 3}px`;
+  cursor.style.left = `${s * 1 / 15}px`;
   cursor.innerHTML = grab;
   resetFaceRotation();
   i = 0;
@@ -227,6 +232,7 @@ function gotIt() {
     // screen.style.visibility = 'hidden';
     cancelAnimationFrame(frame);
     startClock();
+    setUserEventsEnabled(true);
   }, { once: true });
 }
 
@@ -246,7 +252,7 @@ export function reset() {
   cursor.style.left = '-20px';
   cursor.style.transform = '';
   resetMx();
-  document.getElementById('demo-cube').style.transform = `matrix3D(${mxToCSS(mx)})translateZ(${130 / 2}px)`;
+  document.getElementById('demo-cube').style.transform = `matrix3D(${mxToCSS(mx)})translateZ(${s / 2}px)`;
   document.getElementById('demo-next-button').removeEventListener('click', gotIt);
   document.getElementById('demo-next-button').addEventListener('click', shrink);
   document.getElementById('demo-next-button').innerHTML = 'Next<span>&nbsp;&#8250;</span>';
@@ -269,7 +275,7 @@ function animate2() {
   }
 
   if (i > 2 * unit && i < 4 * unit) {
-    cursor.style.transform = `translateY(${50 * Math.sin(Math.PI * 2 * progress(i - 2 * unit))}px)translateX(${-50 + 50 * Math.cos(Math.PI * 2 * progress(i - 2 * unit))}px)`;
+    cursor.style.transform = `translateY(${ROTATE_RADIUS * Math.sin(Math.PI * 2 * progress(i - 2 * unit))}px)translateX(${-ROTATE_RADIUS + ROTATE_RADIUS * Math.cos(Math.PI * 2 * progress(i - 2 * unit))}px)`;
 
     const rot1 = Math.sin(Math.PI * 2 * progress(i - 2 * unit))
       - Math.sin(Math.PI * 2 * progress(i - 1 - 2 * unit));
@@ -284,7 +290,7 @@ function animate2() {
   if (i >= 4 * unit && i < 6 * unit - 1) {
     const idx = rotations.length - 1 - i + 4 * unit;
     mx = multiply(rotations[idx], mx);
-    cursor.style.transform = `translateY(${50 * Math.sin(Math.PI * 2 * progress(i - 2 * unit))}px)translateX(${-50 + 50 * Math.cos(Math.PI * 2 * progress(i - 2 * unit))}px)`;
+    cursor.style.transform = `translateY(${ROTATE_RADIUS * Math.sin(Math.PI * 2 * progress(i - 2 * unit))}px)translateX(${-ROTATE_RADIUS + ROTATE_RADIUS * Math.cos(Math.PI * 2 * progress(i - 2 * unit))}px)`;
   }
 
   if (i >= 6 * unit - 1) {
@@ -292,13 +298,14 @@ function animate2() {
     cursor.innerHTML = grab;
   }
 
-  document.getElementById('demo-cube').style.transform = `matrix3D(${mxToCSS(mx)})translateZ(${130 / 2}px)`;
+  document.getElementById('demo-cube').style.transform = `matrix3D(${mxToCSS(mx)})translateZ(${s / 2}px)`;
 }
 
 export const init = () => {
+  setUserEventsEnabled(false);
   animate();
   document.getElementById('demo-cube').style['transform-origin'] = '50% 50% 0';
-  document.getElementById('demo-cube').style.transform = `matrix3D(${mxToCSS(mx)})translateZ(${130 / 2}px)`;
+  document.getElementById('demo-cube').style.transform = `matrix3D(${mxToCSS(mx)})translateZ(${s / 2}px)`;
 
   ['left', 'front', 'right', 'top', 'back', 'bottom'].forEach((sideName) => {
     const side = document.createElement('div');
@@ -310,8 +317,8 @@ export const init = () => {
         const pip = document.createElement('div');
         const back = document.createElement('div');
         Object.assign(back.style, {
-          height: `${130 / 3}px`,
-          width: `${130 / 3}px`,
+          height: `${s / 3}px`,
+          width: `${s / 3}px`,
           transform: 'rotateY(180deg)',
           position: 'absolute',
         });
@@ -324,7 +331,7 @@ export const init = () => {
         }
         pip.classList.add('demo-pip');
         pip.appendChild(back);
-        pip.style['transform-origin'] = `${-j * 130 / 3 + 130 / 2}px ${-i * 130 / 3 + 130 / 2}px ${-130 / 2}px`;
+        pip.style['transform-origin'] = `${-j * s / 3 + s / 2}px ${-i * s / 3 + s / 2}px ${-s / 2}px`;
         pip.style.transform = tform[sideName];
         pips[sideName][i][j] = pip;
         side.appendChild(pip);
@@ -335,8 +342,8 @@ export const init = () => {
 
   pips.front[0][0].id = 'demo';
   document.getElementById('demo-container').appendChild(cursor);
-  cursor.style.top = '40px';
-  cursor.style.left = '-20px';
+  cursor.style.top = `${s * 0.25}px`;
+  cursor.style.left = `-${s * 0.2}px`;
 
   document.getElementById('demo-next-button').addEventListener('click', shrink);
   document.getElementById('demo-next-button').addEventListener('transitionend', (e) => e.stopPropagation());
