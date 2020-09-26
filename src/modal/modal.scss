@@ -29,13 +29,8 @@ $s: 150px;
   height: 100%;
   width: 100%;
   text-align:center;
-  transform: scale(.5);
-  // animation-name: appear;
-  // animation-duration: .3s;
-  // transition: all .3s;
   z-index: 1;
   background: #fafafc;
-  opacity: 0;
 
   #demo-next-button{
     color: white;
@@ -173,4 +168,10 @@ $s: 150px;
 }
 
 
-
+#menu-modal {
+  button {
+    background: none;
+    font-size: 20px;
+    color: black;
+  }
+}

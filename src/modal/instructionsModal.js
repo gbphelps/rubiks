@@ -184,6 +184,7 @@ function gotIt() {
 }
 
 function showModal() {
+  document.getElementById('hamburger').disabled = true;
   return new Promise((r) => {
     const modal = document.getElementById('modal');
     modal.style.visibility = 'visible';
@@ -199,6 +200,7 @@ function hideModal() {
     modal.style.transform = 'scale(.5)';
     modal.style.opacity = 0;
     setTimeout(() => {
+      document.getElementById('hamburger').disabled = false;
       modal.style.visibility = 'hidden';
       modal.style.animationName = 'none';
       cancelAnimationFrame(frame);
@@ -283,16 +285,13 @@ export const init = () => {
 
   modal.style.transition = `${T_DURATION / 1000}s`;
 
-  setTimeout(() => {
-    modal.style.opacity = 1;
-    modal.style.transform = 'none';
-  });
-
   const hamburger = document.getElementById('hamburger');
+  hamburger.disabled = true;
+
   hamburger.addEventListener('click', () => {
     showModal();
     stopClock();
-    document.getElementById('menu-modal').style.display = 'block';
+    document.getElementById('menu-modal').style.display = 'flex';
     document.getElementById('instructions-modal').style.display = 'none';
   });
 
