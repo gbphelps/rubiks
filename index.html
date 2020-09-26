@@ -55,38 +55,40 @@
             </div>
 
             <div class="top-container">
-                <div id="container">
+                <div class="flex-grow-container">
                     <div id="modal-screen">
-                    <div id="modal" class="card" style="margin: 0">
-                        <div id="instructions-modal" class="modal-body">
-                                <div class="demo-limelight" style="
-                                    display: flex; 
-                                    align-items: center; 
-                                    justify-content: center">
-                                    <div id="demo-container">
-                                        <div id="demo-cube">
-                                        </div>
-                                        </div> 
+                        <div id="modal" class="card" style="margin: 0;">
+                            <div id="instructions-modal" class="modal-body">
+                                    <div class="demo-limelight" style="
+                                        display: flex; 
+                                        align-items: center; 
+                                        justify-content: center">
+                                        <div id="demo-container">
+                                            <div id="demo-cube">
+                                            </div>
+                                            </div> 
+                                    </div>
+                        
+                                    <div className="instruction-container" style="width: 100%; display: flex; justify-content: center; height: 60px; align-items: center">
+                                        <div id="demo-instruction1" style="padding: 20px 30px">Click and drag edge squares to twist a slice of the cube</div>          
+                                        <div id="demo-instruction2" style="padding: 20px 30px; visibility: hidden">Click and drag center squares to rotate the entire cube</div>
+                                    </div>  
+                                
+                                    <button id="demo-next-button">Next<span>&nbsp;&#8250;</span></button>
                                 </div>
-                    
-                                <div className="instruction-container" style="width: 100%; display: flex; justify-content: center; height: 60px; align-items: center">
-                                    <div id="demo-instruction1" style="padding: 20px 30px">Click and drag edge squares to twist a slice of the cube</div>          
-                                    <div id="demo-instruction2" style="padding: 20px 30px; visibility: hidden">Click and drag center squares to rotate the entire cube</div>
-                                </div>  
-                            
-                                <button id="demo-next-button">Next<span>&nbsp;&#8250;</span></button>
+    
+                                <div id="menu-modal" class="modal-body" style="display: none">
+                                    <button id="start-over">New Game</button>
+                                    <button id="see-instructions">Instructions</button>
+                                    <button id="resume">Resume</button>
+                                </div>
+    
                             </div>
-
-                            <div id="menu-modal" class="modal-body" style="display: none">
-                                <button id="start-over">New Game</button>
-                                <button id="see-instructions">Instructions</button>
-                                <button id="resume">Resume</button>
-                            </div>
-
                         </div>
-                    </div>
+                <div id="container">
                     <canvas id="canvas"></canvas>
                 </div>
+            </div>
                 <div class="bottom-panel">
                     <div class="card bottom-card">
                         <div id="clock" style="width: 200px"></div>

@@ -23,9 +23,10 @@ body, html {
     background: #f4f4fa;
 }
 
-#container {
+.flex-grow-container{
     height: 0;
     flex-grow: 1;
+    padding: 14px; //note: this makes the canvas a little smaller to avoid having any of the cube peek through the modal
 }
 
 #canvas {
