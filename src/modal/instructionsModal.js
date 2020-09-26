@@ -13,6 +13,7 @@ const DRAG_DISTANCE = s * 0.6;
 
 const ROTATIONS = [];
 let allRotationsSet = false;
+let modalVisible = true;
 
 let MATRIX = new THREE.Matrix4();
 resetMx();
@@ -136,12 +137,7 @@ function shrink() {
   c.addEventListener('transitionend', () => {
     c.style.transform = '';
     c.style.opacity = '1';
-
-    const i2 = document.getElementById('demo-instruction2');
-    i2.style.visibility = 'visible';
-    i2.style.transform = 'scale(1)';
-    i2.style.opacity = 1;
-    next();
+    setInstruction2();
   }, { once: true });
 }
 
@@ -155,7 +151,12 @@ function resetFaceRotation() {
   });
 }
 
-function next() {
+function setInstruction2() {
+  const inst2 = document.getElementById('demo-instruction2');
+  inst2.style.visibility = 'visible';
+  inst2.style.transform = 'scale(1)';
+  inst2.style.opacity = 1;
+
   Array.from(document.getElementsByClassName('corner')).forEach((pip) => {
     pip.classList.remove('active');
   });
@@ -164,8 +165,7 @@ function next() {
   });
   cancelAnimationFrame(frame);
   cursor.style.transform = '';
-  cursor.style.top = `${s * 2 / 3}px`;
-  cursor.style.left = `${s * 1 / 15}px`;
+  setCursor(2);
   cursor.innerHTML = grab;
   resetFaceRotation();
   i = 0;
@@ -175,16 +175,40 @@ function next() {
   document.getElementById('demo-next-button').innerHTML = 'Got it';
 }
 
+function hideInstruction(num) {
+  const inst = document.getElementById(`demo-instruction${num}`);
+  inst.style.visibility = 'hidden';
+  inst.style.transform = 'translateY(60%)';
+  inst.style.opacity = '0';
+}
+
+function showInstruction(num) {
+  const inst = document.getElementById(`demo-instruction${num}`);
+  inst.style.visibility = 'visible';
+  inst.style.transform = 'scale(1)';
+  inst.style.opacity = 1;
+}
+
+function setCursor(num) {
+  if (num === 1) {
+    cursor.style.top = `${s * 0.25}px`;
+    cursor.style.left = `-${s * 0.2}px`;
+    cursor.style.transform = '';
+  } else if (num === 2) {
+    cursor.style.top = `${s * 2 / 3}px`;
+    cursor.style.left = `${s * 1 / 15}px`;
+  } else {
+    throw new Error('setCursor arg must be 1 or 2');
+  }
+}
+
 function gotIt() {
   hideModal();
-  const inst2 = document.getElementById('demo-instruction2');
-  inst2.style.visibility = 'hidden';
-  inst2.style.transform = 'translateY(60%)';
-  inst2.style.opacity = '0';
+  hideInstruction(2);
 }
 
 function showModal() {
-  document.getElementById('hamburger').disabled = true;
+  modalVisible = true;
   return new Promise((r) => {
     const modal = document.getElementById('modal');
     modal.style.visibility = 'visible';
@@ -200,7 +224,7 @@ function hideModal() {
     modal.style.transform = 'scale(.5)';
     modal.style.opacity = 0;
     setTimeout(() => {
-      document.getElementById('hamburger').disabled = false;
+      modalVisible = false;
       modal.style.visibility = 'hidden';
       modal.style.animationName = 'none';
       cancelAnimationFrame(frame);
@@ -211,18 +235,16 @@ function hideModal() {
   });
 }
 
-export function reset() {
-  const inst1 = document.getElementById('demo-instruction1');
-  inst1.style.visibility = 'visible';
-  inst1.style.transform = 'scale(1)';
-  inst1.style.opacity = 1;
-
+function showInstructionModal() {
   document.getElementById('instructions-modal').style.display = 'flex';
   document.getElementById('menu-modal').style.display = 'none';
+}
 
-  cursor.style.top = `${s * 0.25}px`;
-  cursor.style.left = `-${s * 0.2}px`;
-  cursor.style.transform = '';
+export function setInstruction1() {
+  showInstruction(1);
+  hideInstruction(2);
+  setCursor(1);
+  cursor.innerHTML = grab;
   resetMx();
   document.getElementById('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
   document.getElementById('demo-next-button').removeEventListener('click', gotIt);
@@ -286,9 +308,12 @@ export const init = () => {
   modal.style.transition = `${T_DURATION / 1000}s`;
 
   const hamburger = document.getElementById('hamburger');
-  hamburger.disabled = true;
 
   hamburger.addEventListener('click', () => {
+    if (modalVisible) {
+      hideModal();
+      return;
+    }
     showModal();
     stopClock();
     document.getElementById('menu-modal').style.display = 'flex';
@@ -296,7 +321,8 @@ export const init = () => {
   });
 
   document.getElementById('see-instructions').addEventListener('click', () => {
-    reset();
+    setInstruction1();
+    showInstructionModal();
   });
 
   document.getElementById('start-over').addEventListener('click', () => {
@@ -347,8 +373,7 @@ export const init = () => {
 
   pips.front[0][0].id = 'demo';
   document.getElementById('demo-container').appendChild(cursor);
-  cursor.style.top = `${s * 0.25}px`;
-  cursor.style.left = `-${s * 0.2}px`;
+  setCursor(1);
 
   document.getElementById('demo-next-button').addEventListener('click', shrink);
   document.getElementById('demo-next-button').addEventListener('transitionend', (e) => e.stopPropagation());
