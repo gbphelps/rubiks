@@ -2,6 +2,7 @@ import './modal.scss';
 import * as THREE from 'three';
 import { start as startClock } from '../clock';
 import { setUserEventsEnabled } from '../events';
+import { easeInOut } from '../utils/animation';
 
 const s = 150;
 const ROTATE_RADIUS = s * 0.6;
@@ -73,7 +74,8 @@ function animate() {
     return;
   }
   if (i >= unit * 2 && i < unit * 3) {
-    const progress = 0.5 - 0.5 * Math.cos((i - unit * 2) / unit * Math.PI);
+    const progress = easeInOut((i - unit * 2) / unit);
+
     cursor.style.transform = `translateX(${progress * DRAG_DISTANCE}px)translateY(${progress * DRAG_DISTANCE * Math.tan(Math.PI / 6)}px)`;
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
@@ -100,7 +102,7 @@ function animate() {
     cursor.innerHTML = grabbing;
   }
   if (i >= unit * 6 && i < unit * 7) {
-    const progress = 0.5 - 0.5 * Math.cos((i - unit * 6) / unit * Math.PI);
+    const progress = easeInOut((i - unit * 6) / unit);
 
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) pips.left[i][j].style.transform = `rotateX(${-progress * 90}deg)${tform.left}`;
