@@ -86,22 +86,11 @@ function animate() {
       }
     }
 
-    const sides: Side[] = ['front', 'left', 'right', 'back'];
-    sides.forEach((face) => {
-      for (let i = 0; i < 3; i++) pips[face][0][i].style.transform = `rotateY(${progress * 90}deg)${tform[face]}`;
-    });
+    rotateTrancheHorizontal(progress);
   }
 
-  if (i >= unit * 3 && i < unit * 4) {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        const sides: Side[] = ['front', 'left', 'right', 'back', 'top'];
-        sides.forEach((sideName) => {
-          pips[sideName][i][j].style.transform = tform[sideName];
-        });
-      }
-    }
-  }
+  if (i === unit * 3) resetFaceRotation();
+
   if (i >= unit * 4 && i < unit * 5) {
     cursor.style.transform = '';
     cursor.innerHTML = grab;
@@ -112,25 +101,10 @@ function animate() {
   }
   if (i >= unit * 6 && i < unit * 7) {
     const progress = easeInOut((i - unit * 6) / unit);
-
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) pips.left[i][j].style.transform = `rotateX(${-progress * 90}deg)${tform.left}`;
-      pips.front[i][0].style.transform = `rotateX(${-progress * 90}deg)${tform.front}`;
-      pips.top[i][0].style.transform = `rotateX(${-progress * 90}deg)${tform.top}`;
-      pips.back[i][2].style.transform = `rotateX(${-progress * 90}deg)${tform.back}`;
-    }
+    rotateTrancheVertical(progress);
     cursor.style.transform = `translateY(${progress * DRAG_DISTANCE}px)`;
   }
-  if (i >= unit * 7) {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        const sides: Side[] = ['front', 'left', 'right', 'back', 'top'];
-        sides.forEach((sideName) => {
-          pips[sideName][i][j].style.transform = tform[sideName];
-        });
-      }
-    }
-  }
+  if (i === unit * 7) resetFaceRotation();
 }
 
 function shrink() {
@@ -403,4 +377,22 @@ function setNextButton(num: number) {
   } else {
     throw new Error('Argument to setNextButton must be either 1 or 2');
   }
+}
+
+function rotateTrancheVertical(progress: number) {
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) pips.left[i][j].style.transform = `rotateX(${-progress * 90}deg)${tform.left}`;
+    pips.front[i][0].style.transform = `rotateX(${-progress * 90}deg)${tform.front}`;
+    pips.top[i][0].style.transform = `rotateX(${-progress * 90}deg)${tform.top}`;
+    pips.back[i][2].style.transform = `rotateX(${-progress * 90}deg)${tform.back}`;
+  }
+}
+
+function rotateTrancheHorizontal(progress: number) {
+  const sides: Side[] = ['front', 'left', 'right', 'back'];
+  sides.forEach((face) => {
+    for (let i = 0; i < 3; i++) {
+      pips[face][0][i].style.transform = `rotateY(${progress * 90}deg)${tform[face]}`;
+    }
+  });
 }
