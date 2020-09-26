@@ -175,9 +175,7 @@ function setInstruction2() {
   resetFaceRotation();
   i = 0;
   animate2();
-  getId('demo-next-button').removeEventListener('click', shrink);
-  getId('demo-next-button').addEventListener('click', gotIt);
-  getId('demo-next-button').innerHTML = 'Got it';
+  setNextButton(1);
 }
 
 function hideInstruction(num: number) {
@@ -252,10 +250,7 @@ export function setInstruction1() {
   cursor.innerHTML = grab;
   resetMx();
   getId('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
-  getId('demo-next-button').removeEventListener('click', gotIt);
-  getId('demo-next-button').addEventListener('click', shrink);
-  getId('demo-next-button').innerHTML = 'Next<span>&nbsp;&#8250;</span>';
-
+  setNextButton(2);
   i = 0;
   animate();
 }
@@ -310,11 +305,7 @@ function animate2() {
 export const init = () => {
   initPips();
   initButtons();
-  const modal = getId('modal');
-  const dc = getId('demo-container');
-
-  modal.style.transition = `${T_DURATION / 1000}s`;
-  dc.style.transition = `${T_DURATION / 1000}s`;
+  setTransitions();
   setUserEventsEnabled(false);
   animate();
   getId('demo-cube').style.transformOrigin = '50% 50% 0';
@@ -393,4 +384,23 @@ function getId(id: string) {
   const result = document.getElementById(id);
   if (!result) throw new Error(`Element with ID ${id} was not found in the DOM tree! Did you delete anything from index.html?`);
   return result;
+}
+
+function setTransitions() {
+  getId('modal').style.transition = `${T_DURATION / 1000}s`;
+  getId('demo-container').style.transition = `${T_DURATION / 1000}s`;
+}
+
+function setNextButton(num: number) {
+  if (num === 2) {
+    getId('demo-next-button').removeEventListener('click', gotIt);
+    getId('demo-next-button').addEventListener('click', shrink);
+    getId('demo-next-button').innerHTML = 'Next<span>&nbsp;&#8250;</span>';
+  } else if (num === 1) {
+    getId('demo-next-button').removeEventListener('click', shrink);
+    getId('demo-next-button').addEventListener('click', gotIt);
+    getId('demo-next-button').innerHTML = 'Got it';
+  } else {
+    throw new Error('Argument to setNextButton must be either 1 or 2');
+  }
 }
