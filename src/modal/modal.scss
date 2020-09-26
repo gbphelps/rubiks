@@ -1,12 +1,6 @@
 $s: 150px;
 
 
-
-
-#menu-modal, #intructions-modal {
-  position: absolute;
-}
-
 #modal-screen {
   position: absolute; 
   height: 100%; 
@@ -23,6 +17,9 @@ $s: 150px;
   flex-direction: column; 
   align-items: center; 
   justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 #modal {
