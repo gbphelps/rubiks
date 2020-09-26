@@ -186,6 +186,7 @@ function hideInstruction(num: number) {
 }
 
 function showInstruction(num: number) {
+  hideInstruction(num === 1 ? 2 : 1);
   const inst = getId(`demo-instruction${num}`);
   inst.style.visibility = 'visible';
   inst.style.transform = 'scale(1)';
@@ -207,7 +208,6 @@ function setCursor(num: number) {
 
 function gotIt() {
   hideModal();
-  hideInstruction(2);
 }
 
 function showModal() {
@@ -245,10 +245,10 @@ function showInstructionModal() {
 
 export function setInstruction1() {
   showInstruction(1);
-  hideInstruction(2);
   setCursor(1);
   cursor.innerHTML = grab;
   resetMx();
+  resetFaceRotation();
   getId('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
   setNextButton(1);
   i = 0;
