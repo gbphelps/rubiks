@@ -1,7 +1,5 @@
 $s: 150px;
 
-
-
 #modal-screen {
   position: absolute; 
   height: 100%; 
@@ -13,6 +11,7 @@ $s: 150px;
 
 #modal {
   flex-direction: column;
+  align-items: center;
   display: flex;
   justify-content: center;
   height: 100%;
@@ -26,17 +25,12 @@ $s: 150px;
 
 #demo-next-button{
   border-radius: 0;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
   color: white;
   padding: 5px 20px;
   cursor: pointer;
   transition: .2s;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  width: 200px;
   z-index: 1;
   position: relative;
   font-size: 20px;
@@ -69,6 +63,7 @@ animation-iteration-count: infinite;
 #demo-instruction1, #demo-instruction2{
   transition: .3s;
   color: #5a5a5a;
+  position: absolute;
 }
 
 #demo-instruction2{
@@ -142,16 +137,6 @@ animation-iteration-count: infinite;
   transform-style: preserve-3d;
 }
 
-
-
-#demo-backdrop{
-  width: 100%;
-  height: 60px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  z-index: 2;
-}
 
 .demo-limelight {
   height: 250px; 

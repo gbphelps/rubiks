@@ -1,4 +1,5 @@
 import './modal.scss';
+import * as THREE from 'three';
 import { start as startClock } from '../clock';
 import { setUserEventsEnabled } from '../events';
 
@@ -6,64 +7,18 @@ const s = 150;
 const ROTATE_RADIUS = s * 0.6;
 const DRAG_DISTANCE = s * 0.6;
 
+const ROTATIONS = [];
+let allRotationsSet = false;
+
+let MATRIX = new THREE.Matrix4();
+resetMx();
+
 const cursor = document.createElement('div');
 cursor.id = 'cursor';
 
-function multiply(a, b) {
-  if (a[0].length !== b.length) throw new RangeError('dimensional mismatch');
-
-  const ans = [];
-  for (let i = 0; i < a.length; i++) ans[i] = [];
-
-  for (let rowA = 0; rowA < a.length; rowA++) {
-    for (let colB = 0; colB < b[0].length; colB++) {
-      let val = 0;
-      for (let i = 0; i < a[0].length; i++) {
-        val += a[rowA][i] * b[i][colB];
-      }
-      ans[rowA][colB] = val;
-    }
-  }
-
-  return ans;
-}
-
-const Ry = (theta) => [
-  [Math.cos(theta), 0, Math.sin(theta), 0],
-  [0, 1, 0, 0],
-  [-Math.sin(theta), 0, Math.cos(theta), 0],
-  [0, 0, 0, 1],
-];
-
-const Rx = (theta) => [
-  [1, 0, 0, 0],
-  [0, Math.cos(theta), Math.sin(theta), 0],
-  [0, -Math.sin(theta), Math.cos(theta), 0],
-  [0, 0, 0, 1],
-];
-
-let mx = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
-mx = multiply(
-  multiply(Rx(Math.asin(1 / Math.sqrt(3))), Ry(-Math.PI / 4)),
-  mx,
-);
-
 function resetMx() {
-  mx = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
-  mx = multiply(
-    multiply(Rx(Math.asin(1 / Math.sqrt(3))), Ry(-Math.PI / 4)),
-    mx,
-  );
-}
-
-function mxToCSS(mx) {
-  const result = [];
-  for (let i = 0; i < 4; i++) {
-    for (let j = 0; j < 4; j++) {
-      result.push(mx[j][i]);
-    }
-  }
-  return result.join(',');
+  MATRIX = new THREE.Matrix4().makeRotationY(-Math.PI / 4)
+    .premultiply(new THREE.Matrix4().makeRotationX(-Math.asin(1 / Math.sqrt(3))));
 }
 
 /// ///////
@@ -248,11 +203,11 @@ export function reset() {
   m.style.visibility = 'visible';
   m.style.opacity = 1;
   m.style.transform = '';
-  cursor.style.top = '40px';
-  cursor.style.left = '-20px';
+  cursor.style.top = `${s * 0.25}px`;
+  cursor.style.left = `-${s * 0.2}px`;
   cursor.style.transform = '';
   resetMx();
-  document.getElementById('demo-cube').style.transform = `matrix3D(${mxToCSS(mx)})translateZ(${s / 2}px)`;
+  document.getElementById('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
   document.getElementById('demo-next-button').removeEventListener('click', gotIt);
   document.getElementById('demo-next-button').addEventListener('click', shrink);
   document.getElementById('demo-next-button').innerHTML = 'Next<span>&nbsp;&#8250;</span>';
@@ -261,7 +216,6 @@ export function reset() {
   animate();
 }
 
-let rotations = [];
 function animate2() {
   function progress(i) { return 0.5 * (1 - Math.cos(i * Math.PI / unit / 2)); }
   frame = requestAnimationFrame(animate2);
@@ -283,29 +237,37 @@ function animate2() {
     const rot2 = Math.cos(Math.PI * 2 * progress(i - 2 * unit))
       - Math.cos(Math.PI * 2 * progress(i - 1 - 2 * unit));
 
-    rotations.push(multiply(Ry(-rot2), Rx(-rot1)));
-    mx = multiply(multiply(Rx(rot1), Ry(rot2)), mx);
+    MATRIX
+      .premultiply(new THREE.Matrix4().makeRotationY(rot2))
+      .premultiply(new THREE.Matrix4().makeRotationX(-rot1));
+
+    if (!allRotationsSet) {
+      ROTATIONS.push(
+        new THREE.Matrix4().makeRotationX(rot1)
+          .premultiply(new THREE.Matrix4().makeRotationY(-rot2)),
+      );
+    }
   }
 
   if (i >= 4 * unit && i < 6 * unit - 1) {
-    const idx = rotations.length - 1 - i + 4 * unit;
-    mx = multiply(rotations[idx], mx);
+    allRotationsSet = true;
+    const idx = ROTATIONS.length - 1 - i + 4 * unit;
+    MATRIX.premultiply(ROTATIONS[idx]);
     cursor.style.transform = `translateY(${ROTATE_RADIUS * Math.sin(Math.PI * 2 * progress(i - 2 * unit))}px)translateX(${-ROTATE_RADIUS + ROTATE_RADIUS * Math.cos(Math.PI * 2 * progress(i - 2 * unit))}px)`;
   }
 
   if (i >= 6 * unit - 1) {
-    rotations = [];
     cursor.innerHTML = grab;
   }
 
-  document.getElementById('demo-cube').style.transform = `matrix3D(${mxToCSS(mx)})translateZ(${s / 2}px)`;
+  document.getElementById('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
 }
 
 export const init = () => {
   setUserEventsEnabled(false);
   animate();
   document.getElementById('demo-cube').style['transform-origin'] = '50% 50% 0';
-  document.getElementById('demo-cube').style.transform = `matrix3D(${mxToCSS(mx)})translateZ(${s / 2}px)`;
+  document.getElementById('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
 
   ['left', 'front', 'right', 'top', 'back', 'bottom'].forEach((sideName) => {
     const side = document.createElement('div');
