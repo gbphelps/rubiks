@@ -10,16 +10,13 @@ import {
 } from './history';
 import {
   init as initClock, setClock,
-  stop as stopClock,
 } from './clock';
 import {
   init as initModal,
-  reset as resetModal,
 } from './modal/instructionsModal';
 import {
   init as initOrthoViews,
 } from './orthoViews';
-
 // import makeDebugScreen from './utils/debug';
 import { Face } from './utils/types';
 import * as boxRegistry from './boxRegistry';
@@ -30,7 +27,6 @@ import { shuffle } from './actions/updateRegistry';
 import faceManager from './faceManager';
 import '../index.scss';
 import { getAction } from './action';
-import { startOver } from './startOver';
 
 // TODO: add circular slider for z rotation surrounding the cube.
 
@@ -64,13 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initClock();
   initModal();
   initOrthoViews();
-
-  document.getElementById('help-button')!.addEventListener('click', () => {
-    resetModal();
-    stopClock();
-  });
-
-  document.getElementById('start-over')!.addEventListener('click', startOver);
 
   faceManager.init();
 

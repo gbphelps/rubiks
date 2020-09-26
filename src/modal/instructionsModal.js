@@ -1,8 +1,11 @@
 import './modal.scss';
 import * as THREE from 'three';
-import { start as startClock } from '../clock';
+import { start as startClock, stop as stopClock } from '../clock';
 import { setUserEventsEnabled } from '../events';
 import { easeInOut } from '../utils/animation';
+import { startOver } from '../startOver';
+
+const T_DURATION = 300;
 
 const s = 150;
 const ROTATE_RADIUS = s * 0.6;
@@ -173,24 +176,37 @@ function next() {
 }
 
 function gotIt() {
-  const m = document.getElementById('modal');
-  // const screen = document.getElementById('modal-screen');
-  m.style.transform = 'scale(.5)';
-  m.style.opacity = 0;
-
+  hideModal();
   const inst2 = document.getElementById('demo-instruction2');
   inst2.style.visibility = 'hidden';
   inst2.style.transform = 'translateY(60%)';
   inst2.style.opacity = '0';
+}
 
-  m.addEventListener('transitionend', () => {
-    m.style.visibility = 'hidden';
-    m.style.animationName = 'none';
-    // screen.style.visibility = 'hidden';
-    cancelAnimationFrame(frame);
-    startClock();
-    setUserEventsEnabled(true);
-  }, { once: true });
+function showModal() {
+  return new Promise((r) => {
+    const modal = document.getElementById('modal');
+    modal.style.visibility = 'visible';
+    modal.style.opacity = 1;
+    modal.style.transform = 'none';
+    setTimeout(r, T_DURATION);
+  });
+}
+
+function hideModal() {
+  return new Promise((r) => {
+    const modal = document.getElementById('modal');
+    modal.style.transform = 'scale(.5)';
+    modal.style.opacity = 0;
+    setTimeout(() => {
+      modal.style.visibility = 'hidden';
+      modal.style.animationName = 'none';
+      cancelAnimationFrame(frame);
+      startClock();
+      setUserEventsEnabled(true);
+      r();
+    }, T_DURATION);
+  });
 }
 
 export function reset() {
@@ -199,12 +215,9 @@ export function reset() {
   inst1.style.transform = 'scale(1)';
   inst1.style.opacity = 1;
 
-  const m = document.getElementById('modal');
-  // const screen = document.getElementById('modal-screen');
-  // screen.style.visibility = 'visible';
-  m.style.visibility = 'visible';
-  m.style.opacity = 1;
-  m.style.transform = '';
+  document.getElementById('instructions-modal').style.display = 'flex';
+  document.getElementById('menu-modal').style.display = 'none';
+
   cursor.style.top = `${s * 0.25}px`;
   cursor.style.left = `-${s * 0.2}px`;
   cursor.style.transform = '';
@@ -266,6 +279,35 @@ function animate2() {
 }
 
 export const init = () => {
+  const modal = document.getElementById('modal');
+
+  modal.style.transition = `${T_DURATION / 1000}s`;
+
+  setTimeout(() => {
+    modal.style.opacity = 1;
+    modal.style.transform = 'none';
+  });
+
+  const hamburger = document.getElementById('hamburger');
+  hamburger.addEventListener('click', () => {
+    showModal();
+    stopClock();
+    document.getElementById('menu-modal').style.display = 'block';
+    document.getElementById('instructions-modal').style.display = 'none';
+  });
+
+  document.getElementById('see-instructions').addEventListener('click', () => {
+    reset();
+  });
+
+  document.getElementById('start-over').addEventListener('click', () => {
+    hideModal().then(startOver);
+  });
+
+  document.getElementById('resume').addEventListener('click', () => {
+    hideModal().then(startClock);
+  });
+
   setUserEventsEnabled(false);
   animate();
   document.getElementById('demo-cube').style['transform-origin'] = '50% 50% 0';

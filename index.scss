@@ -259,3 +259,23 @@ button {
 #front, #back, #left, #right, #top, #bottom {
     cursor: pointer;
 }
+
+
+.ham-stroke {
+    height: 20%; 
+    width: 100%; 
+    background: black;
+}
+
+.ham-button {
+    height: 15px; 
+    width: 20px; 
+    display: flex; 
+    flex-direction: column;
+    justify-content: space-between; 
+    position: absolute; 
+    top: 16px; 
+    right: 16px;
+    background: none;
+    padding: 0;
+}
