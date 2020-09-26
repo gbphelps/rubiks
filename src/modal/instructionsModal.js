@@ -127,13 +127,9 @@ function animate() {
 
 function shrink() {
   const c = document.getElementById('demo-container');
-  const i = document.getElementById('demo-instruction1');
   c.style.transform = 'scale(0)';
   c.style.opacity = '0';
-
-  i.style.transform = 'translateY(60%)';
-  i.style.opacity = '0';
-
+  hideInstruction(1);
   c.addEventListener('transitionend', () => {
     c.style.transform = '';
     c.style.opacity = '1';
