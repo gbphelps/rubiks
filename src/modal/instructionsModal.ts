@@ -175,7 +175,7 @@ function setInstruction2() {
   resetFaceRotation();
   i = 0;
   animate2();
-  setNextButton(1);
+  setNextButton(2);
 }
 
 function hideInstruction(num: number) {
@@ -250,7 +250,7 @@ export function setInstruction1() {
   cursor.innerHTML = grab;
   resetMx();
   getId('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
-  setNextButton(2);
+  setNextButton(1);
   i = 0;
   animate();
 }
@@ -392,11 +392,11 @@ function setTransitions() {
 }
 
 function setNextButton(num: number) {
-  if (num === 2) {
+  if (num === 1) {
     getId('demo-next-button').removeEventListener('click', gotIt);
     getId('demo-next-button').addEventListener('click', shrink);
     getId('demo-next-button').innerHTML = 'Next<span>&nbsp;&#8250;</span>';
-  } else if (num === 1) {
+  } else if (num === 2) {
     getId('demo-next-button').removeEventListener('click', shrink);
     getId('demo-next-button').addEventListener('click', gotIt);
     getId('demo-next-button').innerHTML = 'Got it';
