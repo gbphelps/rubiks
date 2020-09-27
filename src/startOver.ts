@@ -5,6 +5,7 @@ import { setRotation } from './rotation';
 import { reset as resetClock } from './clock';
 import { setAction, getAction } from './action';
 import { setUserEventsEnabled } from './events';
+import faceManager from './faceManager';
 
 export function startOver() {
   const action = getAction();
@@ -17,6 +18,7 @@ export function startOver() {
     });
   }
 
+  faceManager.puzzleSolved = false;
   setUserEventsEnabled(true);
   setAction(null);
   resetClock();

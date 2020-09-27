@@ -32,16 +32,16 @@ $s: 150px;
   z-index: 1;
   background: #fafafc;
 
-  #demo-next-button{
-    color: white;
-    padding: 5px 20px;
+  #demo-next-button, #won-start-over{
+    padding: 10px 20px;
     cursor: pointer;
     transition: .2s;
     display: inline-block;
     width: 200px;
     z-index: 1;
     position: relative;
-    font-size: 20px;
+    font-size: 28px;
+    letter-spacing: 1;
   }
 
   #demo-next-button span{
@@ -54,12 +54,6 @@ $s: 150px;
     animation-iteration-count: infinite;
   }
 
-  #demo-next:active{
-    transform: scale(.9);
-    color: dodgerblue;
-  }
-
-
   #demo-container{
     height: $s;
     width: $s;
@@ -70,7 +64,6 @@ $s: 150px;
 
   #demo-instruction1, #demo-instruction2{
     transition: .3s;
-    color: #5a5a5a;
     position: absolute;
   }
 
@@ -104,7 +97,7 @@ $s: 150px;
     display: block;
     height: 85%;
     width: 85%;
-    background: black;
+    background: rgb(29, 34, 48);
     border-radius: 4px;
     backface-visibility: hidden;
     border: 1px solid transparent;
@@ -172,5 +165,22 @@ $s: 150px;
     background: none;
     font-size: 20px;
     color: black;
+    margin: 6px;
   }
+}
+
+.instructions-container {
+  width: 100%; 
+  display: flex;
+  justify-content: center; 
+  height: 100px; 
+  align-items: center;
+  font-size: 24px;
+  color: #5e5b61;
+  font-weight: 300;
+  letter-spacing: .8;
+}
+
+#won-start-over {
+  margin-top: 24px;
 }

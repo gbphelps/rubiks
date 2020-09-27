@@ -1,12 +1,15 @@
 import './modal.scss';
 import * as THREE from 'three';
-import { start as startClock, stop as stopClock } from '../clock';
+import {
+  getTime, start as startClock, stop as stopClock, setClock,
+} from '../clock';
 import { setUserEventsEnabled } from '../events';
 import { easeInOut } from '../utils/animation';
 import { startOver } from '../startOver';
 import grab from './grab.svg';
 import grabbing from './grabbing.svg';
 import { Side } from '../utils/types';
+import faceManager from '../faceManager';
 
 const T_DURATION = 300;
 
@@ -17,6 +20,7 @@ const DRAG_DISTANCE = s * 0.6;
 const ROTATIONS: THREE.Matrix4[] = [];
 let allRotationsSet = false;
 let modalVisible = true;
+let solved = false;
 
 let MATRIX = new THREE.Matrix4();
 resetMx();
@@ -191,7 +195,10 @@ function showModal() {
     modal.style.visibility = 'visible';
     modal.style.opacity = '1';
     modal.style.transform = 'none';
-    setTimeout(r, T_DURATION);
+    setTimeout(() => {
+      setUserEventsEnabled(false);
+      r();
+    }, T_DURATION);
   });
 }
 
@@ -212,9 +219,14 @@ function hideModal() {
   });
 }
 
-function showInstructionModal() {
-  getId('instructions-modal').style.display = 'flex';
-  getId('menu-modal').style.display = 'none';
+function activateModal(modal: string) {
+  ['instructions-modal', 'menu-modal', 'congrats-modal'].forEach((m) => {
+    if (modal === m) {
+      getId(m).style.display = 'flex';
+    } else {
+      getId(m).style.display = 'none';
+    }
+  });
 }
 
 export function setInstruction1() {
@@ -294,28 +306,35 @@ export const init = () => {
 };
 
 function initButtons() {
-  document.getElementById('see-instructions')!.addEventListener('click', () => {
+  getId('won-start-over').addEventListener('click', () => {
+    hideModal().then(() => {
+      startOver();
+      solved = false;
+    });
+  });
+  getId('see-instructions').addEventListener('click', () => {
     setInstruction1();
-    showInstructionModal();
+    activateModal('instructions-modal');
   });
 
-  document.getElementById('start-over')!.addEventListener('click', () => {
+  getId('start-over').addEventListener('click', () => {
     hideModal().then(startOver);
   });
 
-  document.getElementById('resume')!.addEventListener('click', () => {
+  getId('resume').addEventListener('click', () => {
     hideModal().then(startClock);
   });
 
   getId('hamburger').addEventListener('click', () => {
+    if (faceManager.puzzleSolved) return;
+
     if (modalVisible) {
       hideModal();
       return;
     }
     showModal();
     stopClock();
-    getId('menu-modal').style.display = 'flex';
-    getId('instructions-modal').style.display = 'none';
+    activateModal('menu-modal');
   });
 }
 
@@ -395,4 +414,14 @@ function rotateTrancheHorizontal(progress: number) {
       pips[face][0][i].style.transform = `rotateY(${progress * 90}deg)${tform[face]}`;
     }
   });
+}
+
+export function triggerSolvedModal() {
+  if (solved) return;
+  solved = true;
+  stopClock();
+  setClock();
+  showModal();
+  activateModal('congrats-modal');
+  getId('solved-in').innerHTML = `Solved in ${getTime()}`;
 }

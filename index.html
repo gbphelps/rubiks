@@ -69,7 +69,7 @@
                                             </div> 
                                     </div>
                         
-                                    <div className="instruction-container" style="width: 100%; display: flex; justify-content: center; height: 60px; align-items: center">
+                                    <div class="instructions-container">
                                         <div id="demo-instruction1" style="padding: 20px 30px">Click and drag edge squares to twist a slice of the cube</div>          
                                         <div id="demo-instruction2" style="padding: 20px 30px; visibility: hidden">Click and drag center squares to rotate the entire cube</div>
                                     </div>  
@@ -78,9 +78,16 @@
                                 </div>
     
                                 <div id="menu-modal" class="modal-body" style="display: none">
+                                    <div style="font-size: 72px; font-weight: 700">Paused</div>
                                     <button id="start-over">New Game</button>
                                     <button id="see-instructions">Instructions</button>
                                     <button id="resume">Resume</button>
+                                </div>
+
+                                <div id="congrats-modal" class="modal-body" style="display: none">
+                                    <div style="font-size: 72px; font-weight: 700">Congratulations!</div>
+                                    <div id="solved-in"></div>
+                                    <button id="won-start-over">Start Over</button>
                                 </div>
     
                             </div>

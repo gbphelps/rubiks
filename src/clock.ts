@@ -9,6 +9,7 @@ export function reset() {
 }
 
 export function stop() {
+  if (stopped) return;
   stopped = true;
   sum += Date.now() - t0;
 }
@@ -31,7 +32,7 @@ function leadingZeros(num: number, len: number) {
   return str;
 }
 
-function getTime() {
+export function getTime() {
   let del = sum + (stopped ? 0 : Date.now() - t0);
   const millis = del % 1000;
   del -= millis;

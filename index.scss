@@ -185,25 +185,23 @@ $history-fill: rgb(3, 71, 103);
     font-size: 36px;
     font-weight: 700;
     text-shadow: 0 2px white;
-    color: rgb(3, 71, 103);
+    color: rgb(0, 19, 92);
 }
 
 button {
     outline: none;
-    background: linear-gradient(
-        to bottom,
-        lighten($history-fill, 15%),
-        $history-fill,
-    );
+    background: rgb(255, 0, 119);
     color: white;
     border: none;
     border-radius: 3px;
     padding: 6px 8px;
     cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,.2);
 
     &:disabled {
         background: #ddd;
         cursor: not-allowed;
+        box-shadow: none;
     }
 }
 

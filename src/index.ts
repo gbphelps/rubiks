@@ -9,10 +9,10 @@ import {
   init as initHistory,
 } from './history';
 import {
-  init as initClock, setClock,
+  init as initClock, setClock, stop as stopClock,
 } from './clock';
 import {
-  init as initModal,
+  init as initModal, triggerSolvedModal,
 } from './modal/instructionsModal';
 import {
   init as initOrthoViews,
@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initClock();
   initModal();
   initOrthoViews();
+  disableNativeDrag();
 
   faceManager.init();
 
@@ -88,6 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animate() {
       requestAnimationFrame(animate);
+      if (faceManager.puzzleSolved) {
+        triggerSolvedModal();
+        return;
+      }
+
       setClock();
       cube.setRotationFromMatrix(getRotation());
       cube.updateMatrix();
@@ -106,3 +112,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /// //////////////////////////////////////////////////////
+function disableNativeDrag() {
+  [
+    'drag',
+    'dragend',
+    'dragenter',
+    'dragexit',
+    'dragleave',
+    'dragover',
+    'dragstart',
+    'drop',
+  ].forEach((type) => {
+    document.addEventListener(type, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+}

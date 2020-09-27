@@ -45,6 +45,8 @@ class FaceManager {
 
     back: HTMLDivElement[][];
 
+    puzzleSolved = false;
+
     init() {
       sides.forEach((side) => {
         this[side] = makeFace(side);
@@ -62,11 +64,24 @@ class FaceManager {
     }
 
     updateFaces() {
+      let allSolved = true;
       sides.forEach((side) => {
         const colors = extractSide(side);
         this.set(side, colors);
+        if (!sideIsSolved(colors)) allSolved = false;
       });
+      if (allSolved) this.puzzleSolved = true;
     }
+}
+
+function sideIsSolved(colors: string[][]): boolean {
+  const color = colors[0][0];
+  for (let i = 0; i < colors.length; i++) {
+    for (let j = 0; j < colors[0].length; j++) {
+      if (colors[i][j] !== color) return false;
+    }
+  }
+  return true;
 }
 
 export default new FaceManager();
