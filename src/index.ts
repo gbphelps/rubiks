@@ -9,7 +9,7 @@ import {
   init as initHistory,
 } from './history';
 import {
-  init as initClock, setClock, stop as stopClock,
+  init as initClock, setClock,
 } from './clock';
 import {
   init as initModal, triggerSolvedModal,

@@ -139,13 +139,6 @@ function setInstruction2() {
   inst2.style.visibility = 'visible';
   inst2.style.transform = 'scale(1)';
   inst2.style.opacity = '1';
-
-  Array.from(document.getElementsByClassName('corner')).forEach((pip) => {
-    pip.classList.remove('active');
-  });
-  Array.from(document.getElementsByClassName('non-corner')).forEach((pip) => {
-    pip.classList.add('active');
-  });
   cancelAnimationFrame(frame);
   cursor.style.transform = '';
   setCursor(2);
@@ -190,6 +183,7 @@ function gotIt() {
 
 function showModal() {
   modalVisible = true;
+  getId('hamburger').classList.add('minimize');
   return new Promise((r) => {
     const modal = getId('modal');
     modal.style.visibility = 'visible';
@@ -205,6 +199,7 @@ function showModal() {
 function hideModal() {
   return new Promise((r) => {
     const modal = getId('modal');
+    getId('hamburger').classList.remove('minimize');
     modal.style.transform = 'scale(.5)';
     modal.style.opacity = '0';
     setTimeout(() => {
@@ -292,8 +287,8 @@ export const init = () => {
   initPips();
   initButtons();
   setTransitions();
-  setUserEventsEnabled(false);
-  animate();
+  setInstruction1();
+  showModal();
   getId('demo-cube').style.transformOrigin = '50% 50% 0';
   getId('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
 
@@ -327,7 +322,6 @@ function initButtons() {
 
   getId('hamburger').addEventListener('click', () => {
     if (faceManager.puzzleSolved) return;
-
     if (modalVisible) {
       hideModal();
       return;
@@ -354,13 +348,6 @@ function initPips() {
           transform: 'rotateY(180deg)',
           position: 'absolute',
         });
-
-        if (i !== 1 && j !== 1) {
-          pip.classList.add('corner');
-          pip.classList.add('active');
-        } else {
-          pip.classList.add('non-corner');
-        }
         pip.classList.add('demo-pip');
         pip.appendChild(back);
         pip.style.transformOrigin = `${-j * s / 3 + s / 2}px ${-i * s / 3 + s / 2}px ${-s / 2}px`;

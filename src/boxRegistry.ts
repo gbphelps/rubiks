@@ -207,36 +207,3 @@ function roundVector(v: THREE.Vector3) {
   v.y = Math.round(v.y);
   v.z = Math.round(v.z);
 }
-
-// function getIndices(axis: number, fixed: number, others: number[]) {
-//   const indices: number[] = [];
-//   let othersIndex = 0;
-//   for (let i = 0; i < 3; i++) {
-//     indices.push(axis === i ? fixed : others[othersIndex++]);
-//   }
-//   return indices;
-// }
-
-/// ///////////////////////////////////////////////////////////
-
-// function inPlaceRotate(arr: number[][]) {
-//   if (arr.length !== arr[0].length) throw new Error(
-//    'cannot in-place rotate array of mixed dimensions'
-//   );
-//   const l = arr.length;
-
-//   for (let i = 0; i < Math.floor(arr.length / 2); i++) {
-//     for (let j = 0; j <= Math.floor(arr.length / 2 - i); j++) {
-//       const c = [i, i + j];
-//       const store = arr[c[0]][c[1]];
-//       for (let k = 0; k < 3; k++) {
-//         arr[c[0]][c[1]] = arr[l - 1 - c[1]][c[0]];
-//         const store = c[0];
-//         c[0] = l - 1 - c[1];
-//         c[1] = store;
-//       }
-//       arr[c[0]][c[1]] = store;
-//     }
-//   }
-//   return arr;
-// }

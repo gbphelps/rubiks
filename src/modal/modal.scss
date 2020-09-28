@@ -33,6 +33,7 @@ $s: 150px;
   background: #fafafc;
 
   #demo-next-button, #won-start-over{
+    * { color: white; }
     padding: 10px 20px;
     cursor: pointer;
     transition: .2s;
@@ -67,11 +68,6 @@ $s: 150px;
     position: absolute;
   }
 
-  #demo-instruction2{
-    transform: translateY(60%);
-    opacity: 0;
-  }
-
   #demo-cube{
     position: relative;
     left: 0;
@@ -90,17 +86,19 @@ $s: 150px;
     align-items: center;
     justify-content: center;
     position: relative;
-  }
-
-  .demo-pip::after{
-    content: '';
-    display: block;
-    height: 85%;
-    width: 85%;
-    background: rgb(29, 34, 48);
-    border-radius: 4px;
-    backface-visibility: hidden;
-    border: 1px solid transparent;
+    &::after {
+      content: '';
+      display: block;
+      height: 85%;
+      width: 85%;
+      background: rgb(29, 34, 48);
+      border-radius: 4px;
+      backface-visibility: hidden;
+      border: 1px solid transparent;
+    }
+    &.active::after {
+      background: pink;
+    }
   }
 
   .demo-face{
@@ -124,20 +122,13 @@ $s: 150px;
     100%{transform: translateY(60px);}
   }
 
-
-
-
-
   @keyframes emphasis{
     50%{transform: translateX(30%)}
   }
 
-
-
   .demo-face{
     transform-style: preserve-3d;
   }
-
 
   .demo-limelight {
     height: 250px; 
