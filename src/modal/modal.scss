@@ -93,6 +93,7 @@ $s: 150px;
       width: 85%;
       background: rgb(29, 34, 48);
       border-radius: 4px;
+      -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       border: 1px solid transparent;
     }
