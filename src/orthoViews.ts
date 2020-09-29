@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import { Side, sides } from './utils/types';
 import { push as pushToHistory } from './history';
-import { getRotation, getRotationAndInverse } from './rotation';
 import { setAction } from './action';
 import { getUserEventsEnabled, setUserEventsEnabled } from './events';
 import { makeQuaternionProgressFn } from './utils/animation/QuaternionProgressFunction';
+import { globals } from './globals';
 
 const one = () => new THREE.Matrix4().identity();
 
@@ -61,7 +61,7 @@ export function init() {
     const faceElement = document.getElementById(side)!;
     faceElement.addEventListener('click', () => {
       if (!getUserEventsEnabled()) return;
-      const currentRotationData = getRotationAndInverse();
+      const currentRotationData = globals.cube.rotation.getRotationAndInverse();
 
       // if already rotated to side, do nothing
       if (currentRotationData.mx.equals(matrix[side])) return;
@@ -78,7 +78,9 @@ export function init() {
       });
       setUserEventsEnabled(false);
       const toQ = new THREE.Quaternion().setFromRotationMatrix(matrix[side]);
-      const fromQ = new THREE.Quaternion().setFromRotationMatrix(getRotation());
+      const fromQ = new THREE.Quaternion().setFromRotationMatrix(
+        globals.cube.rotation.getRotation(),
+      );
       const progressFn = makeQuaternionProgressFn({
         toQ,
         fromQ,

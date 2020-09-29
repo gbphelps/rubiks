@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { BoxRegistry } from './boxRegistry';
 import makeCube from './cubeSpawn';
+import RotationManager from './rotation';
 
 interface Globals {
     canvas: HTMLCanvasElement | null,
@@ -10,6 +11,7 @@ interface Globals {
     cube: {
       object: THREE.Object3D | null,
       registry: BoxRegistry,
+      rotation: RotationManager,
     },
     render: (() => void) | null,
     container: HTMLDivElement | null,
@@ -33,6 +35,7 @@ export const globals: Globals = {
   cube: {
     object: null,
     registry: new BoxRegistry(),
+    rotation: new RotationManager(),
   },
   pixPerUnit: 0,
 };

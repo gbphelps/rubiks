@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { makeMesh } from './utils/three';
 import { Side, Face, colors } from './utils/types';
 import { BoxRegistry } from './boxRegistry';
+import RotationManager from './rotation';
 
 const INSET = 0.8;
 const BORDER_RADIUS = 0.12;
@@ -128,6 +129,7 @@ function cubeSpawn(faces: Face[], position: THREE.Vector3) {
 export default function makeCube() {
   const cube = new THREE.Object3D();
   const registry = new BoxRegistry();
+  const rotation = new RotationManager();
 
   for (let x = -1; x <= 1; x++) {
     for (let y = -1; y <= 1; y++) {
@@ -144,6 +146,8 @@ export default function makeCube() {
   }
 
   return {
-    object: cube, registry,
+    object: cube,
+    registry,
+    rotation,
   };
 }

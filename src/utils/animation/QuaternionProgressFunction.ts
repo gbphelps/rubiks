@@ -2,13 +2,13 @@ import * as THREE from 'three';
 import { Quaternion } from 'three';
 import { setAction } from '../../action';
 import { setUserEventsEnabled } from '../../events';
-import { setRotation } from '../../rotation';
+import { globals } from '../../globals';
 import { easeInOut, progress } from '../animation';
 
 function makeWorkerFn(fromQuaternion: Quaternion, toQuaternion: Quaternion) {
   return function worker(p: number) {
     const quaternion = fromQuaternion.slerp(toQuaternion, p);
-    setRotation({
+    globals.cube.rotation.setRotation({
       mx: new THREE.Matrix4().makeRotationFromQuaternion(quaternion),
     });
   };
@@ -31,7 +31,7 @@ export function makeQuaternionProgressFn({
     makeWorkerFn(fromQ, toQ),
     () => {
       setUserEventsEnabled(true);
-      setRotation(matrixData);
+      globals.cube.rotation.setRotation(matrixData);
       setAction(null);
       cb();
     },

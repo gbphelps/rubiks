@@ -1,7 +1,6 @@
 import { drain } from '../events';
 import { getAction, setAction } from '../action';
 import setAutocorrectTwist from '../actions/setAutocorrectTwist';
-import { getRotationAndInverse } from '../rotation';
 import * as history from '../history';
 import { globals } from '../globals';
 
@@ -15,7 +14,7 @@ export default function mouseup() {
   if (!action) return;
 
   if (action.type === 'rotate') {
-    const endRotation = getRotationAndInverse();
+    const endRotation = globals.cube.rotation.getRotationAndInverse();
     const { startRotation } = action;
 
     const moveLog: history.RotateMove = {

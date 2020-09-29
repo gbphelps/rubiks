@@ -2,7 +2,6 @@ import { drain, extractScreenCoords } from '../events';
 import { getProjectionOntoCube } from '../cubeProjections';
 import { getBoxRegistryNode, isCenterSquare } from '../boxRegistry';
 import { setAction } from '../action';
-import { getRotationAndInverse } from '../rotation';
 import { globals } from '../globals';
 
 export default function mousedown() {
@@ -25,7 +24,7 @@ export default function mousedown() {
     setAction({
       type: 'rotate',
       prevScreenCoords: screenCoords,
-      startRotation: getRotationAndInverse(),
+      startRotation: globals.cube.rotation.getRotationAndInverse(),
     });
   } else {
     setAction({

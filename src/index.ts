@@ -1,6 +1,4 @@
 import { init as initGlobals, globals } from './globals';
-import makeCube from './cubeSpawn';
-import { getRotation } from './rotation';
 import {
   init as initControls, peek,
 } from './events';
@@ -51,7 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setClock();
-    globals.cube.object!.setRotationFromMatrix(getRotation());
+    globals.cube.object!.setRotationFromMatrix(
+      globals.cube.rotation.getRotation(),
+    );
     globals.cube.object!.updateMatrix();
 
     const action = getAction();

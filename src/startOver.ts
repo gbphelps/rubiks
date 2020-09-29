@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { clear as clearHistory } from './history';
 import { shuffle } from './actions/updateRegistry';
-import { setRotation } from './rotation';
 import { reset as resetClock } from './clock';
 import { setAction, getAction } from './action';
 import { setUserEventsEnabled } from './events';
 import faceManager from './faceManager';
+import { globals } from './globals';
 
 export function startOver() {
   const action = getAction();
@@ -24,7 +24,7 @@ export function startOver() {
   resetClock();
   clearHistory();
   shuffle(50);
-  setRotation({
+  globals.cube.rotation.setRotation({
     mx: new THREE.Matrix4().identity(),
     inv: new THREE.Matrix4().identity(),
   });
