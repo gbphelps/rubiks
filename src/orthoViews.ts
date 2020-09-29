@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { Side, sides } from './utils/types';
 import { push as pushToHistory } from './history';
-import { setAction } from './action';
 import { getUserEventsEnabled, setUserEventsEnabled } from './events';
 import { makeQuaternionProgressFn } from './utils/animation/QuaternionProgressFunction';
 import { globals } from './globals';
@@ -93,7 +92,7 @@ export function init() {
         },
       });
 
-      setAction({
+      globals.action.setAction({
         type: 'rotate-autocorrect',
         params: {
           progressFn,

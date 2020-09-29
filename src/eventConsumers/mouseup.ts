@@ -1,5 +1,4 @@
 import { drain } from '../events';
-import { getAction, setAction } from '../action';
 import setAutocorrectTwist from '../actions/setAutocorrectTwist';
 import * as history from '../history';
 import { globals } from '../globals';
@@ -10,7 +9,7 @@ export default function mouseup() {
   const e = drain('mouseup');
   if (!e) throw new Error();
 
-  const action = getAction();
+  const action = globals.action.getAction();
   if (!action) return;
 
   if (action.type === 'rotate') {
@@ -29,13 +28,13 @@ export default function mouseup() {
       history.push(moveLog);
     }
 
-    setAction(null);
+    globals.action.setAction(null);
     return;
   }
 
   if (action.type === 'twist') {
     setAutocorrectTwist(e);
-    const newAction = getAction();
+    const newAction = globals.action.getAction();
     if (newAction?.type !== 'twist-autocorrect') return; // NOTE: this condition is encountered if user clicks without dragging
 
     const {

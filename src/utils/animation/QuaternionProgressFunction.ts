@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { Quaternion } from 'three';
-import { setAction } from '../../action';
 import { setUserEventsEnabled } from '../../events';
 import { globals } from '../../globals';
 import { easeInOut, progress } from '../animation';
@@ -32,7 +31,7 @@ export function makeQuaternionProgressFn({
     () => {
       setUserEventsEnabled(true);
       globals.cube.rotation.setRotation(matrixData);
-      setAction(null);
+      globals.action.setAction(null);
       cb();
     },
   );

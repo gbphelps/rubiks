@@ -1,14 +1,14 @@
 import getUserTorque from '../getUserTorque';
-import { getAction, setAction } from '../action';
 import { setUserEventsEnabled } from '../events';
 import { makeTwistProgressFn } from '../utils/animation/TwistProgressFunction';
+import { globals } from '../globals';
 
 export default function setAutocorrectTwist(e: MouseEvent) {
-  const action = getAction();
+  const action = globals.action.getAction();
   if (action?.type !== 'twist') throw new Error();
   if (!action.torqueParams) {
     // no twisting has been applied - no need for cleanup.
-    setAction(null);
+    globals.action.setAction(null);
     return;
   }
 
@@ -23,7 +23,7 @@ export default function setAutocorrectTwist(e: MouseEvent) {
     tranche, unitTorque,
   } = action.torqueParams!;
 
-  setAction({
+  globals.action.setAction({
     type: 'twist-autocorrect',
     params: {
       progressFn: makeTwistProgressFn({

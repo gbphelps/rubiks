@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { setAction } from '../action';
 import { Axis, axes } from '../utils/types';
 import faceManager from '../faceManager';
 import { globals } from '../globals';
@@ -27,7 +26,7 @@ export default function updateRegistry(
   });
 
   faceManager.updateFaces();
-  setAction(null);
+  globals.action.setAction(null);
 }
 
 function rotateChild(child: THREE.Object3D, axis: Axis, rotation: number) {

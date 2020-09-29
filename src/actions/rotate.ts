@@ -1,9 +1,8 @@
-import { setAction, getAction } from '../action';
 import { extractScreenCoords } from '../events';
 import { globals } from '../globals';
 
 export default function applyRotate(e: MouseEvent) {
-  const action = getAction();
+  const action = globals.action.getAction();
   if (!action) throw new Error();
   if (action.type !== 'rotate') throw new Error('Action is not of type `rotate`');
 
@@ -13,7 +12,7 @@ export default function applyRotate(e: MouseEvent) {
   const delx = x2 - x1;
   const dely = y2 - y1;
   globals.cube.rotation.rotate(-dely * 0.5, delx * 0.5, 0);
-  setAction({
+  globals.action.setAction({
     type: 'rotate',
     prevScreenCoords: screenCoords,
     startRotation: action.startRotation,

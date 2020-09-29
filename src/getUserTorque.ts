@@ -1,9 +1,9 @@
-import { getAction } from './action';
 import { extractScreenCoords } from './events';
+import { globals } from './globals';
 import { dotProd } from './utils/matrix';
 
 export default function getUserTorque(e: MouseEvent) {
-  const action = getAction();
+  const action = globals.action.getAction();
   if (!action) throw new Error();
   if (action.type !== 'twist') throw new Error();
   if (!action.torqueParams) throw new Error();

@@ -47,12 +47,14 @@ export interface RotateAutocorrectAction {
   }
 }
 
-let action: Action | null = null;
+export default class ActionManager {
+  action: Action | null = null;
 
-export function getAction() {
-  return action;
-}
+  getAction() {
+    return this.action;
+  }
 
-export function setAction(incomingAction: Action | null) {
-  action = incomingAction;
+  setAction(incomingAction: Action | null) {
+    this.action = incomingAction;
+  }
 }

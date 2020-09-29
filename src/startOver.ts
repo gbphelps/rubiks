@@ -2,13 +2,12 @@ import * as THREE from 'three';
 import { clear as clearHistory } from './history';
 import { shuffle } from './actions/updateRegistry';
 import { reset as resetClock } from './clock';
-import { setAction, getAction } from './action';
 import { setUserEventsEnabled } from './events';
 import faceManager from './faceManager';
 import { globals } from './globals';
 
 export function startOver() {
-  const action = getAction();
+  const action = globals.action.getAction();
 
   if (action?.type === 'twist-autocorrect') {
     action.params.tranche.forEach((box) => {
@@ -20,7 +19,7 @@ export function startOver() {
 
   faceManager.puzzleSolved = false;
   setUserEventsEnabled(true);
-  setAction(null);
+  globals.action.setAction(null);
   resetClock();
   clearHistory();
   shuffle(50);

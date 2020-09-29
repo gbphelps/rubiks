@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {
-  setAction, TwistAction, getAction,
+  TwistAction,
 } from '../action';
 import { extractScreenCoords } from '../events';
 import { getProjectionOntoSide, getCameraCoords, getScreenCoords } from '../cubeProjections';
@@ -100,7 +100,7 @@ function getTorqueParams(e: MouseEvent, action: TwistAction) {
 }
 
 export default function applyTwist(e: MouseEvent) {
-  const action = getAction();
+  const action = globals.action.getAction();
   if (!action) throw new Error();
   if (action.type !== 'twist') throw new Error();
 
@@ -112,7 +112,7 @@ export default function applyTwist(e: MouseEvent) {
     // is in screen units (the cube is 3x3x3 in screen units).
     if (!canSetTorqueParams(e, action)) return;
     torqueParams = getTorqueParams(e, action);
-    setAction({
+    globals.action.setAction({
       ...action,
       torqueParams,
     });

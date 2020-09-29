@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import { setAction } from './action';
 import { setUserEventsEnabled } from './events';
 import rubiksSVG from './assets/rubiks.svg';
 import { makeTwistProgressFn } from './utils/animation/TwistProgressFunction';
 import { makeQuaternionProgressFn } from './utils/animation/QuaternionProgressFunction';
+import { globals } from './globals';
 
 class Queue {
   list: (() => void)[] = [];
@@ -123,7 +123,7 @@ function doTwist(move: TwistMove, dir: number, cb: () => void) {
     unitTorque, toTorque, tranche,
   } = move.params;
   setUserEventsEnabled(false);
-  setAction({
+  globals.action.setAction({
     type: 'twist-autocorrect',
     params: {
       progressFn: makeTwistProgressFn({
@@ -147,7 +147,7 @@ function doRotate(move: RotateMove, dir: number, cb: () => void) {
   const fromQ = new THREE.Quaternion().setFromRotationMatrix(move.params.endRotation.mx);
   const toQ = new THREE.Quaternion().setFromRotationMatrix(move.params.startRotation.mx);
   setUserEventsEnabled(false);
-  setAction({
+  globals.action.setAction({
     type: 'rotate-autocorrect',
     params: {
       progressFn: makeQuaternionProgressFn({

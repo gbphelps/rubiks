@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import ActionManager from './action';
 import { BoxRegistry } from './boxRegistry';
 import makeCube from './cubeSpawn';
 import RotationManager from './rotation';
@@ -6,6 +7,8 @@ import RotationManager from './rotation';
 const UNIT = 10;
 
 export class Globals {
+  action = new ActionManager();
+
   canvas: HTMLCanvasElement;
 
   scene: THREE.Scene;

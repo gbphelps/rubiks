@@ -21,7 +21,6 @@ import mousemove from './eventConsumers/mousemove';
 import { shuffle } from './actions/updateRegistry';
 import faceManager from './faceManager';
 import '../index.scss';
-import { getAction } from './action';
 
 // TODO: add circular slider for z rotation surrounding the cube.
 
@@ -54,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     globals.cube.object!.updateMatrix();
 
-    const action = getAction();
+    const action = globals.action.getAction();
     if (action?.type === 'twist-autocorrect') action.params.progressFn();
     if (action?.type === 'rotate-autocorrect') action.params.progressFn();
 
