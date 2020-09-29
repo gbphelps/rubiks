@@ -10,7 +10,10 @@ $bottom-panel-height: 150px;
 $left-panel-width: 340px;
 $padding: 8px;
 
-
+#container {
+    height: 100%;
+    width: 100%;
+}
 
 * {
     flex-shrink: 0;
