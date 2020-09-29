@@ -2,12 +2,10 @@ import * as THREE from 'three';
 import { colorize, decolorize } from './utils/uiEffects';
 import { axes, getNormalCubeSpace, Side } from './utils/types';
 
-type BoxRegistry = (THREE.Object3D | null)[][][];
-
-class BR {
+export class BoxRegistry {
   activeNode: THREE.Vector3 | null = null;
 
-  registry: BoxRegistry = [
+  registry: (THREE.Object3D | null)[][][] = [
     [
       [null, null, null],
       [null, null, null],
@@ -210,4 +208,4 @@ function getRotationToFront(side: Side) {
   }
 }
 
-export default new BR();
+export default new BoxRegistry();

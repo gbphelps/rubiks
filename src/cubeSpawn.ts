@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { makeMesh } from './utils/three';
 import { Side, Face, colors } from './utils/types';
-import boxRegistry from './boxRegistry';
+import { BoxRegistry } from './boxRegistry';
 
 const INSET = 0.8;
 const BORDER_RADIUS = 0.12;
@@ -127,13 +127,14 @@ function cubeSpawn(faces: Face[], position: THREE.Vector3) {
 
 export default function makeCube() {
   const cube = new THREE.Object3D();
+  const registry = new BoxRegistry();
 
   for (let x = -1; x <= 1; x++) {
     for (let y = -1; y <= 1; y++) {
       for (let z = -1; z <= 1; z++) {
         const decals = getInitialDecals(x, y, z);
         const box = cubeSpawn(decals, new THREE.Vector3(x, y, z));
-        boxRegistry.registerBox(
+        registry.registerBox(
           new THREE.Vector3(x + 1, y + 1, z + 1),
           box,
         );
@@ -142,5 +143,7 @@ export default function makeCube() {
     }
   }
 
-  return cube;
+  return {
+    object: cube, registry,
+  };
 }

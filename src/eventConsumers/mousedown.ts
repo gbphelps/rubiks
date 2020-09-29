@@ -1,8 +1,9 @@
 import { drain, extractScreenCoords } from '../events';
 import { getProjectionOntoCube } from '../cubeProjections';
-import boxRegistry, { getBoxRegistryNode, isCenterSquare } from '../boxRegistry';
+import { getBoxRegistryNode, isCenterSquare } from '../boxRegistry';
 import { setAction } from '../action';
 import { getRotationAndInverse } from '../rotation';
+import { globals } from '../globals';
 
 export default function mousedown() {
   const e = drain('mousedown');
@@ -12,8 +13,8 @@ export default function mousedown() {
   const data = getProjectionOntoCube(screenCoords);
 
   if (!data) {
-    boxRegistry.deselectCube();
-    boxRegistry.setActiveBox(null);
+    globals.cube.registry.deselectCube();
+    globals.cube.registry.setActiveBox(null);
     return;
   }
 
@@ -39,5 +40,5 @@ export default function mousedown() {
     });
   }
 
-  boxRegistry.setActiveBox(boxRegistryNode);
+  globals.cube.registry.setActiveBox(boxRegistryNode);
 }

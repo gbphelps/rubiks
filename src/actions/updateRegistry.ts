@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { setAction } from '../action';
 import { Axis, axes } from '../utils/types';
-import boxRegistry from '../boxRegistry';
 import faceManager from '../faceManager';
+import { globals } from '../globals';
 
 export default function updateRegistry(
   unitTorque: THREE.Vector3,
@@ -23,7 +23,7 @@ export default function updateRegistry(
     roundPosition(child);
 
     const { x, y, z } = child.position;
-    boxRegistry.registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
+    globals.cube.registry.registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
   });
 
   faceManager.updateFaces();
@@ -89,7 +89,7 @@ export function shuffle(times: number) {
     const axis = Math.floor(Math.random() * 3);
     const rotation = (Math.floor(Math.random() * 3) + 1) * Math.PI / 2;
     const layer = Math.floor(Math.random() * 3);
-    const tranche = boxRegistry.getTrancheStatic(axis, layer);
+    const tranche = globals.cube.registry.getTrancheStatic(axis, layer);
     const rotMx = getRotationMatrix(axes[axis], rotation);
     tranche.forEach((box) => {
       if (!box) throw new Error();
@@ -101,7 +101,7 @@ export function shuffle(times: number) {
       child.updateMatrix();
 
       const { x, y, z } = child.position;
-      boxRegistry.registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
+      globals.cube.registry.registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
     });
   }
 

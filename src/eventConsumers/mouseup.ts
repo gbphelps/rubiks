@@ -1,12 +1,12 @@
 import { drain } from '../events';
 import { getAction, setAction } from '../action';
 import setAutocorrectTwist from '../actions/setAutocorrectTwist';
-import boxRegistry from '../boxRegistry';
 import { getRotationAndInverse } from '../rotation';
 import * as history from '../history';
+import { globals } from '../globals';
 
 export default function mouseup() {
-  boxRegistry.deselectCube();
+  globals.cube.registry.deselectCube();
 
   const e = drain('mouseup');
   if (!e) throw new Error();

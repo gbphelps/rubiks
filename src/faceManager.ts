@@ -1,7 +1,7 @@
+import { globals } from './globals';
 import {
   sides, Side, colors,
 } from './utils/types';
-import boxRegistry from './boxRegistry';
 
 function makeBox(faceElement: HTMLDivElement) {
   const black = document.createElement('div');
@@ -66,7 +66,7 @@ class FaceManager {
     updateFaces() {
       let allSolved = true;
       sides.forEach((side) => {
-        const colors = boxRegistry.extractSide(side);
+        const colors = globals.cube.registry.extractSide(side);
         this.set(side, colors);
         if (!sideIsSolved(colors)) allSolved = false;
       });

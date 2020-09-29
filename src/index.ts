@@ -38,37 +38,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
   faceManager.init();
 
-  const cube = makeCube();
-
   shuffle(50);
 
-    globals.scene!.add(cube);
+  // const debug = makeDebugScreen();
+  // globals.scene!.add(debug);
 
-    // const debug = makeDebugScreen();
-    // globals.scene!.add(debug);
-
-    function animate() {
-      requestAnimationFrame(animate);
-      if (faceManager.puzzleSolved) {
-        triggerSolvedModal();
-        return;
-      }
-
-      setClock();
-      cube.setRotationFromMatrix(getRotation());
-      cube.updateMatrix();
-
-      const action = getAction();
-      if (action?.type === 'twist-autocorrect') action.params.progressFn();
-      if (action?.type === 'rotate-autocorrect') action.params.progressFn();
-
-      if (peek('mousedown')) mousedown();
-      if (peek('mouseup')) mouseup();
-      if (peek('mousemove')) mousemove();
-      globals.render!();
+  function animate() {
+    requestAnimationFrame(animate);
+    if (faceManager.puzzleSolved) {
+      triggerSolvedModal();
+      return;
     }
 
-    animate();
+    setClock();
+    globals.cube.object!.setRotationFromMatrix(getRotation());
+    globals.cube.object!.updateMatrix();
+
+    const action = getAction();
+    if (action?.type === 'twist-autocorrect') action.params.progressFn();
+    if (action?.type === 'rotate-autocorrect') action.params.progressFn();
+
+    if (peek('mousedown')) mousedown();
+    if (peek('mouseup')) mouseup();
+    if (peek('mousemove')) mousemove();
+      globals.render!();
+  }
+
+  animate();
 });
 
 /// //////////////////////////////////////////////////////

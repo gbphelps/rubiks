@@ -1,10 +1,16 @@
 import * as THREE from 'three';
+import { BoxRegistry } from './boxRegistry';
+import makeCube from './cubeSpawn';
 
 interface Globals {
     canvas: HTMLCanvasElement | null,
     scene: THREE.Scene | null,
     camera: THREE.PerspectiveCamera | null,
     renderer: THREE.Renderer | null,
+    cube: {
+      object: THREE.Object3D | null,
+      registry: BoxRegistry,
+    },
     render: (() => void) | null,
     container: HTMLDivElement | null,
     pixPerUnit: number,
@@ -24,6 +30,10 @@ export const globals: Globals = {
   render: null,
   container: null,
   lights: null,
+  cube: {
+    object: null,
+    registry: new BoxRegistry(),
+  },
   pixPerUnit: 0,
 };
 
@@ -48,6 +58,9 @@ export function init() {
   camera.position.z = UNIT;
 
   const scene = new THREE.Scene();
+
+  const cube = makeCube();
+  scene.add(cube.object);
 
   const ambientLight = new THREE.AmbientLight('white', 0.2);
   scene.add(ambientLight);
@@ -85,6 +98,7 @@ export function init() {
     scene,
     camera,
     renderer,
+    cube,
     lights: {
       ambientLight,
       pointLightFront,

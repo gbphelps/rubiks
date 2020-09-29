@@ -8,8 +8,8 @@ import {
   getNormalCubeSpace, CoordTriad, Axis,
 } from '../utils/types';
 
-import boxRegistry from '../boxRegistry';
 import getUserTorque from '../getUserTorque';
+import { globals } from '../globals';
 
 const THRESHHOLD = 0.1;
 
@@ -87,14 +87,14 @@ function getTorqueParams(e: MouseEvent, action: TwistAction) {
     direction,
   );
 
-  const activeNode = boxRegistry.getActiveNode();
+  const activeNode = globals.cube.registry.getActiveNode();
   if (!activeNode) throw new Error();
 
   return {
     direction,
     screenDirection,
     unitTorque,
-    tranche: boxRegistry.getTranche(unitTorque),
+    tranche: globals.cube.registry.getTranche(unitTorque),
     activeNode,
   };
 }
