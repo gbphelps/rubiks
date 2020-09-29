@@ -1,12 +1,21 @@
 import * as THREE from 'three';
 
 import { makeMesh } from './utils/three';
-import { Side, Face, colors } from './utils/types';
+import {
+  Side, Face, colors,
+} from './utils/types';
 import { BoxRegistry } from './boxRegistry';
 import RotationManager from './rotation';
 
 const INSET = 0.8;
 const BORDER_RADIUS = 0.12;
+
+export interface CubeManager {
+  object: THREE.Object3D;
+  registry: BoxRegistry;
+  rotation: RotationManager;
+  updateRotation: () => void;
+}
 
 function makeDecal(color: string | number, side: Side) {
   const threeColor = new THREE.Color(colors[color]);
@@ -149,5 +158,8 @@ export default function makeCube() {
     object: cube,
     registry,
     rotation,
+    updateRotation: () => cube.setRotationFromMatrix(
+      rotation.getRotation(),
+    ),
   };
 }

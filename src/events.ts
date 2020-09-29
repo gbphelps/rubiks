@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { globals } from './globals';
 
 let userEventsEnabled = true;
@@ -31,7 +32,7 @@ export function extractScreenCoords(e: MouseEvent) {
   const x = ((e.clientX - x0) - width / 2) / globals.pixPerUnit;
   const y = (height / 2 - (e.clientY - y0)) / globals.pixPerUnit;
 
-  return { x, y };
+  return new THREE.Vector2(x, y);
 }
 
 export function init() {

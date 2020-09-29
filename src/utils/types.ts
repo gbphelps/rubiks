@@ -15,15 +15,10 @@ export const colors: Record<string, string | number> = {
   white: 'white',
 };
 
-export interface Vec2 {
-    x: number,
-    y: number,
-}
-
 export interface CoordTriad {
     cubeCoords: THREE.Vector3,
     cameraCoords: THREE.Vector3,
-    screenCoords: Vec2,
+    screenCoords: THREE.Vector2,
 }
 
 export interface ProjectionData {

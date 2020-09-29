@@ -1,5 +1,4 @@
 import { drain, extractScreenCoords } from '../events';
-import { getProjectionOntoCube } from '../cubeProjections';
 import { getBoxRegistryNode, isCenterSquare } from '../boxRegistry';
 import { globals } from '../globals';
 
@@ -8,7 +7,7 @@ export default function mousedown() {
   if (!e) throw new Error('Event already drained!');
 
   const screenCoords = extractScreenCoords(e);
-  const data = getProjectionOntoCube(screenCoords);
+  const data = globals.getProjectionOntoCube(screenCoords);
 
   if (!data) {
     globals.cube.registry.deselectCube();

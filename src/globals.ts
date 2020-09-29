@@ -1,8 +1,15 @@
 import * as THREE from 'three';
 import ActionManager from './action';
 import { BoxRegistry } from './boxRegistry';
+import {
+  getProjectionOntoCube,
+  getProjectionOntoSide,
+  getCameraCoords,
+  getScreenCoords,
+} from './cubeProjections';
 import makeCube from './cubeSpawn';
 import RotationManager from './rotation';
+import { Side } from './utils/types';
 
 const UNIT = 10;
 
@@ -27,6 +34,7 @@ export class Globals {
     object: THREE.Object3D,
     registry: BoxRegistry,
     rotation: RotationManager,
+    updateRotation: () => void,
   };
 
   pixPerUnit: number;
@@ -85,6 +93,31 @@ export class Globals {
 
     this.renderer.setSize(width, height);
   }
+
+   // basically treating funcs from cubeProjection as a Projection mixin.
+   // typescript mixins seem to be real gross, but there's probably a better way to do this.
+   getProjectionOntoCube = (vec: THREE.Vector2) => getProjectionOntoCube({
+     screen: vec,
+     camera: this.camera,
+     cube: this.cube,
+   })
+
+  getProjectionOntoSide = (vec: THREE.Vector2, side: Side) => getProjectionOntoSide({
+    screen: vec,
+    side,
+    camera: this.camera,
+    cube: this.cube,
+  })
+
+  getCameraCoordsFromCubeCoords = (cubeCoords: THREE.Vector3) => getCameraCoords({
+    cubeCoords,
+    cube: this.cube,
+  })
+
+  getScreenCoordsFromCameraCoords = (cameraCoords: THREE.Vector3) => getScreenCoords({
+    cameraCoords,
+    camera: this.camera,
+  })
 }
 
 function makeLights() {

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {
-  Matrix, Vec2,
+  Matrix,
 } from './types';
 
 export function Matrix2Vec(mx: Matrix) {
@@ -25,7 +25,7 @@ export function XProd(v1: THREE.Vector3, v2: THREE.Vector3) {
   };
 }
 
-export function dotProd(v1: Vec2 | THREE.Vector3, v2: Vec2 | THREE.Vector3) {
+export function dotProd(v1: THREE.Vector2 | THREE.Vector3, v2: THREE.Vector2 | THREE.Vector3) {
   const a = {
     z: 0,
     ...v1,
@@ -43,7 +43,7 @@ export function mag2(vec: THREE.Vector3) {
   return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
 }
 
-export function vec3(vec: Vec2) {
+export function vec3(vec: THREE.Vector2) {
   return {
     ...vec,
     z: 0,

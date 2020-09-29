@@ -1,6 +1,3 @@
-$s: 150px;
-
-
 #modal-screen {
   position: absolute; 
   height: 100%; 
@@ -56,8 +53,8 @@ $s: 150px;
   }
 
   #demo-container{
-    height: $s;
-    width: $s;
+    height: 200px;
+    width: 200px;
     margin: auto;
     transition-timing-function: cubic-bezier(0,0,.2,1);
     perspective: 800px;
@@ -66,50 +63,6 @@ $s: 150px;
   #demo-instruction1, #demo-instruction2{
     transition: .3s;
     position: absolute;
-  }
-
-  #demo-cube{
-    position: relative;
-    left: 0;
-    height: $s;
-    width: $s;
-    transform-origin: $s/2 $s/2 -$s/2;
-    transform-style: preserve-3d;
-    transform: rotateX(-35.264deg)rotateY(-45deg)translateZ($s/2);
-  }
-
-
-  .demo-pip{
-    height: $s/3;
-    width: $s/3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    &::after {
-      content: '';
-      display: block;
-      height: 85%;
-      width: 85%;
-      background: rgb(29, 34, 48);
-      border-radius: 4px;
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-      border: 1px solid transparent;
-    }
-    &.active::after {
-      background: pink;
-    }
-  }
-
-  .demo-face{
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-items: center;
   }
 
   #cursor{

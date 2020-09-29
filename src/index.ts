@@ -48,9 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setClock();
-    globals.cube.object!.setRotationFromMatrix(
-      globals.cube.rotation.getRotation(),
-    );
+    globals.cube.updateRotation();
     globals.cube.object!.updateMatrix();
 
     const action = globals.action.getAction();

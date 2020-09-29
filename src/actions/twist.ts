@@ -3,7 +3,6 @@ import {
   TwistAction,
 } from '../action';
 import { extractScreenCoords } from '../events';
-import { getProjectionOntoSide, getCameraCoords, getScreenCoords } from '../cubeProjections';
 import {
   getNormalCubeSpace, CoordTriad, Axis,
 } from '../utils/types';
@@ -43,14 +42,14 @@ function getCardinalDirection(vec: THREE.Vector3) {
 
 function getScreenDirection(startPosition: CoordTriad, direction: THREE.Vector3) {
   const cameraStart = startPosition.cameraCoords;
-  const cameraDir = getCameraCoords(direction);
+  const cameraDir = globals.getCameraCoordsFromCubeCoords(direction);
   const end = new THREE.Vector3(
     cameraStart.x + cameraDir.x,
     cameraStart.y + cameraDir.y,
     cameraStart.z + cameraDir.z,
   );
 
-  const screenEnd = getScreenCoords(end);
+  const screenEnd = globals.getScreenCoordsFromCameraCoords(end);
   const screenStart = startPosition.screenCoords;
   const r = {
     x: screenEnd.x - screenStart.x,
@@ -58,10 +57,7 @@ function getScreenDirection(startPosition: CoordTriad, direction: THREE.Vector3)
   };
   const mag = Math.sqrt(r.x * r.x + r.y * r.y);
 
-  return {
-    x: r.x / mag,
-    y: r.y / mag,
-  };
+  return new THREE.Vector2(r.x / mag, r.y / mag);
 }
 
 function canSetTorqueParams(e: MouseEvent, action: TwistAction) {
@@ -72,7 +68,7 @@ function canSetTorqueParams(e: MouseEvent, action: TwistAction) {
 
 function getTorqueParams(e: MouseEvent, action: TwistAction) {
   const screenCoords = extractScreenCoords(e);
-  const { cubeCoords } = getProjectionOntoSide(screenCoords, action.side);
+  const { cubeCoords } = globals.getProjectionOntoSide(screenCoords, action.side);
 
   const vec = (new THREE.Vector3()).subVectors(
     cubeCoords,

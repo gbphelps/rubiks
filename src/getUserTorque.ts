@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { extractScreenCoords } from './events';
 import { globals } from './globals';
 import { dotProd } from './utils/matrix';
@@ -15,10 +16,7 @@ export default function getUserTorque(e: MouseEvent) {
 
   const { x: x2, y: y2 } = extractScreenCoords(e);
   const { x: x1, y: y1 } = action.startPosition.screenCoords;
-  const userDir = {
-    x: x2 - x1,
-    y: y2 - y1,
-  };
+  const userDir = new THREE.Vector2(x2 - x1, y2 - y1);
 
   const magnitudeAsRotation = dotProd(userDir, screenDirection);
   return magnitudeAsRotation;

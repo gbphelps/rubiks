@@ -1,5 +1,5 @@
 import {
-  Vec2, Side, CoordTriad,
+  Side, CoordTriad,
 } from './utils/types';
 
 type Action = |
@@ -10,7 +10,7 @@ type Action = |
 
 export interface RotateAction {
     type: 'rotate',
-    prevScreenCoords: Vec2,
+    prevScreenCoords: THREE.Vector2,
     startRotation: {
       mx: THREE.Matrix4,
       inv: THREE.Matrix4,
@@ -25,7 +25,7 @@ export interface TwistAction {
         direction: THREE.Vector3,
         unitTorque: THREE.Vector3,
         activeNode: THREE.Vector3,
-        screenDirection: Vec2,
+        screenDirection: THREE.Vector2,
         tranche: (THREE.Object3D | null)[],
     } | null,
 }

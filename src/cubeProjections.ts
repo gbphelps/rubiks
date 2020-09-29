@@ -1,12 +1,20 @@
 import * as THREE from 'three';
 import {
-  Vec2, ProjectionData, sides, Side,
+  ProjectionData, sides, Side,
 } from './utils/types';
-import { globals } from './globals';
+import { CubeManager } from './cubeSpawn';
 
 const ERR = 1e-8;
 
-export function getProjectionOntoCube(screen: Vec2): null | ProjectionData {
+export function getProjectionOntoCube({
+  screen,
+  camera,
+  cube,
+}: {
+  screen: THREE.Vector2,
+  camera: THREE.PerspectiveCamera,
+  cube: CubeManager
+}): null | ProjectionData {
   // Recovering 3D position from 2D input is a system of three equations:
 
   // Point must be on this plane:
@@ -18,10 +26,15 @@ export function getProjectionOntoCube(screen: Vec2): null | ProjectionData {
   //      y = screen.y * (cam.p.z - z)/cam.p.z;
 
   let best: null | ProjectionData = null;
-  const camZ = globals.camera!.position.z;
+  const camZ = camera.position.z;
 
   sides.forEach((side) => {
-    const { cubeCoords, cameraCoords } = getProjectionOntoSide(screen, side);
+    const { cubeCoords, cameraCoords } = getProjectionOntoSide({
+      screen,
+      side,
+      camera,
+      cube,
+    });
 
     if (
       !(
@@ -47,12 +60,22 @@ export function getProjectionOntoCube(screen: Vec2): null | ProjectionData {
   return best;
 }
 
-export function getProjectionOntoSide(screen: Vec2, side: Side) {
+export function getProjectionOntoSide({
+  screen,
+  side,
+  camera,
+  cube,
+}: {
+  screen: THREE.Vector2,
+  side: Side,
+  camera: THREE.PerspectiveCamera,
+  cube: CubeManager,
+}) {
   const {
     A, B, C, D,
-  } = globals.cube.rotation.getPlane(side);
+  } = cube.rotation.getPlane(side);
 
-  const camZ = globals.camera!.position.z;
+  const camZ = camera.position.z;
 
   const MM = -(A * screen.x + B * screen.y) / camZ + C;
   const BB = A * screen.x + B * screen.y + D;
@@ -64,21 +87,33 @@ export function getProjectionOntoSide(screen: Vec2, side: Side) {
   const vec = new THREE.Vector3(x, y, z);
 
   return {
-    cubeCoords: vec.clone().applyMatrix4(globals.cube.rotation.inv),
+    cubeCoords: vec.clone().applyMatrix4(cube.rotation.inv),
     cameraCoords: vec,
   };
 }
 
-export function getCameraCoords(cubeCoords: THREE.Vector3) {
-  return cubeCoords.clone().applyMatrix4(globals.cube.rotation.mx);
+export function getCameraCoords({
+  cubeCoords,
+  cube,
+}: {
+  cubeCoords: THREE.Vector3,
+  cube: CubeManager
+}) {
+  return cubeCoords.clone().applyMatrix4(cube.rotation.mx);
 }
 
-export function getScreenCoords(cameraCoords: THREE.Vector3) {
-  const camZ = globals.camera!.position.z;
+export function getScreenCoords({
+  cameraCoords,
+  camera,
+}:{
+  cameraCoords: THREE.Vector3,
+  camera: THREE.PerspectiveCamera
+}) {
+  const camZ = camera.position.z;
   const { x, y, z } = cameraCoords;
 
-  return {
-    x: camZ / (camZ - z) * x,
-    y: camZ / (camZ - z) * y,
-  };
+  return new THREE.Vector2(
+    camZ / (camZ - z) * x,
+    camZ / (camZ - z) * y,
+  );
 }

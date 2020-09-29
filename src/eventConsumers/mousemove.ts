@@ -7,9 +7,6 @@ export default function mousemove() {
   const e = drain('mousemove');
   if (!e) return;
 
-  // const screenCoords = extractScreenCoords(e);
-  // const data = getProjectionOntoCube(screenCoords);
-
   const action = globals.action.getAction();
 
   if (!action) return;
