@@ -4,53 +4,169 @@ import { axes, getNormalCubeSpace, Side } from './utils/types';
 
 type BoxRegistry = (THREE.Object3D | null)[][][];
 
-let activeNode: THREE.Vector3 | null = null;
+class BR {
+  activeNode: THREE.Vector3 | null = null;
 
-const boxRegistry: BoxRegistry = [
-  [
-    [null, null, null],
-    [null, null, null],
-    [null, null, null],
-  ], [
-    [null, null, null],
-    [null, null, null],
-    [null, null, null],
-  ], [
-    [null, null, null],
-    [null, null, null],
-    [null, null, null],
-  ],
-];
+  registry: BoxRegistry = [
+    [
+      [null, null, null],
+      [null, null, null],
+      [null, null, null],
+    ], [
+      [null, null, null],
+      [null, null, null],
+      [null, null, null],
+    ], [
+      [null, null, null],
+      [null, null, null],
+      [null, null, null],
+    ],
+  ];
 
-export function registerBox({ x, y, z }: THREE.Vector3, box: THREE.Object3D) {
-  boxRegistry[x][y][z] = box;
-}
-
-export function getBox({ x, y, z }: THREE.Vector3) {
-  return boxRegistry[x][y][z];
-}
-
-export function getActiveNode() {
-  return activeNode;
-}
-
-export function setActiveBox(node: THREE.Vector3 | null) {
-  if (activeNode) {
-    decolorize(
-      getBox(activeNode),
-    );
+  registerBox({ x, y, z }: THREE.Vector3, box: THREE.Object3D) {
+    this.registry[x][y][z] = box;
   }
-  activeNode = node;
-  if (activeNode) {
-    colorize(
-      getBox(activeNode),
-    );
-  }
-}
 
-export function getActiveBox() {
-  if (!activeNode) return null;
-  return getBox(activeNode);
+  getBox({ x, y, z }: THREE.Vector3) {
+    return this.registry[x][y][z];
+  }
+
+  getActiveNode() {
+    return this.activeNode;
+  }
+
+  setActiveBox(node: THREE.Vector3 | null) {
+    if (this.activeNode) {
+      decolorize(
+        this.getBox(this.activeNode),
+      );
+    }
+    this.activeNode = node;
+    if (this.activeNode) {
+      colorize(
+        this.getBox(this.activeNode),
+      );
+    }
+  }
+
+  getActiveBox() {
+    if (!this.activeNode) return null;
+    return this.getBox(this.activeNode);
+  }
+
+  getTranche(unitTorque: THREE.Vector3) {
+    if (!this.activeNode) throw new Error();
+
+    const tranche = [];
+
+    const bounds: Record<string, number[]> = {};
+    for (let i = 0; i < 3; i++) {
+      const dim = axes[i];
+      bounds[dim] = unitTorque[dim]
+        ? [this.activeNode[dim], this.activeNode[dim]]
+        : [0, 2];
+    }
+
+    for (let x: number = bounds.x[0]; x <= bounds.x[1]; x++) {
+      for (let y = bounds.y[0]; y <= bounds.y[1]; y++) {
+        for (let z = bounds.z[0]; z <= bounds.z[1]; z++) {
+          tranche.push(this.registry[x][y][z]);
+        }
+      }
+    }
+
+    return tranche;
+  }
+
+  deselectCube() {
+    if (this.activeNode) {
+      decolorize(
+        this.getBox(this.activeNode),
+      );
+    }
+    this.setActiveBox(null);
+  }
+
+  getTrancheStatic(axis: number, layer: number) {
+    const tranche = [];
+
+    const bounds: Record<string, number[]> = {};
+
+    for (let i = 0; i < 3; i++) {
+      bounds[axes[i]] = (
+        axis === i
+          ? [layer, layer]
+          : [0, 2]
+      );
+    }
+
+    for (let x: number = bounds.x[0]; x <= bounds.x[1]; x++) {
+      for (let y = bounds.y[0]; y <= bounds.y[1]; y++) {
+        for (let z = bounds.z[0]; z <= bounds.z[1]; z++) {
+          tranche.push(this.registry[x][y][z]);
+        }
+      }
+    }
+
+    return tranche;
+  }
+
+  // todo: this can be hardcoded into a lookup to save a ton of calculations.
+  extractSide(side: Side) {
+    const normal = getNormalCubeSpace(side);
+    let dimension;
+    let index;
+
+    for (let i = 0; i < 3; i++) {
+      if (!normal[axes[i]]) continue;
+      dimension = i;
+      index = normal[axes[i]] + 1;
+    }
+    if (
+      dimension === undefined
+    || index === undefined
+    ) throw new Error();
+
+    const tranche = this.getTrancheStatic(dimension, index);
+    const rotation = getRotationToFront(side);
+
+    const face: (THREE.Object3D | null)[][] = [
+      [null, null, null],
+      [null, null, null],
+      [null, null, null],
+    ];
+    tranche.forEach((box) => {
+      if (!box) throw new Error();
+      const child = box.children[0] as THREE.Mesh;
+      const position = child.position.clone().applyMatrix4(rotation);
+      roundVector(position);
+      face[position.x + 1][position.y + 1] = box;
+    });
+
+    const faceColors = face.map((row) => (
+      row.map((box) => {
+        if (!box) throw new Error();
+        const child = box.children[0] as THREE.Mesh;
+        const decals = child.children;
+        for (let i = 0; i < decals.length; i++) {
+          const decal = decals[i].children[0];
+          decals[i].updateMatrix();
+          child.updateMatrix();
+          const pos = decal.position.clone()
+            .applyMatrix4(decals[i].matrix)
+            .applyEuler(child.rotation)
+            .applyMatrix4(rotation);
+          if (Math.round(pos.z * 2) === 1) {
+            const mesh = decal.children[0] as THREE.Mesh;
+            return mesh.userData.color;
+          }
+        }
+        throw new Error();
+      })
+    ));
+
+    return faceColors;
+  }
 }
 
 export function isCenterSquare(node: THREE.Vector3) {
@@ -69,61 +185,10 @@ export function getBoxRegistryNode(cubeCoords: THREE.Vector3) {
   return new THREE.Vector3(int('x'), int('y'), int('z'));
 }
 
-export function getTranche(unitTorque: THREE.Vector3) {
-  if (!activeNode) throw new Error();
-
-  const tranche = [];
-
-  const bounds: Record<string, number[]> = {};
-  for (let i = 0; i < 3; i++) {
-    const dim = axes[i];
-    bounds[dim] = unitTorque[dim]
-      ? [activeNode[dim], activeNode[dim]]
-      : [0, 2];
-  }
-
-  for (let x: number = bounds.x[0]; x <= bounds.x[1]; x++) {
-    for (let y = bounds.y[0]; y <= bounds.y[1]; y++) {
-      for (let z = bounds.z[0]; z <= bounds.z[1]; z++) {
-        tranche.push(boxRegistry[x][y][z]);
-      }
-    }
-  }
-
-  return tranche;
-}
-
-export function deselectCube() {
-  if (activeNode) {
-    decolorize(
-      getBox(activeNode),
-    );
-  }
-  setActiveBox(null);
-}
-
-export function getTrancheStatic(axis: number, layer: number) {
-  const tranche = [];
-
-  const bounds: Record<string, number[]> = {};
-
-  for (let i = 0; i < 3; i++) {
-    bounds[axes[i]] = (
-      axis === i
-        ? [layer, layer]
-        : [0, 2]
-    );
-  }
-
-  for (let x: number = bounds.x[0]; x <= bounds.x[1]; x++) {
-    for (let y = bounds.y[0]; y <= bounds.y[1]; y++) {
-      for (let z = bounds.z[0]; z <= bounds.z[1]; z++) {
-        tranche.push(boxRegistry[x][y][z]);
-      }
-    }
-  }
-
-  return tranche;
+function roundVector(v: THREE.Vector3) {
+  v.x = Math.round(v.x);
+  v.y = Math.round(v.y);
+  v.z = Math.round(v.z);
 }
 
 function getRotationToFront(side: Side) {
@@ -145,65 +210,4 @@ function getRotationToFront(side: Side) {
   }
 }
 
-// todo: this can be hardcoded into a lookup to save a ton of calculations.
-export function extractSide(side: Side) {
-  const normal = getNormalCubeSpace(side);
-  let dimension;
-  let index;
-
-  for (let i = 0; i < 3; i++) {
-    if (!normal[axes[i]]) continue;
-    dimension = i;
-    index = normal[axes[i]] + 1;
-  }
-  if (
-    dimension === undefined
-    || index === undefined
-  ) throw new Error();
-
-  const tranche = getTrancheStatic(dimension, index);
-  const rotation = getRotationToFront(side);
-
-  const face: (THREE.Object3D | null)[][] = [
-    [null, null, null],
-    [null, null, null],
-    [null, null, null],
-  ];
-  tranche.forEach((box) => {
-    if (!box) throw new Error();
-    const child = box.children[0] as THREE.Mesh;
-    const position = child.position.clone().applyMatrix4(rotation);
-    roundVector(position);
-    face[position.x + 1][position.y + 1] = box;
-  });
-
-  const faceColors = face.map((row) => (
-    row.map((box) => {
-      if (!box) throw new Error();
-      const child = box.children[0] as THREE.Mesh;
-      const decals = child.children;
-      for (let i = 0; i < decals.length; i++) {
-        const decal = decals[i].children[0];
-        decals[i].updateMatrix();
-        child.updateMatrix();
-        const pos = decal.position.clone()
-          .applyMatrix4(decals[i].matrix)
-          .applyEuler(child.rotation)
-          .applyMatrix4(rotation);
-        if (Math.round(pos.z * 2) === 1) {
-          const mesh = decal.children[0] as THREE.Mesh;
-          return mesh.userData.color;
-        }
-      }
-      throw new Error();
-    })
-  ));
-
-  return faceColors;
-}
-
-function roundVector(v: THREE.Vector3) {
-  v.x = Math.round(v.x);
-  v.y = Math.round(v.y);
-  v.z = Math.round(v.z);
-}
+export default new BR();

@@ -1,6 +1,6 @@
 import { drain, extractScreenCoords } from '../events';
 import { getProjectionOntoCube } from '../cubeProjections';
-import * as boxRegistry from '../boxRegistry';
+import boxRegistry, { getBoxRegistryNode, isCenterSquare } from '../boxRegistry';
 import { setAction } from '../action';
 import { getRotationAndInverse } from '../rotation';
 
@@ -18,9 +18,9 @@ export default function mousedown() {
   }
 
   const { cubeCoords, cameraCoords } = data;
-  const boxRegistryNode = boxRegistry.getBoxRegistryNode(cubeCoords);
+  const boxRegistryNode = getBoxRegistryNode(cubeCoords);
 
-  if (boxRegistry.isCenterSquare(boxRegistryNode)) {
+  if (isCenterSquare(boxRegistryNode)) {
     setAction({
       type: 'rotate',
       prevScreenCoords: screenCoords,

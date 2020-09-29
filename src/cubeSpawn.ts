@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { makeMesh } from './utils/three';
 import { Side, Face, colors } from './utils/types';
-import * as boxRegistry from './boxRegistry';
+import boxRegistry from './boxRegistry';
 
 const INSET = 0.8;
 const BORDER_RADIUS = 0.12;
