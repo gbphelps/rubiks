@@ -1,6 +1,5 @@
-import * as THREE from 'three';
 import { init as initGlobals, globals } from './globals';
-import cubeSpawn from './cubeSpawn';
+import makeCube from './cubeSpawn';
 import { getRotation } from './rotation';
 import {
   init as initControls, peek,
@@ -18,8 +17,6 @@ import {
   init as initOrthoViews,
 } from './orthoViews';
 // import makeDebugScreen from './utils/debug';
-import { Face } from './utils/types';
-import * as boxRegistry from './boxRegistry';
 import mouseup from './eventConsumers/mouseup';
 import mousedown from './eventConsumers/mousedown';
 import mousemove from './eventConsumers/mousemove';
@@ -29,29 +26,6 @@ import '../index.scss';
 import { getAction } from './action';
 
 // TODO: add circular slider for z rotation surrounding the cube.
-
-function getInitialDecals(x: number, y: number, z: number) {
-  const decals: Face[] = [];
-  if (z === 1) {
-    decals.push({ side: 'front', color: 'green' });
-  } else if (z === -1) {
-    decals.push({ side: 'back', color: 'yellow' });
-  }
-
-  if (x === 1) {
-    decals.push({ side: 'right', color: 'red' });
-  } else if (x === -1) {
-    decals.push({ side: 'left', color: 'orange' });
-  }
-
-  if (y === 1) {
-    decals.push({ side: 'top', color: 'white' });
-  } else if (y === -1) {
-    decals.push({ side: 'bottom', color: 'blue' });
-  }
-
-  return decals;
-}
 
 document.addEventListener('DOMContentLoaded', () => {
   initGlobals();
@@ -64,21 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   faceManager.init();
 
-  const cube = new THREE.Object3D();
-
-  for (let x = -1; x <= 1; x++) {
-    for (let y = -1; y <= 1; y++) {
-      for (let z = -1; z <= 1; z++) {
-        const decals = getInitialDecals(x, y, z);
-        const box = cubeSpawn(decals, new THREE.Vector3(x, y, z));
-        boxRegistry.registerBox(
-          new THREE.Vector3(x + 1, y + 1, z + 1),
-          box,
-        );
-        cube.add(box);
-      }
-    }
-  }
+  const cube = makeCube();
 
   shuffle(50);
 

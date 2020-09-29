@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 import { makeMesh } from './utils/three';
 import { Side, Face, colors } from './utils/types';
+import * as boxRegistry from './boxRegistry';
 
 const INSET = 0.8;
 const BORDER_RADIUS = 0.12;
@@ -79,7 +80,30 @@ function makeDecal(color: string | number, side: Side) {
   return pivot;
 }
 
-export default function cubeSpawn(faces: Face[], position: THREE.Vector3) {
+function getInitialDecals(x: number, y: number, z: number) {
+  const decals: Face[] = [];
+  if (z === 1) {
+    decals.push({ side: 'front', color: 'green' });
+  } else if (z === -1) {
+    decals.push({ side: 'back', color: 'yellow' });
+  }
+
+  if (x === 1) {
+    decals.push({ side: 'right', color: 'red' });
+  } else if (x === -1) {
+    decals.push({ side: 'left', color: 'orange' });
+  }
+
+  if (y === 1) {
+    decals.push({ side: 'top', color: 'white' });
+  } else if (y === -1) {
+    decals.push({ side: 'bottom', color: 'blue' });
+  }
+
+  return decals;
+}
+
+function cubeSpawn(faces: Face[], position: THREE.Vector3) {
   const box = makeMesh({
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: new THREE.MeshLambertMaterial({ color: 0x101010 }),
@@ -99,4 +123,24 @@ export default function cubeSpawn(faces: Face[], position: THREE.Vector3) {
   box.position.z = position.z;
 
   return pivot;
+}
+
+export default function makeCube() {
+  const cube = new THREE.Object3D();
+
+  for (let x = -1; x <= 1; x++) {
+    for (let y = -1; y <= 1; y++) {
+      for (let z = -1; z <= 1; z++) {
+        const decals = getInitialDecals(x, y, z);
+        const box = cubeSpawn(decals, new THREE.Vector3(x, y, z));
+        boxRegistry.registerBox(
+          new THREE.Vector3(x + 1, y + 1, z + 1),
+          box,
+        );
+        cube.add(box);
+      }
+    }
+  }
+
+  return cube;
 }
