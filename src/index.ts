@@ -1,4 +1,4 @@
-import { init as initGlobals, globals } from './globals';
+import { globals } from './globals';
 import {
   init as initControls, peek,
 } from './events';
@@ -26,7 +26,7 @@ import { getAction } from './action';
 // TODO: add circular slider for z rotation surrounding the cube.
 
 document.addEventListener('DOMContentLoaded', () => {
-  initGlobals();
+  globals.init();
   initControls();
   initHistory();
   initClock();

@@ -3,134 +3,108 @@ import { BoxRegistry } from './boxRegistry';
 import makeCube from './cubeSpawn';
 import RotationManager from './rotation';
 
-interface Globals {
-    canvas: HTMLCanvasElement | null,
-    scene: THREE.Scene | null,
-    camera: THREE.PerspectiveCamera | null,
-    renderer: THREE.Renderer | null,
-    cube: {
-      object: THREE.Object3D | null,
-      registry: BoxRegistry,
-      rotation: RotationManager,
-    },
-    render: (() => void) | null,
-    container: HTMLDivElement | null,
-    pixPerUnit: number,
-    lights: null | {
-      ambientLight: THREE.AmbientLight,
-      pointLightLeft: THREE.PointLight,
-      pointLightRight: THREE.PointLight,
-      pointLightFront: THREE.PointLight,
-    }
-}
-
-export const globals: Globals = {
-  canvas: null,
-  scene: null,
-  camera: null,
-  renderer: null,
-  render: null,
-  container: null,
-  lights: null,
-  cube: {
-    object: null,
-    registry: new BoxRegistry(),
-    rotation: new RotationManager(),
-  },
-  pixPerUnit: 0,
-};
-
 const UNIT = 10;
 
-export function init() {
-  const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-  const container = document.getElementById('container') as HTMLDivElement;
+class Globals {
+  canvas: HTMLCanvasElement;
 
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: true,
-    alpha: true,
-  });
+  scene: THREE.Scene;
 
-  // renderer.shadowMap.enabled = true;
-  // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  camera: THREE.PerspectiveCamera;
 
-  const { height, width } = container.getBoundingClientRect();
-  const camera = new THREE.PerspectiveCamera(30, width / height);
+  renderer: THREE.Renderer;
 
-  camera.position.z = UNIT;
+  render: (() => void);
 
-  const scene = new THREE.Scene();
+  container: HTMLDivElement;
 
-  const cube = makeCube();
-  scene.add(cube.object);
+  lights: THREE.Light[];
 
+  cube: {
+    object: THREE.Object3D,
+    registry: BoxRegistry,
+    rotation: RotationManager,
+  };
+
+  pixPerUnit: number;
+
+  getCanvas: () => HTMLCanvasElement;
+
+  getContainer: () => HTMLDivElement;
+
+  constructor({ getCanvas, getContainer }: {
+    getCanvas: () => HTMLCanvasElement,
+    getContainer: () => HTMLDivElement,
+  }) {
+    this.getCanvas = getCanvas;
+    this.getContainer = getContainer;
+  }
+
+  init() {
+    this.canvas = this.getCanvas();
+    this.container = this.getContainer();
+    this.scene = new THREE.Scene();
+
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
+      antialias: true,
+      alpha: true,
+    });
+
+    this.lights = makeLights();
+    this.lights.forEach((l) => this.scene.add(l));
+
+    const { height, width } = this.container.getBoundingClientRect();
+    this.camera = new THREE.PerspectiveCamera(30, width / height);
+    this.camera.position.z = UNIT;
+    this.render = () => { this.renderer.render(this.scene, this.camera); };
+
+    this.cube = makeCube();
+    this.scene.add(this.cube.object);
+
+    window.addEventListener('resize', this.resize);
+    this.resize();
+  }
+
+  resize = () => {
+    const { height, width } = this.container.getBoundingClientRect();
+
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+
+    const theta = this.camera.fov / 180 * Math.PI;
+
+    // calculate z distance of camera screen in pixels (using height).
+    const z = (height / 2) / Math.tan(theta / 2);
+
+    // calculate ratio between z in pixels and z in scene units.
+    this.pixPerUnit = z / this.camera.position.z;
+
+    this.renderer.setSize(width, height);
+  }
+}
+
+function makeLights() {
   const ambientLight = new THREE.AmbientLight('white', 0.2);
-  scene.add(ambientLight);
 
   const pointLightFront = new THREE.PointLight('white', 1, 0, 2);
   pointLightFront.position.set(0, 0.5 * UNIT, 1 * UNIT);
-  // pointLightFront.castShadow = true;
-  // pointLightFront.shadow.mapSize.width = 1500;
-  // pointLightFront.shadow.mapSize.height = 1500;
-  // pointLightFront.shadow.radius = 2;
-  scene.add(pointLightFront);
 
   const pointLightLeft = new THREE.PointLight('white', 0.4, 0, 2);
   pointLightLeft.position.set(-2 * UNIT, -UNIT, -UNIT * 0.5);
-  scene.add(pointLightLeft);
 
   const pointLightRight = new THREE.PointLight('white', 0.4, 0, 2);
   pointLightRight.position.set(2 * UNIT, -UNIT, -UNIT * 0.5);
-  scene.add(pointLightRight);
 
-  // const pivot = new THREE.Object3D();
-  // const planeGeometry = new THREE.PlaneBufferGeometry(50, 50, 200, 200);
-  // const planeMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-  // const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  // plane.position.z = -10;
-  // pivot.rotation.x = -Math.PI / 2 + 0.4;
-
-  // plane.receiveShadow = true;
-  // pivot.add(plane);
-  // scene.add(pivot);
-
-  Object.assign(globals, {
-    container,
-    canvas,
-    scene,
-    camera,
-    renderer,
-    cube,
-    lights: {
-      ambientLight,
-      pointLightFront,
-      pointLightLeft,
-      pointLightRight,
-    },
-    render: () => renderer.render(scene, camera),
-  });
-
-  window.addEventListener('resize', resize);
-  resize();
+  return [
+    ambientLight,
+    pointLightFront,
+    pointLightLeft,
+    pointLightRight,
+  ];
 }
 
-function resize() {
-  const {
-    camera, renderer, container,
-  } = globals;
-  const { height, width } = container!.getBoundingClientRect();
-
-  camera!.aspect = width / height;
-  camera!.updateProjectionMatrix();
-
-  const theta = camera!.fov / 180 * Math.PI;
-
-  // calculate z distance of camera screen in pixels (using height).
-  const z = (height / 2) / Math.tan(theta / 2);
-
-  // calculate ratio between z in pixels and z in scene units.
-  globals.pixPerUnit = z / camera!.position.z;
-
-  renderer!.setSize(width, height);
-}
+export const globals = new Globals({
+  getCanvas: () => document.getElementById('canvas') as HTMLCanvasElement,
+  getContainer: () => document.getElementById('container') as HTMLDivElement,
+});
