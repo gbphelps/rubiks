@@ -5,7 +5,7 @@ import RotationManager from './rotation';
 
 const UNIT = 10;
 
-class Globals {
+export class Globals {
   canvas: HTMLCanvasElement;
 
   scene: THREE.Scene;

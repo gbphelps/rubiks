@@ -10,6 +10,7 @@ import grab from './grab.svg';
 import grabbing from './grabbing.svg';
 import { Side } from '../utils/types';
 import faceManager from '../faceManager';
+import { Globals } from '../globals';
 
 const T_DURATION = 300;
 
@@ -18,7 +19,7 @@ const ROTATE_RADIUS = s * 0.6;
 const DRAG_DISTANCE = s * 0.6;
 
 const ROTATIONS: THREE.Matrix4[] = [];
-let allRotationsSet = false;
+const allRotationsSet = false;
 let modalVisible = true;
 let solved = false;
 
@@ -62,53 +63,53 @@ const tform = {
 
 let i = 0;
 const unit = 35;
-let frame: number = 0;
+const frame: number = 0;
 
 function animate() {
-  frame = requestAnimationFrame(animate);
-  i++;
-  if (i === unit * 8) {
-    i = 0;
-    cursor.style.transform = '';
-  }
+  // frame = requestAnimationFrame(animate);
+  // i++;
+  // if (i === unit * 8) {
+  //   i = 0;
+  //   cursor.style.transform = '';
+  // }
 
-  if (i === 0) {
-    cursor.innerHTML = grab;
-    return;
-  }
-  if (i === unit) {
-    cursor.innerHTML = grabbing;
-    return;
-  }
-  if (i >= unit * 2 && i < unit * 3) {
-    const progress = easeInOut((i - unit * 2) / unit);
+  // if (i === 0) {
+  //   cursor.innerHTML = grab;
+  //   return;
+  // }
+  // if (i === unit) {
+  //   cursor.innerHTML = grabbing;
+  //   return;
+  // }
+  // if (i >= unit * 2 && i < unit * 3) {
+  //   const progress = easeInOut((i - unit * 2) / unit);
 
-    cursor.style.transform = `translateX(${progress * DRAG_DISTANCE}px)translateY(${progress * DRAG_DISTANCE * Math.tan(Math.PI / 6)}px)`;
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        pips.top[i][j].style.transform = `rotateY(${progress * 90}deg)${tform.top}`;
-      }
-    }
+  //   cursor.style.transform = `translateX(${progress * DRAG_DISTANCE}px)translateY(${progress * DRAG_DISTANCE * Math.tan(Math.PI / 6)}px)`;
+  //   for (let i = 0; i < 3; i++) {
+  //     for (let j = 0; j < 3; j++) {
+  //       pips.top[i][j].style.transform = `rotateY(${progress * 90}deg)${tform.top}`;
+  //     }
+  //   }
 
-    rotateTrancheHorizontal(progress);
-  }
+  //   rotateTrancheHorizontal(progress);
+  // }
 
-  if (i === unit * 3) resetFaceRotation();
+  // if (i === unit * 3) resetFaceRotation();
 
-  if (i >= unit * 4 && i < unit * 5) {
-    cursor.style.transform = '';
-    cursor.innerHTML = grab;
-    return;
-  }
-  if (i >= unit * 5 && i < unit * 6) {
-    cursor.innerHTML = grabbing;
-  }
-  if (i >= unit * 6 && i < unit * 7) {
-    const progress = easeInOut((i - unit * 6) / unit);
-    rotateTrancheVertical(progress);
-    cursor.style.transform = `translateY(${progress * DRAG_DISTANCE}px)`;
-  }
-  if (i === unit * 7) resetFaceRotation();
+  // if (i >= unit * 4 && i < unit * 5) {
+  //   cursor.style.transform = '';
+  //   cursor.innerHTML = grab;
+  //   return;
+  // }
+  // if (i >= unit * 5 && i < unit * 6) {
+  //   cursor.innerHTML = grabbing;
+  // }
+  // if (i >= unit * 6 && i < unit * 7) {
+  //   const progress = easeInOut((i - unit * 6) / unit);
+  //   rotateTrancheVertical(progress);
+  //   cursor.style.transform = `translateY(${progress * DRAG_DISTANCE}px)`;
+  // }
+  // if (i === unit * 7) resetFaceRotation();
 }
 
 function shrink() {
@@ -124,14 +125,14 @@ function shrink() {
 }
 
 function resetFaceRotation() {
-  const sides: Side[] = ['front', 'right', 'top', 'back', 'left'];
-  sides.forEach((face) => {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        pips[face][i][j].style.transform = tform[face];
-      }
-    }
-  });
+  // const sides: Side[] = ['front', 'right', 'top', 'back', 'left'];
+  // sides.forEach((face) => {
+  //   for (let i = 0; i < 3; i++) {
+  //     for (let j = 0; j < 3; j++) {
+  //       pips[face][i][j].style.transform = tform[face];
+  //     }
+  //   }
+  // });
 }
 
 function setInstruction2() {
@@ -230,69 +231,77 @@ export function setInstruction1() {
   cursor.innerHTML = grab;
   resetMx();
   resetFaceRotation();
-  getId('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
+  // getId('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
   setNextButton(1);
   i = 0;
   animate();
 }
 
 function animate2() {
-  function progress(i: number) { return 0.5 * (1 - Math.cos(i * Math.PI / unit / 2)); }
-  frame = requestAnimationFrame(animate2);
-  i++;
+  // function progress(i: number) { return 0.5 * (1 - Math.cos(i * Math.PI / unit / 2)); }
+  // frame = requestAnimationFrame(animate2);
+  // i++;
 
-  if (i < unit) return;
-  if (i > 7.5 * unit) i = 0;
-  if (i >= unit && i <= 2 * unit) {
-    cursor.innerHTML = grabbing;
-    return;
-  }
+  // if (i < unit) return;
+  // if (i > 7.5 * unit) i = 0;
+  // if (i >= unit && i <= 2 * unit) {
+  //   cursor.innerHTML = grabbing;
+  //   return;
+  // }
 
-  if (i > 2 * unit && i < 4 * unit) {
-    cursor.style.transform = `translateY(${ROTATE_RADIUS * Math.sin(Math.PI * 2 * progress(i - 2 * unit))}px)translateX(${-ROTATE_RADIUS + ROTATE_RADIUS * Math.cos(Math.PI * 2 * progress(i - 2 * unit))}px)`;
+  // if (i > 2 * unit && i < 4 * unit) {
+  //   cursor.style.transform = `translateY(${ROTATE_RADIUS * Math.sin(Math.PI * 2 * progress(i - 2 * unit))}px)translateX(${-ROTATE_RADIUS + ROTATE_RADIUS * Math.cos(Math.PI * 2 * progress(i - 2 * unit))}px)`;
 
-    const rot1 = Math.sin(Math.PI * 2 * progress(i - 2 * unit))
-      - Math.sin(Math.PI * 2 * progress(i - 1 - 2 * unit));
+  //   const rot1 = Math.sin(Math.PI * 2 * progress(i - 2 * unit))
+  //     - Math.sin(Math.PI * 2 * progress(i - 1 - 2 * unit));
 
-    const rot2 = Math.cos(Math.PI * 2 * progress(i - 2 * unit))
-      - Math.cos(Math.PI * 2 * progress(i - 1 - 2 * unit));
+  //   const rot2 = Math.cos(Math.PI * 2 * progress(i - 2 * unit))
+  //     - Math.cos(Math.PI * 2 * progress(i - 1 - 2 * unit));
 
-    MATRIX
-      .premultiply(new THREE.Matrix4().makeRotationY(rot2))
-      .premultiply(new THREE.Matrix4().makeRotationX(-rot1));
+  //   MATRIX
+  //     .premultiply(new THREE.Matrix4().makeRotationY(rot2))
+  //     .premultiply(new THREE.Matrix4().makeRotationX(-rot1));
 
-    if (!allRotationsSet) {
-      ROTATIONS.push(
-        new THREE.Matrix4().makeRotationX(rot1)
-          .premultiply(new THREE.Matrix4().makeRotationY(-rot2)),
-      );
-    }
-  }
+  //   if (!allRotationsSet) {
+  //     ROTATIONS.push(
+  //       new THREE.Matrix4().makeRotationX(rot1)
+  //         .premultiply(new THREE.Matrix4().makeRotationY(-rot2)),
+  //     );
+  //   }
+  // }
 
-  if (i >= 4 * unit && i < 6 * unit - 1) {
-    allRotationsSet = true;
-    const idx = ROTATIONS.length - 1 - i + 4 * unit;
-    MATRIX.premultiply(ROTATIONS[idx]);
-    cursor.style.transform = `translateY(${ROTATE_RADIUS * Math.sin(Math.PI * 2 * progress(i - 2 * unit))}px)translateX(${-ROTATE_RADIUS + ROTATE_RADIUS * Math.cos(Math.PI * 2 * progress(i - 2 * unit))}px)`;
-  }
+  // if (i >= 4 * unit && i < 6 * unit - 1) {
+  //   allRotationsSet = true;
+  //   const idx = ROTATIONS.length - 1 - i + 4 * unit;
+  //   MATRIX.premultiply(ROTATIONS[idx]);
+  //   cursor.style.transform = `translateY(${ROTATE_RADIUS * Math.sin(Math.PI * 2 * progress(i - 2 * unit))}px)translateX(${-ROTATE_RADIUS + ROTATE_RADIUS * Math.cos(Math.PI * 2 * progress(i - 2 * unit))}px)`;
+  // }
 
-  if (i >= 6 * unit - 1) {
-    cursor.innerHTML = grab;
-  }
+  // if (i >= 6 * unit - 1) {
+  //   cursor.innerHTML = grab;
+  // }
 
-  getId('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
+  // getId('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
 }
 
 export const init = () => {
+  const g = new Globals({
+    getCanvas: () => getId('demo-canvas') as HTMLCanvasElement,
+    getContainer: () => getId('demo-container') as HTMLDivElement,
+  });
+
+  g.init();
+  g.render();
+
   initPips();
   initButtons();
   setTransitions();
   setInstruction1();
   showModal();
-  getId('demo-cube').style.transformOrigin = '50% 50% 0';
-  getId('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
+  // getId('demo-cube').style.transformOrigin = '50% 50% 0';
+  // getId('demo-cube').style.transform = `matrix3D(${MATRIX.elements})translateZ(${s / 2}px)`;
 
-  pips.front[0][0].id = 'demo';
+  // pips.front[0][0].id = 'demo';
   document.getElementById('demo-container')!.appendChild(cursor);
   setCursor(1);
 
@@ -333,31 +342,31 @@ function initButtons() {
 }
 
 function initPips() {
-  const sides: Side[] = ['left', 'front', 'right', 'top', 'back', 'bottom'];
-  sides.forEach((sideName) => {
-    const side = document.createElement('div');
-    side.classList.add('demo-face');
-    side.id = sideName;
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        const pip = document.createElement('div');
-        const back = document.createElement('div');
-        Object.assign(back.style, {
-          height: `${s / 3}px`,
-          width: `${s / 3}px`,
-          transform: 'rotateY(180deg)',
-          position: 'absolute',
-        });
-        pip.classList.add('demo-pip');
-        pip.appendChild(back);
-        pip.style.transformOrigin = `${-j * s / 3 + s / 2}px ${-i * s / 3 + s / 2}px ${-s / 2}px`;
-        pip.style.transform = tform[sideName];
-        pips[sideName][i][j] = pip;
-        side.appendChild(pip);
-      }
-    }
-    getId('demo-cube').appendChild(side);
-  });
+  // const sides: Side[] = ['left', 'front', 'right', 'top', 'back', 'bottom'];
+  // sides.forEach((sideName) => {
+  //   const side = document.createElement('div');
+  //   side.classList.add('demo-face');
+  //   side.id = sideName;
+  //   for (let i = 0; i < 3; i++) {
+  //     for (let j = 0; j < 3; j++) {
+  //       const pip = document.createElement('div');
+  //       const back = document.createElement('div');
+  //       Object.assign(back.style, {
+  //         height: `${s / 3}px`,
+  //         width: `${s / 3}px`,
+  //         transform: 'rotateY(180deg)',
+  //         position: 'absolute',
+  //       });
+  //       pip.classList.add('demo-pip');
+  //       pip.appendChild(back);
+  //       pip.style.transformOrigin = `${-j * s / 3 + s / 2}px ${-i * s / 3 + s / 2}px ${-s / 2}px`;
+  //       pip.style.transform = tform[sideName];
+  //       pips[sideName][i][j] = pip;
+  //       side.appendChild(pip);
+  //     }
+  //   }
+  //   getId('demo-cube').appendChild(side);
+  // });
 }
 
 function getId(id: string) {
