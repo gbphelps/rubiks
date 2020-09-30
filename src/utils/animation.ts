@@ -12,15 +12,17 @@ export function lerp(p: number, from: number, to: number) {
 export function progress(
   millis: number,
   ease: (x: number) => number,
-  worker: (p: number) => void,
+  worker: (p: number, pprev?: number) => void,
   cleanup: () => void,
 ) {
   const t0 = Date.now();
+  let pprev = 0;
   return function getProgress() {
     const x = (Date.now() - t0) / millis;
     let p = ease(x);
     if (x >= 1) p = 1;
-    worker(p);
+    worker(p, pprev);
+    pprev = p;
     if (p === 1) {
       cleanup();
     }

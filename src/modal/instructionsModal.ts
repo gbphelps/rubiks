@@ -62,6 +62,71 @@ function shrink() {
   }, T_DURATION);
 }
 
+const ms: THREE.Matrix4[] = [];
+let msSet = false;
+function rotateForward(s: THREE.Vector2) {
+  return progress(
+    2000,
+    easeInOut,
+    (p: number) => {
+      const x = 1 - Math.cos(p * 2 * Math.PI);
+      const y = Math.sin(p * Math.PI * 2);
+
+      const cursorX = s.x - 100 * x;
+      const cursorY = s.y + 100 * y;
+
+      const cxPrev = +cursor.style.left.slice(0, -2);
+      const cyPrev = +cursor.style.top.slice(0, -2);
+
+      g.cube.rotation.rotate((cursorY - cyPrev) * 0.01, (cursorX - cxPrev) * 0.01, 0);
+      if (!msSet) ms.push(g.cube.rotation.getRotation());
+      g.cube.updateRotation();
+
+      cursor.style.left = `${cursorX}px`;
+      cursor.style.top = `${cursorY}px`;
+    },
+    () => {
+      msSet = true;
+      g.action.setAction({
+        type: 'rotate-autocorrect',
+        params: {
+          progressFn: rotateBackward(s),
+        },
+      });
+    },
+  );
+}
+
+function rotateBackward(s: THREE.Vector2) {
+  let pointer = ms.length - 1;
+  return progress(
+    2000,
+    easeInOut,
+    (p: number) => {
+      const x = 1 - Math.cos(p * 2 * Math.PI);
+      const y = -(Math.sin(p * Math.PI * 2));
+
+      const cursorX = s.x - 100 * x;
+      const cursorY = s.y + 100 * y;
+
+      g.cube.rotation.setRotation({ mx: ms[pointer--] });
+      g.cube.updateRotation();
+
+      cursor.style.left = `${cursorX}px`;
+      cursor.style.top = `${cursorY}px`;
+    },
+    () => {
+      g.action.setAction(null);
+      g.action.setAction({
+        type: 'rotate-autocorrect',
+        params: {
+          progressFn: rotateForward(s),
+        },
+      });
+    },
+  );
+}
+
 function setInstruction2() {
   timeouts.forEach((t) => clearTimeout(t));
   const inst2 = getId('demo-instruction2');
@@ -84,27 +149,7 @@ function setInstruction2() {
   g.action.setAction({
     type: 'rotate-autocorrect',
     params: {
-      progressFn: progress(
-        2000,
-        easeInOut,
-        (p: number) => {
-          console.log(p);
-          // const prevPosition = new THREE.Vector2(
-          //   +cursor.style.left.slice(0, -2),
-          //   +cursor.style.top.slice(0, -2),
-          // );
-          const delx = 100 * (1 - Math.cos(p * 2 * Math.PI));
-          const dely = 100 * Math.sin(p * Math.PI * 2);
-
-          const x = s.x - delx;
-          const y = s.y + dely;
-          cursor.style.left = `${x}px`;
-          cursor.style.top = `${y}px`;
-        },
-        () => {
-          g.action.setAction(null);
-        },
-      ),
+      progressFn: rotateForward(s),
     },
   });
   animate2();
