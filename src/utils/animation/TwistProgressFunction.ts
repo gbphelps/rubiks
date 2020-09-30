@@ -32,7 +32,7 @@ export function makeTwistProgressFn({
       });
     },
     () => {
-      updateRegistry(unitTorque, toTorque, tranche);
+      updateRegistry(tranche);
       setUserEventsEnabled(true);
       if (addlCleanup) addlCleanup();
     },

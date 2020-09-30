@@ -4,23 +4,15 @@ import faceManager from '../faceManager';
 import { globals } from '../globals';
 
 export default function updateRegistry(
-  unitTorque: THREE.Vector3,
-  toTorque: number,
   tranche: (THREE.Object3D | null)[],
 ) {
-  const { axis, rotation } = getAxisAndRotation(unitTorque, toTorque);
-  const rotMx = getRotationMatrix(axis, rotation);
-
   tranche.forEach((box) => {
     if (!box) throw new Error();
     const child = box.children[0];
+    const mx = box.matrix.clone();
     box.rotation.set(0, 0, 0);
-
-    rotateChild(child, axis, rotation);
-
-    child.position.applyMatrix4(rotMx);
+    child.applyMatrix4(mx);
     roundPosition(child);
-
     const { x, y, z } = child.position;
     globals.cube.registry.registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
   });
@@ -56,20 +48,6 @@ function roundPosition(obj: THREE.Object3D) {
     const axis = axes[i];
     obj.position[axis] = Math.round(obj.position[axis]);
   }
-}
-
-function getAxisAndRotation(unitTorque: THREE.Vector3, magnitude: number) {
-  let axis: Axis | null = null;
-  let rotation: number = 0;
-  for (let i = 0; i < 3; i++) {
-    if (unitTorque[axes[i]] === 0) continue;
-    rotation = magnitude * unitTorque[axes[i]];
-    axis = axes[i];
-    break;
-  }
-  if (!axis) throw new Error('Axis not defined?');
-
-  return { axis, rotation };
 }
 
 function getRotationMatrix(axis: Axis, rotation: number) {
