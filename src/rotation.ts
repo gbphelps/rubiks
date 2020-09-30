@@ -19,6 +19,13 @@ export default class RotationManager {
       if (inv) this.inv = inv.clone();
     }
 
+    reset() {
+      this.setRotation({
+        mx: new THREE.Matrix4(),
+        inv: new THREE.Matrix4(),
+      });
+    }
+
     rotate(tx: number, ty: number, tz: number) {
       this.mx = Rx(tx).multiply(
         Ry(ty).multiply(

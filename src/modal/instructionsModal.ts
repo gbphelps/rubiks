@@ -21,17 +21,14 @@ const g = new Globals({
   getContainer: () => getId('demo-container') as HTMLDivElement,
 });
 
-let MATRIX = new THREE.Matrix4();
-resetMx();
+const MATRIX = new THREE.Matrix4().makeRotationY(-Math.PI / 4)
+  .premultiply(
+    new THREE.Matrix4().makeRotationX(Math.asin(1 / Math.sqrt(3))),
+  );
 
 const cursor = document.createElement('div');
 cursor.id = 'cursor';
 cursor.style.transform = 'translateX(-50%)translateY(-50%)';
-
-function resetMx() {
-  MATRIX = new THREE.Matrix4().makeRotationY(-Math.PI / 4)
-    .premultiply(new THREE.Matrix4().makeRotationX(Math.asin(1 / Math.sqrt(3))));
-}
 
 /// ///////
 
@@ -337,10 +334,13 @@ function twistHorizontal() {
 
 export function setInstruction1() {
   g.cube.respawn();
+  g.cube.rotation.setRotation({ mx: MATRIX });
+  g.cube.updateRotation();
+  g.render();
+
   timeouts.forEach((t) => clearTimeout(t));
   showInstruction(1);
   cursor.innerHTML = grab;
-  resetMx();
   setCursor(1);
   setNextButton(1);
 
