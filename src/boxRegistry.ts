@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { colorize, decolorize } from './utils/uiEffects';
 import { axes, getNormalCubeSpace, Side } from './utils/types';
-import { roundPosition } from './utils/three';
+import { roundPosition, roundRotation } from './utils/three';
 
 export class BoxRegistry {
   activeNode: THREE.Vector3 | null = null;
@@ -177,6 +177,7 @@ export class BoxRegistry {
       box.rotation.set(0, 0, 0);
       child.applyMatrix4(mx);
       roundPosition(child);
+      roundRotation(child);
       const { x, y, z } = child.position;
       this.registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
     });
