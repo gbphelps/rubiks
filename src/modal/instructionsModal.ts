@@ -128,6 +128,7 @@ function rotateBackward(s: THREE.Vector2) {
 }
 
 function setInstruction2() {
+  g.cube.respawn();
   timeouts.forEach((t) => clearTimeout(t));
   const inst2 = getId('demo-instruction2');
   inst2.style.visibility = 'visible';

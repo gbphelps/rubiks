@@ -15,6 +15,7 @@ export interface CubeManager {
   registry: BoxRegistry;
   rotation: RotationManager;
   updateRotation: () => void;
+  respawn: () => void;
 }
 
 function makeDecal(color: string | number, side: Side) {
@@ -140,24 +141,30 @@ export default function makeCube() {
   const registry = new BoxRegistry();
   const rotation = new RotationManager();
 
-  for (let x = -1; x <= 1; x++) {
-    for (let y = -1; y <= 1; y++) {
-      for (let z = -1; z <= 1; z++) {
-        const decals = getInitialDecals(x, y, z);
-        const box = cubeSpawn(decals, new THREE.Vector3(x, y, z));
-        registry.registerBox(
-          new THREE.Vector3(x + 1, y + 1, z + 1),
-          box,
-        );
-        cube.add(box);
+  function respawn() {
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
+        for (let z = -1; z <= 1; z++) {
+          const loc = new THREE.Vector3(x + 1, y + 1, z + 1);
+          const oldBox = registry.getBox(loc);
+          if (oldBox) cube.remove(oldBox);
+
+          const decals = getInitialDecals(x, y, z);
+          const box = cubeSpawn(decals, new THREE.Vector3(x, y, z));
+          registry.registerBox(loc, box);
+          cube.add(box);
+        }
       }
     }
   }
+
+  respawn();
 
   return {
     object: cube,
     registry,
     rotation,
+    respawn,
     updateRotation: () => cube.setRotationFromMatrix(
       rotation.getRotation(),
     ),
