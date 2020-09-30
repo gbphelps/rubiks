@@ -7,14 +7,12 @@ import { setUserEventsEnabled } from '../events';
 import { startOver } from '../startOver';
 import grab from './grab.svg';
 import grabbing from './grabbing.svg';
-import { Side } from '../utils/types';
 import faceManager from '../faceManager';
 import { Globals } from '../globals';
 import { makeTwistProgressFn } from '../utils/animation/TwistProgressFunction';
+import { easeInOut, progress } from '../utils/animation';
 
 const T_DURATION = 300;
-
-const s = 150;
 let modalVisible = true;
 let solved = false;
 
@@ -39,10 +37,11 @@ function resetMx() {
 
 cursor.innerHTML = grab;
 
-const frame: number = 0;
+let frame: number = 0;
+let timeouts: ReturnType<typeof setTimeout>[] = [];
 
 function animate() {
-  requestAnimationFrame(animate);
+  frame = requestAnimationFrame(animate);
   g.render();
   const action = g.action.getAction();
   if (action?.type === 'twist-autocorrect') {
@@ -51,18 +50,20 @@ function animate() {
 }
 
 function shrink() {
+  cancelAnimationFrame(frame);
   const c = getId('demo-container');
   c.style.transform = 'scale(0)';
   c.style.opacity = '0';
   hideInstruction(1);
-  c.addEventListener('transitionend', () => {
+  setTimeout(() => {
     c.style.transform = '';
     c.style.opacity = '1';
     setInstruction2();
-  }, { once: true });
+  }, T_DURATION);
 }
 
 function setInstruction2() {
+  timeouts.forEach((t) => clearTimeout(t));
   const inst2 = getId('demo-instruction2');
   inst2.style.visibility = 'visible';
   inst2.style.transform = 'scale(1)';
@@ -71,6 +72,41 @@ function setInstruction2() {
   cursor.style.transform = 'translateX(-50%)translateY(-50%)';
   setCursor(2);
   cursor.innerHTML = grab;
+  const startPos = g.getScreenCoordsFromCameraCoords(
+    new THREE.Vector3(0, 0, 1.5).applyMatrix4(MATRIX),
+  ).multiplyScalar(g.pixPerUnit);
+
+  const s = new THREE.Vector2(
+    g.canvas.width / 2 + startPos.x,
+    g.canvas.height / 2 - startPos.y,
+  );
+
+  g.action.setAction({
+    type: 'rotate-autocorrect',
+    params: {
+      progressFn: progress(
+        2000,
+        easeInOut,
+        (p: number) => {
+          console.log(p);
+          // const prevPosition = new THREE.Vector2(
+          //   +cursor.style.left.slice(0, -2),
+          //   +cursor.style.top.slice(0, -2),
+          // );
+          const delx = 100 * (1 - Math.cos(p * 2 * Math.PI));
+          const dely = 100 * Math.sin(p * Math.PI * 2);
+
+          const x = s.x - delx;
+          const y = s.y + dely;
+          cursor.style.left = `${x}px`;
+          cursor.style.top = `${y}px`;
+        },
+        () => {
+          g.action.setAction(null);
+        },
+      ),
+    },
+  });
   animate2();
   setNextButton(2);
 }
@@ -92,13 +128,17 @@ function showInstruction(num: number) {
 
 function setCursor(num: number) {
   if (num === 1) {
-    const a = new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX);
-    const b = g.getScreenCoordsFromCameraCoords(a).multiplyScalar(g.pixPerUnit);
-    cursor.style.top = `${g.canvas.height / 2 - b.y}px`;
-    cursor.style.left = `${g.canvas.width / 2 + b.x}px`;
+    const pos = g.getScreenCoordsFromCameraCoords(
+      new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX),
+    ).multiplyScalar(g.pixPerUnit);
+    cursor.style.top = `${g.canvas.height / 2 - pos.y}px`;
+    cursor.style.left = `${g.canvas.width / 2 + pos.x}px`;
   } else if (num === 2) {
-    cursor.style.top = `${s * 2 / 3}px`;
-    cursor.style.left = `${s * 1 / 15}px`;
+    const pos = g.getScreenCoordsFromCameraCoords(
+      new THREE.Vector3(0, 0, 1.5).applyMatrix4(MATRIX),
+    ).multiplyScalar(g.pixPerUnit);
+    cursor.style.top = `${g.canvas.height / 2 - pos.y}px`;
+    cursor.style.left = `${g.canvas.width / 2 + pos.x}px`;
   } else {
     throw new Error('setCursor arg must be 1 or 2');
   }
@@ -181,14 +221,16 @@ function twistVertical() {
         addlCleanup: () => {
           cursor.innerHTML = grab;
           g.action.setAction(null);
-          setTimeout(() => {
-            cursor.style.top = `${(g.canvas.height / 2) - cStart.y}px`;
-            cursor.style.left = `${(g.canvas.width / 2) + cStart.x}px`;
-          }, 500);
-          setTimeout(() => {
-            cursor.innerHTML = grabbing;
-          }, 750);
-          setTimeout(twistHorizontal, 1000);
+          timeouts = [
+            setTimeout(() => {
+              cursor.style.top = `${(g.canvas.height / 2) - cStart.y}px`;
+              cursor.style.left = `${(g.canvas.width / 2) + cStart.x}px`;
+            }, 500),
+            setTimeout(() => {
+              cursor.innerHTML = grabbing;
+            }, 750),
+            setTimeout(twistHorizontal, 1000),
+          ];
         },
       }),
       unitTorque,
@@ -228,14 +270,16 @@ function twistHorizontal() {
         addlCleanup: () => {
           g.action.setAction(null);
           cursor.innerHTML = grab;
-          setTimeout(() => {
-            cursor.style.top = `${(g.canvas.height / 2) - cStart.y}px`;
-            cursor.style.left = `${(g.canvas.width / 2) + cStart.x}px`;
-          }, 500);
-          setTimeout(() => {
-            cursor.innerHTML = grabbing;
-          }, 750);
-          setTimeout(twistVertical, 1000);
+          timeouts = [
+            setTimeout(() => {
+              cursor.style.top = `${(g.canvas.height / 2) - cStart.y}px`;
+              cursor.style.left = `${(g.canvas.width / 2) + cStart.x}px`;
+            }, 500),
+            setTimeout(() => {
+              cursor.innerHTML = grabbing;
+            }, 750),
+            setTimeout(twistVertical, 1000),
+          ];
         },
       }),
       tranche,
@@ -246,6 +290,7 @@ function twistHorizontal() {
 }
 
 export function setInstruction1() {
+  timeouts.forEach((t) => clearTimeout(t));
   showInstruction(1);
   cursor.innerHTML = grab;
   resetMx();
@@ -255,16 +300,24 @@ export function setInstruction1() {
   g.cube.registry.setActiveBox(
     new THREE.Vector3(0, 2, 2),
   );
-  setTimeout(() => {
-    cursor.innerHTML = grabbing;
-  }, 1000);
-  setTimeout(() => {
-    twistVertical();
-    animate();
-  }, 1250);
+  timeouts = [
+    setTimeout(() => {
+      cursor.innerHTML = grabbing;
+    }, 1000),
+    setTimeout(() => {
+      twistVertical();
+      animate();
+    }, 1250),
+  ];
 }
 
 function animate2() {
+  frame = requestAnimationFrame(animate2);
+  g.render();
+  const action = g.action.getAction();
+  if (action?.type === 'rotate-autocorrect') {
+    action.params.progressFn();
+  }
 }
 
 export const init = () => {
@@ -283,7 +336,6 @@ export const init = () => {
   setCursor(1);
 
   getId('demo-next-button').addEventListener('click', shrink);
-  getId('demo-next-button').addEventListener('transitionend', (e) => e.stopPropagation());
 };
 
 function initButtons() {
