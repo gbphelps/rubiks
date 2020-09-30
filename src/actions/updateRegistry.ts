@@ -2,24 +2,7 @@ import * as THREE from 'three';
 import { Axis, axes } from '../utils/types';
 import faceManager from '../faceManager';
 import { globals } from '../globals';
-
-export default function updateRegistry(
-  tranche: (THREE.Object3D | null)[],
-) {
-  tranche.forEach((box) => {
-    if (!box) throw new Error();
-    const child = box.children[0];
-    const mx = box.matrix.clone();
-    box.rotation.set(0, 0, 0);
-    child.applyMatrix4(mx);
-    roundPosition(child);
-    const { x, y, z } = child.position;
-    globals.cube.registry.registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
-  });
-
-  faceManager.updateFaces();
-  globals.action.setAction(null);
-}
+import { roundPosition } from '../utils/three';
 
 function rotateChild(child: THREE.Object3D, axis: Axis, rotation: number) {
   const a = getRotationMatrix(axis, rotation);
@@ -40,13 +23,6 @@ function roundRotation(obj: THREE.Object3D) {
     const oneRotation = Math.PI / 2;
     const turns = Math.round(obj.rotation[axis] / oneRotation);
     obj.rotation[axis] = mod(turns, 4) * oneRotation;
-  }
-}
-
-function roundPosition(obj: THREE.Object3D) {
-  for (let i = 0; i < 3; i++) {
-    const axis = axes[i];
-    obj.position[axis] = Math.round(obj.position[axis]);
   }
 }
 

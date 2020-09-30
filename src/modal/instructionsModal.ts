@@ -11,6 +11,7 @@ import grabbing from './grabbing.svg';
 import { Side } from '../utils/types';
 import faceManager from '../faceManager';
 import { Globals } from '../globals';
+import { makeTwistProgressFn } from '../utils/animation/TwistProgressFunction';
 
 const T_DURATION = 300;
 
@@ -49,7 +50,12 @@ const unit = 35;
 const frame: number = 0;
 
 function animate() {
-
+  requestAnimationFrame(animate);
+  g.render();
+  const action = g.action.getAction();
+  if (action?.type === 'twist-autocorrect') {
+    action.params.progressFn();
+  }
 }
 
 function shrink() {
@@ -154,13 +160,65 @@ function activateModal(modal: string) {
   });
 }
 
+function twistVertical() {
+  const unitTorque = new THREE.Vector3(1, 0, 0);
+  const tranche = g.cube.registry.getTranche(unitTorque);
+  const toTorque = Math.PI / 2;
+
+  g.action.setAction({
+    type: 'twist-autocorrect',
+    params: {
+      progressFn: makeTwistProgressFn({
+        tranche,
+        unitTorque,
+        fromTorque: 0,
+        toTorque,
+        duration: 500,
+        cube: g.cube,
+        addlCleanup: twistHorizontal,
+      }),
+      unitTorque,
+      toTorque,
+      tranche,
+    },
+  });
+}
+
+function twistHorizontal() {
+  const unitTorque = new THREE.Vector3(0, 1, 0);
+  const toTorque = Math.PI / 2;
+  const tranche = g.cube.registry.getTranche(unitTorque);
+
+  g.action.setAction({
+    type: 'twist-autocorrect',
+    params: {
+      progressFn: makeTwistProgressFn({
+        tranche,
+        unitTorque,
+        fromTorque: 0,
+        toTorque,
+        duration: 500,
+        cube: g.cube,
+        addlCleanup: twistVertical,
+      }),
+      tranche,
+      unitTorque,
+      toTorque,
+    },
+  });
+}
+
 export function setInstruction1() {
   showInstruction(1);
   setCursor(1);
   cursor.innerHTML = grab;
   resetMx();
   setNextButton(1);
-  i = 0;
+
+  g.cube.registry.setActiveBox(
+    new THREE.Vector3(0, 2, 2),
+  );
+  twistVertical();
   animate();
 }
 

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { colorize, decolorize } from './utils/uiEffects';
 import { axes, getNormalCubeSpace, Side } from './utils/types';
+import { roundPosition } from './utils/three';
 
 export class BoxRegistry {
   activeNode: THREE.Vector3 | null = null;
@@ -164,6 +165,21 @@ export class BoxRegistry {
     ));
 
     return faceColors;
+  }
+
+  updateRegistry(
+    tranche: (THREE.Object3D | null)[],
+  ) {
+    tranche.forEach((box) => {
+      if (!box) throw new Error();
+      const child = box.children[0];
+      const mx = box.matrix.clone();
+      box.rotation.set(0, 0, 0);
+      child.applyMatrix4(mx);
+      roundPosition(child);
+      const { x, y, z } = child.position;
+      this.registerBox(new THREE.Vector3(x + 1, y + 1, z + 1), box);
+    });
   }
 }
 

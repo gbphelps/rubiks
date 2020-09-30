@@ -27,11 +27,13 @@ export default function setAutocorrectTwist(e: MouseEvent) {
     type: 'twist-autocorrect',
     params: {
       progressFn: makeTwistProgressFn({
+        cube: globals.cube,
         tranche,
         unitTorque,
         toTorque,
         fromTorque: torque,
         duration: 300,
+        addlCleanup: () => { globals.action.setAction(null); },
       }),
       tranche,
       unitTorque,

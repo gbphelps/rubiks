@@ -127,6 +127,7 @@ function doTwist(move: TwistMove, dir: number, cb: () => void) {
     type: 'twist-autocorrect',
     params: {
       progressFn: makeTwistProgressFn({
+        cube: globals.cube,
         tranche,
         unitTorque,
         toTorque: dir * toTorque,

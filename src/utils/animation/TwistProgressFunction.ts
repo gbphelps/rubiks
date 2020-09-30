@@ -1,6 +1,6 @@
-import updateRegistry from '../../actions/updateRegistry';
 import { easeInOut, lerp, progress } from '../animation';
 import { setUserEventsEnabled } from '../../events';
+import { CubeManager } from '../../cubeSpawn';
 
 interface ProgressFunctionParams {
     tranche: (THREE.Object3D | null)[],
@@ -9,10 +9,17 @@ interface ProgressFunctionParams {
     toTorque: number,
     duration: number,
     addlCleanup?: () => void,
+    cube: CubeManager,
   }
 
 export function makeTwistProgressFn({
-  tranche, unitTorque, toTorque, fromTorque, duration, addlCleanup,
+  tranche,
+  unitTorque,
+  toTorque,
+  fromTorque,
+  duration,
+  addlCleanup,
+  cube,
 }: ProgressFunctionParams) {
   return progress(
     duration,
@@ -32,7 +39,7 @@ export function makeTwistProgressFn({
       });
     },
     () => {
-      updateRegistry(tranche);
+      cube.registry.updateRegistry(tranche);
       setUserEventsEnabled(true);
       if (addlCleanup) addlCleanup();
     },
