@@ -4,6 +4,7 @@ import rubiksSVG from './assets/rubiks.svg';
 import { makeTwistProgressFn } from './utils/animation/TwistProgressFunction';
 import { makeQuaternionProgressFn } from './utils/animation/QuaternionProgressFunction';
 import { globals } from './globals';
+import faceManager from './faceManager';
 
 class Queue {
   list: (() => void)[] = [];
@@ -134,6 +135,7 @@ function doTwist(move: TwistMove, dir: number, cb: () => void) {
         fromTorque: 0,
         duration: 500,
         addlCleanup: () => {
+          faceManager.updateFaces();
           cb();
         },
       }),

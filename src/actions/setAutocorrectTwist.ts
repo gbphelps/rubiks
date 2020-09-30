@@ -2,6 +2,7 @@ import getUserTorque from '../getUserTorque';
 import { setUserEventsEnabled } from '../events';
 import { makeTwistProgressFn } from '../utils/animation/TwistProgressFunction';
 import { globals } from '../globals';
+import faceManager from '../faceManager';
 
 export default function setAutocorrectTwist(e: MouseEvent) {
   const action = globals.action.getAction();
@@ -33,7 +34,10 @@ export default function setAutocorrectTwist(e: MouseEvent) {
         toTorque,
         fromTorque: torque,
         duration: 300,
-        addlCleanup: () => { globals.action.setAction(null); },
+        addlCleanup: () => {
+          globals.action.setAction(null);
+          faceManager.updateFaces();
+        },
       }),
       tranche,
       unitTorque,
