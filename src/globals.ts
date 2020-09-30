@@ -1,14 +1,12 @@
 import * as THREE from 'three';
 import ActionManager from './action';
-import { BoxRegistry } from './boxRegistry';
 import {
   getProjectionOntoCube,
   getProjectionOntoSide,
   getCameraCoords,
   getScreenCoords,
 } from './cubeProjections';
-import makeCube from './cubeSpawn';
-import RotationManager from './rotation';
+import makeCube, { CubeManager } from './cubeSpawn';
 import { Side } from './utils/types';
 
 const UNIT = 10;
@@ -30,12 +28,7 @@ export class Globals {
 
   lights: THREE.Light[];
 
-  cube: {
-    object: THREE.Object3D,
-    registry: BoxRegistry,
-    rotation: RotationManager,
-    updateRotation: () => void,
-  };
+  cube: CubeManager;
 
   pixPerUnit: number;
 

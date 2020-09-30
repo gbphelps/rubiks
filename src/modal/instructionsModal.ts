@@ -336,6 +336,7 @@ function twistHorizontal() {
 }
 
 export function setInstruction1() {
+  g.cube.respawn();
   timeouts.forEach((t) => clearTimeout(t));
   showInstruction(1);
   cursor.innerHTML = grab;
