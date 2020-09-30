@@ -63,7 +63,7 @@ const ms: THREE.Matrix4[] = [];
 let msSet = false;
 function rotateForward(s: THREE.Vector2) {
   return progress(
-    2000,
+    1500,
     easeInOut,
     (p: number) => {
       const x = 1 - Math.cos(p * 2 * Math.PI);
@@ -97,7 +97,7 @@ function rotateForward(s: THREE.Vector2) {
 function rotateBackward(s: THREE.Vector2) {
   let pointer = ms.length - 1;
   return progress(
-    2000,
+    1500,
     easeInOut,
     (p: number) => {
       const x = 1 - Math.cos(p * 2 * Math.PI);
@@ -114,12 +114,18 @@ function rotateBackward(s: THREE.Vector2) {
     },
     () => {
       g.action.setAction(null);
-      g.action.setAction({
-        type: 'rotate-autocorrect',
-        params: {
-          progressFn: rotateForward(s),
-        },
-      });
+      cursor.innerHTML = grab;
+      timeouts = [
+        setTimeout(() => {
+          cursor.innerHTML = grabbing;
+        }, 500),
+        setTimeout(() => g.action.setAction({
+          type: 'rotate-autocorrect',
+          params: {
+            progressFn: rotateForward(s),
+          },
+        }), 1000),
+      ];
     },
   );
 }
@@ -144,12 +150,16 @@ function setInstruction2() {
     g.canvas.height / 2 - startPos.y,
   );
 
-  g.action.setAction({
-    type: 'rotate-autocorrect',
-    params: {
-      progressFn: rotateForward(s),
-    },
-  });
+  timeouts = [
+    setTimeout(() => { cursor.innerHTML = grabbing; }, 500),
+    setTimeout(() => g.action.setAction({
+      type: 'rotate-autocorrect',
+      params: {
+        progressFn: rotateForward(s),
+      },
+    }), 1000),
+  ];
+
   animate2();
   setNextButton(2);
 }
