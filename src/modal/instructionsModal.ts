@@ -4,7 +4,6 @@ import {
   getTime, start as startClock, stop as stopClock, setClock,
 } from '../clock';
 import { setUserEventsEnabled } from '../events';
-import { easeInOut } from '../utils/animation';
 import { startOver } from '../startOver';
 import grab from './grab.svg';
 import grabbing from './grabbing.svg';
@@ -16,11 +15,6 @@ import { makeTwistProgressFn } from '../utils/animation/TwistProgressFunction';
 const T_DURATION = 300;
 
 const s = 150;
-const ROTATE_RADIUS = s * 0.6;
-const DRAG_DISTANCE = s * 0.6;
-
-const ROTATIONS: THREE.Matrix4[] = [];
-const allRotationsSet = false;
 let modalVisible = true;
 let solved = false;
 
@@ -45,8 +39,6 @@ function resetMx() {
 
 cursor.innerHTML = grab;
 
-let i = 0;
-const unit = 35;
 const frame: number = 0;
 
 function animate() {
@@ -79,7 +71,6 @@ function setInstruction2() {
   cursor.style.transform = 'translateX(-50%)translateY(-50%)';
   setCursor(2);
   cursor.innerHTML = grab;
-  i = 0;
   animate2();
   setNextButton(2);
 }
@@ -165,6 +156,13 @@ function twistVertical() {
   const tranche = g.cube.registry.getTranche(unitTorque);
   const toTorque = Math.PI / 2;
 
+  const cStart = g.getScreenCoordsFromCameraCoords(
+    new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX),
+  ).multiplyScalar(g.pixPerUnit);
+  const cEnd = g.getScreenCoordsFromCameraCoords(
+    new THREE.Vector3(-1, -1, 1.5).applyMatrix4(MATRIX),
+  ).multiplyScalar(g.pixPerUnit);
+
   g.action.setAction({
     type: 'twist-autocorrect',
     params: {
@@ -175,7 +173,23 @@ function twistVertical() {
         toTorque,
         duration: 500,
         cube: g.cube,
-        addlCleanup: twistHorizontal,
+        addlWork: (p: number) => {
+          const pos = new THREE.Vector2().lerpVectors(cStart, cEnd, p);
+          cursor.style.top = `${(g.canvas.height / 2) - pos.y}px`;
+          cursor.style.left = `${(g.canvas.width / 2) + pos.x}px`;
+        },
+        addlCleanup: () => {
+          cursor.innerHTML = grab;
+          g.action.setAction(null);
+          setTimeout(() => {
+            cursor.style.top = `${(g.canvas.height / 2) - cStart.y}px`;
+            cursor.style.left = `${(g.canvas.width / 2) + cStart.x}px`;
+          }, 500);
+          setTimeout(() => {
+            cursor.innerHTML = grabbing;
+          }, 750);
+          setTimeout(twistHorizontal, 1000);
+        },
       }),
       unitTorque,
       toTorque,
@@ -185,6 +199,13 @@ function twistVertical() {
 }
 
 function twistHorizontal() {
+  const cStart = g.getScreenCoordsFromCameraCoords(
+    new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX),
+  ).multiplyScalar(g.pixPerUnit);
+  const cEnd = g.getScreenCoordsFromCameraCoords(
+    new THREE.Vector3(1, 1, 1.5).applyMatrix4(MATRIX),
+  ).multiplyScalar(g.pixPerUnit);
+
   const unitTorque = new THREE.Vector3(0, 1, 0);
   const toTorque = Math.PI / 2;
   const tranche = g.cube.registry.getTranche(unitTorque);
@@ -199,7 +220,23 @@ function twistHorizontal() {
         toTorque,
         duration: 500,
         cube: g.cube,
-        addlCleanup: twistVertical,
+        addlWork: (p: number) => {
+          const pos = new THREE.Vector2().lerpVectors(cStart, cEnd, p);
+          cursor.style.top = `${g.canvas.height / 2 - pos.y}px`;
+          cursor.style.left = `${g.canvas.width / 2 + pos.x}px`;
+        },
+        addlCleanup: () => {
+          g.action.setAction(null);
+          cursor.innerHTML = grab;
+          setTimeout(() => {
+            cursor.style.top = `${(g.canvas.height / 2) - cStart.y}px`;
+            cursor.style.left = `${(g.canvas.width / 2) + cStart.x}px`;
+          }, 500);
+          setTimeout(() => {
+            cursor.innerHTML = grabbing;
+          }, 750);
+          setTimeout(twistVertical, 1000);
+        },
       }),
       tranche,
       unitTorque,
@@ -210,16 +247,21 @@ function twistHorizontal() {
 
 export function setInstruction1() {
   showInstruction(1);
-  setCursor(1);
   cursor.innerHTML = grab;
   resetMx();
+  setCursor(1);
   setNextButton(1);
 
   g.cube.registry.setActiveBox(
     new THREE.Vector3(0, 2, 2),
   );
-  twistVertical();
-  animate();
+  setTimeout(() => {
+    cursor.innerHTML = grabbing;
+  }, 1000);
+  setTimeout(() => {
+    twistVertical();
+    animate();
+  }, 1250);
 }
 
 function animate2() {

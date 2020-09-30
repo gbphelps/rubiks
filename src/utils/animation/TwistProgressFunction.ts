@@ -9,6 +9,7 @@ interface ProgressFunctionParams {
     toTorque: number,
     duration: number,
     addlCleanup?: () => void,
+    addlWork?: (p: number) => void,
     cube: CubeManager,
   }
 
@@ -19,12 +20,14 @@ export function makeTwistProgressFn({
   fromTorque,
   duration,
   addlCleanup,
+  addlWork,
   cube,
 }: ProgressFunctionParams) {
   return progress(
     duration,
     easeInOut,
     (p: number) => {
+      if (addlWork) addlWork(p);
       const from = fromTorque;
       const to = toTorque;
 
