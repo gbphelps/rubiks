@@ -71,7 +71,11 @@ export class Globals {
   }
 
   resize = () => {
-    const { height, width } = this.container.getBoundingClientRect();
+    let { height, width } = this.container.getBoundingClientRect();
+
+    const limitingDimension = Math.min(height, width);
+    height = limitingDimension;
+    width = limitingDimension;
 
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();

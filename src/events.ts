@@ -24,10 +24,10 @@ function assign(key: string) {
 }
 
 export function extractScreenCoords(e: MouseEvent) {
-  const { container } = globals;
+  const { canvas } = globals;
   const {
     top: y0, left: x0, height, width,
-  } = container!.getBoundingClientRect();
+  } = canvas.getBoundingClientRect();
 
   const x = ((e.clientX - x0) - width / 2) / globals.pixPerUnit;
   const y = (height / 2 - (e.clientY - y0)) / globals.pixPerUnit;
