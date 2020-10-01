@@ -49,6 +49,7 @@ export default function mouseup() {
         unitTorque,
         toTorque,
         tranche,
+        staticLocation: tranche[0]!.children[0].position.clone(),
       },
     };
     history.push(moveLog);
