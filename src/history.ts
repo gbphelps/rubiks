@@ -5,6 +5,8 @@ import { makeTwistProgressFn } from './utils/animation/TwistProgressFunction';
 import { makeQuaternionProgressFn } from './utils/animation/QuaternionProgressFunction';
 import { globals } from './globals';
 import faceManager from './faceManager';
+import cc from './assets/cc.svg';
+import cw from './assets/cw.svg';
 
 class Queue {
   list: (() => void)[] = [];
@@ -225,8 +227,8 @@ const faceNames = {
 };
 
 function getRotDirection(torque: number, pos: number) {
-  if (pos === 0) return (torque === 1 ? 'COUNTER-CW' : 'CLOCKWISE');
-  return torque * pos === 1 ? 'COUNTER-CW' : 'CLOCKWISE';
+  if (pos === 0) return (torque === 1 ? -1 : 1);
+  return torque * pos === 1 ? -1 : 1;
 }
 
 function translateLog(entry: MoveLog) {
@@ -244,8 +246,9 @@ function translateLog(entry: MoveLog) {
             <div class="face-name">
               <span>${faceName.toUpperCase()}</span>
             </div> 
-            <div class="turns">
-              <span>${rot} \u00d7 ${turns}</span>
+            <div class="turns ${rot === 1 ? 'cw' : 'cc'}">
+              ${rot === 1 ? cw : cc}
+              <span>&nbsp;\u00d7&nbsp;${turns}</span>
             </div>
           </div>
         `;

@@ -145,7 +145,9 @@ body, html {
 
 
 .history-log {
-    padding: 12px;
+    height: 40px;
+    display: flex;
+    align-items: center;
     border-bottom: 1px solid rgba($black, .05);
     border-top: 1px solid rgba($black, .05);
     margin-bottom: -1px;
@@ -293,6 +295,13 @@ button {
 
 .history-log-content {
     display: flex;
+    align-items: center;
+
+    svg {
+        height: 20px;
+        width: auto;
+    }
+
     .face-name {
         width: 80px;
         span {
@@ -307,6 +316,16 @@ button {
         letter-spacing: 1;
         color: #777;
         font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        &.cw svg {
+            fill: blue;
+        }
+        &.cc svg {
+            fill: red;
+            position: relative;
+            left: -3px;
+        }
     }
     
     &.rotate {
