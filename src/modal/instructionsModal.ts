@@ -93,32 +93,32 @@ async function shrinkThenSetInstruction(num: number) {
   instructionSetters[num - 1]();
 }
 
-const ms: THREE.Matrix4[] = [];
-let msSet = false;
+let ms: THREE.Matrix4[] = [];
 function rotateForward(getStart: () => THREE.Vector2) {
+  g.cube.rotation.setRotation({ mx: MATRIX });
+  g.cube.updateRotation();
+
   return progress(
     1500,
     easeInOut,
-    (p: number) => {
+    (p: number, pprev: number) => {
       const s = getStart();
       const x = 1 - Math.cos(p * 2 * Math.PI);
       const y = Math.sin(p * Math.PI * 2);
+      const xprev = 1 - Math.cos(pprev * 2 * Math.PI);
+      const yprev = Math.sin(pprev * Math.PI * 2);
 
       const cursorX = s.x - 100 * x;
       const cursorY = s.y + 100 * y;
 
-      const cxPrev = +cursor.style.left.slice(0, -2);
-      const cyPrev = +cursor.style.top.slice(0, -2);
-
-      g.cube.rotation.rotate((cursorY - cyPrev) * 0.01, (cursorX - cxPrev) * 0.01, 0);
-      if (!msSet) ms.push(g.cube.rotation.getRotation());
+      g.cube.rotation.rotate((y - yprev), (xprev - x), 0);
+      ms.push(g.cube.rotation.getRotation());
       g.cube.updateRotation();
 
       cursor.style.left = `${cursorX}px`;
       cursor.style.top = `${cursorY}px`;
     },
     () => {
-      msSet = true;
       g.action.setAction({
         type: 'rotate-autocorrect',
         params: {
@@ -149,6 +149,7 @@ function rotateBackward(getStart: () => THREE.Vector2) {
       cursor.style.top = `${cursorY}px`;
     },
     () => {
+      ms = [];
       g.action.setAction(null);
       cursor.innerHTML = grab;
       timeouts = [
