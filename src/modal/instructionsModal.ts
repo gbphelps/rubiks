@@ -15,6 +15,28 @@ import { easeInOut, progress } from '../utils/animation';
 const T_DURATION = 300;
 let modalVisible = true;
 let solved = false;
+let activeInstruction = 1;
+
+const listeners: Record<string, Record<string, ()=>void>> = {};
+
+function setListener(name: string, type: string, listener: ()=>void) {
+  if (!listeners[name]) listeners[name] = {};
+  if (listeners[name][type]) getId(name).removeEventListener(type, listeners[name][type]);
+  listeners[name][type] = listener;
+  getId(name).addEventListener(type, listener);
+}
+
+function unsetActiveInstruction() {
+  const lastActive = activeInstruction;
+  activeInstruction = 0;
+  return lastActive ? hideInstruction(lastActive) : Promise.resolve();
+}
+
+function setActiveInstruction(i: number) {
+  if (activeInstruction) hideInstruction(activeInstruction);
+  activeInstruction = i;
+  return showInstruction(i);
+}
 
 const g = new Globals({
   getCanvas: () => getId('demo-canvas') as HTMLCanvasElement,
@@ -46,17 +68,29 @@ function animate() {
   }
 }
 
-function shrink() {
+let demoContainerVisible = true;
+function setDemoContainerVisible(visible: boolean) {
+  if (demoContainerVisible === visible) return Promise.resolve();
+  return new Promise((r) => {
+    const c = getId('demo-container');
+    if (!visible) {
+      c.style.transform = 'scale(0)';
+      c.style.opacity = '0';
+    } else {
+      c.style.transform = 'scale(1)';
+      c.style.opacity = '1';
+    }
+    demoContainerVisible = visible;
+    setTimeout(r, T_DURATION);
+  });
+}
+
+async function shrinkThenSetInstruction(num: number) {
   cancelAnimationFrame(frame);
-  const c = getId('demo-container');
-  c.style.transform = 'scale(0)';
-  c.style.opacity = '0';
-  hideInstruction(1);
-  setTimeout(() => {
-    c.style.transform = '';
-    c.style.opacity = '1';
-    setInstruction2();
-  }, T_DURATION);
+  unsetActiveInstruction();
+  await setDemoContainerVisible(false);
+  setDemoContainerVisible(true);
+  instructionSetters[num - 1]();
 }
 
 const ms: THREE.Matrix4[] = [];
@@ -133,10 +167,7 @@ function rotateBackward(s: THREE.Vector2) {
 function setInstruction2() {
   g.cube.respawn();
   timeouts.forEach((t) => clearTimeout(t));
-  const inst2 = getId('demo-instruction2');
-  inst2.style.visibility = 'visible';
-  inst2.style.transform = 'scale(1)';
-  inst2.style.opacity = '1';
+  setActiveInstruction(2);
   cancelAnimationFrame(frame);
   cursor.style.transform = 'translateX(-50%)translateY(-50%)';
   setCursor(2);
@@ -165,18 +196,24 @@ function setInstruction2() {
 }
 
 function hideInstruction(num: number) {
-  const inst = getId(`demo-instruction${num}`);
-  inst.style.visibility = 'hidden';
-  inst.style.transform = 'translateY(60%)';
-  inst.style.opacity = '0';
+  return new Promise((r) => {
+    const inst = getId(`demo-instruction${num}`);
+    inst.style.visibility = 'hidden';
+    inst.style.transform = 'translateY(60%)';
+    inst.style.opacity = '0';
+    setTimeout(r, T_DURATION);
+  });
 }
 
 function showInstruction(num: number) {
-  hideInstruction(num === 1 ? 2 : 1);
-  const inst = getId(`demo-instruction${num}`);
-  inst.style.visibility = 'visible';
-  inst.style.transform = 'scale(1)';
-  inst.style.opacity = '1';
+  return new Promise((r) => {
+    hideInstruction(num === 1 ? 2 : 1);
+    const inst = getId(`demo-instruction${num}`);
+    inst.style.visibility = 'visible';
+    inst.style.transform = 'scale(1)';
+    inst.style.opacity = '1';
+    setTimeout(r, T_DURATION);
+  });
 }
 
 function setCursor(num: number) {
@@ -342,6 +379,7 @@ function twistHorizontal() {
   });
 }
 
+const instructionSetters = [setInstruction1, setInstruction2];
 export function setInstruction1() {
   g.cube.respawn();
   g.cube.rotation.setRotation({ mx: MATRIX });
@@ -349,7 +387,7 @@ export function setInstruction1() {
   g.render();
 
   timeouts.forEach((t) => clearTimeout(t));
-  showInstruction(1);
+  setActiveInstruction(1);
   cursor.innerHTML = grab;
   setCursor(1);
   setNextButton(1);
@@ -391,8 +429,7 @@ export const init = () => {
   showModal();
   document.getElementById('demo-container')!.appendChild(cursor);
   setCursor(1);
-
-  getId('demo-next-button').addEventListener('click', shrink);
+  setNextButton(1);
 };
 
 function initButtons() {
@@ -440,13 +477,11 @@ function setTransitions() {
 
 function setNextButton(num: number) {
   if (num === 1) {
-    getId('demo-next-button').removeEventListener('click', gotIt);
-    getId('demo-next-button').addEventListener('click', shrink);
-    getId('demo-next-button').innerHTML = 'Next<span>&nbsp;&#8250;</span>';
+    setListener('demo-next-button', 'click', () => shrinkThenSetInstruction(2));
+    setListener('demo-prev-button', 'click', () => {});
   } else if (num === 2) {
-    getId('demo-next-button').removeEventListener('click', shrink);
-    getId('demo-next-button').addEventListener('click', gotIt);
-    getId('demo-next-button').innerHTML = 'Got it';
+    setListener('demo-prev-button', 'click', () => shrinkThenSetInstruction(1));
+    setListener('demo-next-button', 'click', gotIt);
   } else {
     throw new Error('Argument to setNextButton must be either 1 or 2');
   }
