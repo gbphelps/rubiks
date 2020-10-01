@@ -45,6 +45,7 @@ export type TwistMove = {
         unitTorque: THREE.Vector3,
         toTorque: number,
         tranche: (THREE.Object3D | null)[],
+        staticLocation: THREE.Vector3,
     }
 }
 
@@ -233,7 +234,7 @@ function getRotDirection(torque: number, pos: number) {
 
 function translateLog(entry: MoveLog) {
   if (entry.type === 'twist') {
-    const pos = entry.params.tranche[0]!.children[0].position;
+    const pos = entry.params.staticLocation;
     const torque = entry.params.unitTorque;
     const turns = Math.round(Math.abs(entry.params.toTorque * 2 / Math.PI));
     const dims: ('x' | 'y' | 'z')[] = ['x', 'y', 'z'];
