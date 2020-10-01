@@ -40,7 +40,7 @@ function setActiveInstruction(i: number) {
 
 const g = new Globals({
   getCanvas: () => getId('demo-canvas') as HTMLCanvasElement,
-  getContainer: () => getId('demo-container') as HTMLDivElement,
+  getContainer: () => getId('faux-container') as HTMLDivElement,
 });
 
 const MATRIX = new THREE.Matrix4().makeRotationY(-Math.PI / 4)
@@ -95,11 +95,12 @@ async function shrinkThenSetInstruction(num: number) {
 
 const ms: THREE.Matrix4[] = [];
 let msSet = false;
-function rotateForward(s: THREE.Vector2) {
+function rotateForward(getStart: () => THREE.Vector2) {
   return progress(
     1500,
     easeInOut,
     (p: number) => {
+      const s = getStart();
       const x = 1 - Math.cos(p * 2 * Math.PI);
       const y = Math.sin(p * Math.PI * 2);
 
@@ -121,19 +122,20 @@ function rotateForward(s: THREE.Vector2) {
       g.action.setAction({
         type: 'rotate-autocorrect',
         params: {
-          progressFn: rotateBackward(s),
+          progressFn: rotateBackward(getStart),
         },
       });
     },
   );
 }
 
-function rotateBackward(s: THREE.Vector2) {
+function rotateBackward(getStart: () => THREE.Vector2) {
   let pointer = ms.length - 1;
   return progress(
     1500,
     easeInOut,
     (p: number) => {
+      const s = getStart();
       const x = 1 - Math.cos(p * 2 * Math.PI);
       const y = -(Math.sin(p * Math.PI * 2));
 
@@ -156,7 +158,7 @@ function rotateBackward(s: THREE.Vector2) {
         setTimeout(() => g.action.setAction({
           type: 'rotate-autocorrect',
           params: {
-            progressFn: rotateForward(s),
+            progressFn: rotateForward(getStart),
           },
         }), 1000),
       ];
@@ -172,21 +174,23 @@ function setInstruction2() {
   cursor.style.transform = 'translateX(-50%)translateY(-50%)';
   setCursor(2);
   cursor.innerHTML = grab;
-  const startPos = g.getScreenCoordsFromCameraCoords(
-    new THREE.Vector3(0, 0, 1.5).applyMatrix4(MATRIX),
-  ).multiplyScalar(g.pixPerUnit);
 
-  const s = new THREE.Vector2(
-    g.canvas.width / 2 + startPos.x,
-    g.canvas.height / 2 - startPos.y,
-  );
+  const getStart = () => {
+    const startPos = g.getScreenCoordsFromCameraCoords(
+      new THREE.Vector3(0, 0, 1.5).applyMatrix4(MATRIX),
+    ).multiplyScalar(g.pixPerUnit);
+    return new THREE.Vector2(
+      g.canvas.width / 2 + startPos.x,
+      g.canvas.height / 2 - startPos.y,
+    );
+  };
 
   timeouts = [
     setTimeout(() => { cursor.innerHTML = grabbing; }, 500),
     setTimeout(() => g.action.setAction({
       type: 'rotate-autocorrect',
       params: {
-        progressFn: rotateForward(s),
+        progressFn: rotateForward(getStart),
       },
     }), 1000),
   ];
@@ -248,6 +252,7 @@ function showModal() {
     modal.style.transform = 'none';
     setTimeout(() => {
       setUserEventsEnabled(false);
+      g.resize();
       r();
     }, T_DURATION);
   });
@@ -286,12 +291,15 @@ function twistVertical() {
   const tranche = g.cube.registry.getTranche(unitTorque);
   const toTorque = Math.PI / 2;
 
-  const cStart = g.getScreenCoordsFromCameraCoords(
-    new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX),
-  ).multiplyScalar(g.pixPerUnit);
-  const cEnd = g.getScreenCoordsFromCameraCoords(
-    new THREE.Vector3(-1, -1, 1.5).applyMatrix4(MATRIX),
-  ).multiplyScalar(g.pixPerUnit);
+  function getStartEnd() {
+    const cStart = g.getScreenCoordsFromCameraCoords(
+      new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX),
+    ).multiplyScalar(g.pixPerUnit);
+    const cEnd = g.getScreenCoordsFromCameraCoords(
+      new THREE.Vector3(-1, -1, 1.5).applyMatrix4(MATRIX),
+    ).multiplyScalar(g.pixPerUnit);
+    return [cStart, cEnd];
+  }
 
   g.action.setAction({
     type: 'twist-autocorrect',
@@ -304,7 +312,8 @@ function twistVertical() {
         duration: 500,
         cube: g.cube,
         addlWork: (p: number) => {
-          const pos = new THREE.Vector2().lerpVectors(cStart, cEnd, p);
+          const [start, end] = getStartEnd();
+          const pos = new THREE.Vector2().lerpVectors(start, end, p);
           cursor.style.top = `${(g.canvas.height / 2) - pos.y}px`;
           cursor.style.left = `${(g.canvas.width / 2) + pos.x}px`;
         },
@@ -313,8 +322,9 @@ function twistVertical() {
           g.action.setAction(null);
           timeouts = [
             setTimeout(() => {
-              cursor.style.top = `${(g.canvas.height / 2) - cStart.y}px`;
-              cursor.style.left = `${(g.canvas.width / 2) + cStart.x}px`;
+              const [start] = getStartEnd();
+              cursor.style.top = `${(g.canvas.height / 2) - start.y}px`;
+              cursor.style.left = `${(g.canvas.width / 2) + start.x}px`;
             }, 500),
             setTimeout(() => {
               cursor.innerHTML = grabbing;
@@ -331,12 +341,15 @@ function twistVertical() {
 }
 
 function twistHorizontal() {
-  const cStart = g.getScreenCoordsFromCameraCoords(
-    new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX),
-  ).multiplyScalar(g.pixPerUnit);
-  const cEnd = g.getScreenCoordsFromCameraCoords(
-    new THREE.Vector3(1, 1, 1.5).applyMatrix4(MATRIX),
-  ).multiplyScalar(g.pixPerUnit);
+  function getStartEnd() {
+    const cStart = g.getScreenCoordsFromCameraCoords(
+      new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX),
+    ).multiplyScalar(g.pixPerUnit);
+    const cEnd = g.getScreenCoordsFromCameraCoords(
+      new THREE.Vector3(1, 1, 1.5).applyMatrix4(MATRIX),
+    ).multiplyScalar(g.pixPerUnit);
+    return [cStart, cEnd];
+  }
 
   const unitTorque = new THREE.Vector3(0, 1, 0);
   const toTorque = Math.PI / 2;
@@ -353,17 +366,19 @@ function twistHorizontal() {
         duration: 500,
         cube: g.cube,
         addlWork: (p: number) => {
-          const pos = new THREE.Vector2().lerpVectors(cStart, cEnd, p);
+          const [start, end] = getStartEnd();
+          const pos = new THREE.Vector2().lerpVectors(start, end, p);
           cursor.style.top = `${g.canvas.height / 2 - pos.y}px`;
           cursor.style.left = `${g.canvas.width / 2 + pos.x}px`;
         },
         addlCleanup: () => {
+          const [start] = getStartEnd();
           g.action.setAction(null);
           cursor.innerHTML = grab;
           timeouts = [
             setTimeout(() => {
-              cursor.style.top = `${(g.canvas.height / 2) - cStart.y}px`;
-              cursor.style.left = `${(g.canvas.width / 2) + cStart.x}px`;
+              cursor.style.top = `${(g.canvas.height / 2) - start.y}px`;
+              cursor.style.left = `${(g.canvas.width / 2) + start.x}px`;
             }, 500),
             setTimeout(() => {
               cursor.innerHTML = grabbing;
