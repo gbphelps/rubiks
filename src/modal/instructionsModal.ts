@@ -10,7 +10,7 @@ import grabbing from './grabbing.svg';
 import faceManager from '../faceManager';
 import { Globals } from '../globals';
 import { makeTwistProgressFn } from '../utils/animation/TwistProgressFunction';
-import { easeInOut, progress } from '../utils/animation';
+import * as timeouts from './timeouts';
 
 import { rotateForward } from './rotateInstruction';
 
@@ -59,7 +59,6 @@ cursor.style.transform = 'translateX(-50%)translateY(-50%)';
 cursor.innerHTML = grab;
 
 let frame: number = 0;
-let timeouts: ReturnType<typeof setTimeout>[] = [];
 
 function animate() {
   frame = requestAnimationFrame(animate);
@@ -95,84 +94,9 @@ async function shrinkThenSetInstruction(num: number) {
   instructionSetters[num - 1]();
 }
 
-// const ms: THREE.Matrix4[] = [];
-// function rotateForward(getStart: () => THREE.Vector2) {
-//   g.cube.rotation.setRotation({ mx: MATRIX });
-//   g.cube.updateRotation();
-
-//   return progress(
-//     1500,
-//     easeInOut,
-//     (p: number, pprev: number) => {
-//       const s = getStart();
-//       const x = 1 - Math.cos(p * 2 * Math.PI);
-//       const y = Math.sin(p * Math.PI * 2);
-//       const xprev = 1 - Math.cos(pprev * 2 * Math.PI);
-//       const yprev = Math.sin(pprev * Math.PI * 2);
-
-//       const cursorX = s.x - 100 * x;
-//       const cursorY = s.y + 100 * y;
-
-//       g.cube.rotation.rotate((y - yprev), (xprev - x), 0);
-//       ms.push(g.cube.rotation.getRotation());
-//       g.cube.updateRotation();
-
-//       cursor.style.left = `${cursorX}px`;
-//       cursor.style.top = `${cursorY}px`;
-//     },
-//     () => {
-//       g.action.setAction({
-//         type: 'rotate-autocorrect',
-//         params: {
-//           progressFn: rotateBackward(getStart),
-//         },
-//       });
-//     },
-//   );
-// }
-
-// function rotateBackward(getStart: () => THREE.Vector2) {
-//   let pointer = ms.length - 1;
-//   console.log(ms.length);
-//   return progress(
-//     1500,
-//     easeInOut,
-//     (p: number) => {
-//       const s = getStart();
-//       const x = 1 - Math.cos(p * 2 * Math.PI);
-//       const y = -(Math.sin(p * Math.PI * 2));
-
-//       const cursorX = s.x - 100 * x;
-//       const cursorY = s.y + 100 * y;
-
-//       g.cube.rotation.setRotation({ mx: ms[pointer--] });
-//       g.cube.updateRotation();
-
-//       cursor.style.left = `${cursorX}px`;
-//       cursor.style.top = `${cursorY}px`;
-//     },
-//     () => {
-//       ms = [];
-//       g.action.setAction(null);
-//       cursor.innerHTML = grab;
-//       timeouts = [
-//         setTimeout(() => {
-//           cursor.innerHTML = grabbing;
-//         }, 500),
-//         setTimeout(() => g.action.setAction({
-//           type: 'rotate-autocorrect',
-//           params: {
-//             progressFn: rotateForward(getStart),
-//           },
-//         }), 1000),
-//       ];
-//     },
-//   );
-// }
-
 function setInstruction2() {
   g.cube.respawn();
-  timeouts.forEach((t) => clearTimeout(t));
+  timeouts.cancelTimeouts();
   setActiveInstruction(2);
   cancelAnimationFrame(frame);
   cursor.style.transform = 'translateX(-50%)translateY(-50%)';
@@ -189,13 +113,7 @@ function setInstruction2() {
     );
   };
 
-  timeouts = [
-    setTimeout(() => { cursor.innerHTML = grabbing; }, 500),
-    setTimeout(() => {
-      rotateForward(g, getStart, cursor);
-    }, 1000),
-  ];
-
+  rotateForward(g, getStart, cursor);
   animate2();
   setNextButton(2);
 }
@@ -321,7 +239,7 @@ function twistVertical() {
         addlCleanup: () => {
           cursor.innerHTML = grab;
           g.action.setAction(null);
-          timeouts = [
+          timeouts.setTimeouts([
             setTimeout(() => {
               const [start] = getStartEnd();
               cursor.style.top = `${(g.canvas.height / 2) - start.y}px`;
@@ -331,7 +249,7 @@ function twistVertical() {
               cursor.innerHTML = grabbing;
             }, 750),
             setTimeout(twistHorizontal, 1000),
-          ];
+          ]);
         },
       }),
       unitTorque,
@@ -376,7 +294,7 @@ function twistHorizontal() {
           const [start] = getStartEnd();
           g.action.setAction(null);
           cursor.innerHTML = grab;
-          timeouts = [
+          timeouts.setTimeouts([
             setTimeout(() => {
               cursor.style.top = `${(g.canvas.height / 2) - start.y}px`;
               cursor.style.left = `${(g.canvas.width / 2) + start.x}px`;
@@ -385,7 +303,7 @@ function twistHorizontal() {
               cursor.innerHTML = grabbing;
             }, 750),
             setTimeout(twistVertical, 1000),
-          ];
+          ]);
         },
       }),
       tranche,
@@ -402,7 +320,7 @@ export function setInstruction1() {
   g.cube.updateRotation();
   g.render();
 
-  timeouts.forEach((t) => clearTimeout(t));
+  timeouts.cancelTimeouts();
   setActiveInstruction(1);
   cursor.innerHTML = grab;
   setCursor(1);
@@ -411,7 +329,7 @@ export function setInstruction1() {
   g.cube.registry.setActiveBox(
     new THREE.Vector3(0, 2, 2),
   );
-  timeouts = [
+  timeouts.setTimeouts([
     setTimeout(() => {
       cursor.innerHTML = grabbing;
     }, 1000),
@@ -419,7 +337,7 @@ export function setInstruction1() {
       twistVertical();
       animate();
     }, 1250),
-  ];
+  ]);
 }
 
 function animate2() {

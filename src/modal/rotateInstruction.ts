@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { Globals } from '../globals';
 import RotationManager from '../rotation';
 import { easeInOut } from '../utils/animation';
+import * as timeouts from './timeouts';
+import grab from './grab.svg';
+import grabbing from './grabbing.svg';
 
 const rotations: THREE.Matrix4[] = [];
 const cursorLocations: THREE.Vector2[] = [];
@@ -61,14 +64,22 @@ export function rotateForward(
   getStart: () => THREE.Vector2,
   cursor: HTMLDivElement,
 ) {
-  g.action.setAction({
-    type: 'rotate-autocorrect',
-    params: {
-      progressFn: rotate(g, getStart, cursor, () => rotateBackward(
-        g, getStart, cursor,
-      ), 1),
-    },
-  });
+  cursor.innerHTML = grab;
+  timeouts.setTimeouts([
+    setTimeout(() => {
+      cursor.innerHTML = grabbing;
+    }, 500),
+    setTimeout(() => {
+      g.action.setAction({
+        type: 'rotate-autocorrect',
+        params: {
+          progressFn: rotate(g, getStart, cursor, () => rotateBackward(
+            g, getStart, cursor,
+          ), 1),
+        },
+      });
+    }, 1000),
+  ]);
 }
 
 function rotateBackward(
