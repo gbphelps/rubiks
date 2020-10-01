@@ -203,7 +203,7 @@ function setHistory() {
     const child = document.createElement('div');
     child.classList.add('history-log');
     child.style.height = `${LOG_HEIGHT}px`;
-    child.innerHTML = manifest[i].type;
+    child.innerHTML = translateLog(manifest[i]);
     history.appendChild(child);
   }
 }
@@ -216,4 +216,45 @@ function setPointer() {
 
 export function getManifest() {
   return manifest;
+}
+
+const faceNames = {
+  x: ['left', 'xMid', 'right'],
+  y: ['bottom', 'yMid', 'top'],
+  z: ['back', 'zMid', 'front'],
+};
+
+function getRotDirection(torque: number, pos: number) {
+  if (pos === 0) return (torque === 1 ? 'COUNTER-CW' : 'CLOCKWISE');
+  return torque * pos === 1 ? 'COUNTER-CW' : 'CLOCKWISE';
+}
+
+function translateLog(entry: MoveLog) {
+  if (entry.type === 'twist') {
+    const pos = entry.params.tranche[0]!.children[0].position;
+    const torque = entry.params.unitTorque;
+    const turns = Math.round(Math.abs(entry.params.toTorque * 2 / Math.PI));
+    const dims: ('x' | 'y' | 'z')[] = ['x', 'y', 'z'];
+    for (let i = 0; i < dims.length; i++) {
+      if (torque[dims[i]]) {
+        const faceName = faceNames[dims[i]][pos[dims[i]] + 1];
+        const rot = getRotDirection(torque[dims[i]], pos[dims[i]]);
+        return `
+          <div class="history-log-content">
+            <div class="face-name">
+              <span>${faceName.toUpperCase()}</span>
+            </div> 
+            <div class="turns">
+              <span>${rot} \u00d7 ${turns}</span>
+            </div>
+          </div>
+        `;
+      }
+    }
+  }
+  return `
+  <div class="history-log-content rotate">
+    ROTATE
+  </div>
+  `;
 }

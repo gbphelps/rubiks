@@ -289,3 +289,30 @@ button {
         }
     }
 }
+
+
+.history-log-content {
+    display: flex;
+    .face-name {
+        width: 80px;
+        span {
+            letter-spacing: 1.2;
+            font-size: 12px;
+            color: $black;
+            font-weight: 700;
+        }
+    }
+   
+    .turns {
+        letter-spacing: 1;
+        color: #777;
+        font-size: 12px;
+    }
+    
+    &.rotate {
+        font-size: 12px;
+        color: #999;
+        letter-spacing: 1.2;
+        width: 100%;
+    }
+}
