@@ -35,7 +35,7 @@ R.setRotation({ mx: MATRIX });
     R.rotate((y - yprev), (xprev - x), 0);
     rotations.push(R.getRotation());
 
-    cursorLocations.push(new THREE.Vector2(cursorX, cursorY));
+    cursorLocations.push(new THREE.Vector2(cursorX * 2, -cursorY * 2));
   }
 }());
 
