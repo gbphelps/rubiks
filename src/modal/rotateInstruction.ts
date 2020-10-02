@@ -1,10 +1,12 @@
 import * as THREE from 'three';
+import { Vector2 } from 'three';
 import { Globals } from '../globals';
 import RotationManager from '../rotation';
 import { easeInOut } from '../utils/animation';
 import * as timeouts from './timeouts';
 import grab from './grab.svg';
 import grabbing from './grabbing.svg';
+import { setCursorPosition } from './cursorPosition';
 
 const rotations: THREE.Matrix4[] = [];
 const cursorLocations: THREE.Vector2[] = [];
@@ -37,21 +39,27 @@ R.setRotation({ mx: MATRIX });
   }
 }());
 
+function getId(id: string) {
+  const result = document.getElementById(id);
+  if (!result) throw new Error(`Element with ID ${id} was not found in the DOM tree! Did you delete anything from index.html?`);
+  return result;
+}
+
 function rotate(
   g: Globals,
-  getStart: () => THREE.Vector2,
-  cursor: HTMLDivElement,
   callback: () => void,
   direction: number,
+  getStart: () => Vector2,
 ) {
   let i = 0;
   return function tick() {
-    const s = getStart();
+    const start = getStart();
     const frame = direction === 1 ? i : cursorLocations.length - 1 - i;
-    const { x, y } = cursorLocations[frame];
     const rot = rotations[frame];
-    cursor.style.left = `${s.x + g.pixPerUnit * x}px`;
-    cursor.style.top = `${s.y + g.pixPerUnit * y}px`;
+    setCursorPosition(g, new THREE.Vector2().addVectors(
+      cursorLocations[frame],
+      start,
+    ));
     g.cube.rotation.setRotation({ mx: rot });
     g.cube.updateRotation();
     if (i === cursorLocations.length - 1) callback();
@@ -62,20 +70,19 @@ function rotate(
 export function rotateForward(
   g: Globals,
   getStart: () => THREE.Vector2,
-  cursor: HTMLDivElement,
 ) {
-  cursor.innerHTML = grab;
+  getId('cursor').innerHTML = grab;
   timeouts.setTimeouts([
     setTimeout(() => {
-      cursor.innerHTML = grabbing;
+      getId('cursor').innerHTML = grabbing;
     }, 500),
     setTimeout(() => {
       g.action.setAction({
         type: 'rotate-autocorrect',
         params: {
-          progressFn: rotate(g, getStart, cursor, () => rotateBackward(
-            g, getStart, cursor,
-          ), 1),
+          progressFn: rotate(
+            g, () => rotateBackward(g, getStart), 1, getStart,
+          ),
         },
       });
     }, 1000),
@@ -85,14 +92,14 @@ export function rotateForward(
 function rotateBackward(
   g: Globals,
   getStart: () => THREE.Vector2,
-  cursor: HTMLDivElement,
 ) {
   g.action.setAction({
     type: 'rotate-autocorrect',
     params: {
-      progressFn: rotate(g, getStart, cursor, () => rotateForward(
-        g, getStart, cursor,
-      ), -1),
+      progressFn: rotate(g, () => {
+        g.action.setAction(null);
+        rotateForward(g, getStart);
+      }, -1, getStart),
     },
   });
 }
