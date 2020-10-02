@@ -20,6 +20,10 @@ let solved = false;
 let activeInstruction = 1;
 let neverClosed = true;
 
+export function getModalVisible() {
+  return modalVisible;
+}
+
 const listeners: Record<string, Record<string, ()=>void>> = {};
 
 function setListener(name: string, type: string, listener: ()=>void) {
