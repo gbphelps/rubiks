@@ -42,14 +42,14 @@ function getCardinalDirection(vec: THREE.Vector3) {
 
 function getScreenDirection(startPosition: CoordTriad, direction: THREE.Vector3) {
   const cameraStart = startPosition.cameraCoords;
-  const cameraDir = globals.getCameraCoordsFromCubeCoords(direction);
+  const cameraDir = globals.projections.getCameraCoordsFromCubeCoords(direction);
   const end = new THREE.Vector3(
     cameraStart.x + cameraDir.x,
     cameraStart.y + cameraDir.y,
     cameraStart.z + cameraDir.z,
   );
 
-  const screenEnd = globals.getScreenCoordsFromCameraCoords(end);
+  const screenEnd = globals.projections.getScreenCoordsFromCameraCoords(end);
   const screenStart = startPosition.screenCoords;
   const r = {
     x: screenEnd.x - screenStart.x,
@@ -68,7 +68,9 @@ function canSetTorqueParams(e: MouseEvent, action: TwistAction) {
 
 function getTorqueParams(e: MouseEvent, action: TwistAction) {
   const screenCoords = extractScreenCoords(e);
-  const { cubeCoords } = globals.getProjectionOntoSide(screenCoords, action.side);
+  const { cubeCoords } = globals.projections.getProjectionOntoSide({
+    screen: screenCoords, side: action.side,
+  });
 
   const vec = (new THREE.Vector3()).subVectors(
     cubeCoords,

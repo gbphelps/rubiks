@@ -1,11 +1,6 @@
 import * as THREE from 'three';
 import ActionManager from './action';
-import {
-  getProjectionOntoCube,
-  getProjectionOntoSide,
-  getCameraCoords,
-  getScreenCoords,
-} from './cubeProjections';
+import { Projections } from './cubeProjections';
 import makeCube, { CubeManager } from './cubeSpawn';
 import { Side } from './utils/types';
 
@@ -35,6 +30,8 @@ export class Globals {
   getCanvas: () => HTMLCanvasElement;
 
   getContainer: () => HTMLDivElement;
+
+  projections: Projections;
 
   constructor({ getCanvas, getContainer }: {
     getCanvas: () => HTMLCanvasElement,
@@ -66,6 +63,11 @@ export class Globals {
     this.cube = makeCube();
     this.scene.add(this.cube.object);
 
+    this.projections = new Projections({
+      cube: this.cube,
+      camera: this.camera,
+    });
+
     window.addEventListener('resize', this.resize);
     this.resize();
   }
@@ -90,31 +92,6 @@ export class Globals {
 
     this.renderer.setSize(width, height);
   }
-
-   // basically treating funcs from cubeProjection as a Projection mixin.
-   // typescript mixins seem to be real gross, but there's probably a better way to do this.
-   getProjectionOntoCube = (vec: THREE.Vector2) => getProjectionOntoCube({
-     screen: vec,
-     camera: this.camera,
-     cube: this.cube,
-   })
-
-  getProjectionOntoSide = (vec: THREE.Vector2, side: Side) => getProjectionOntoSide({
-    screen: vec,
-    side,
-    camera: this.camera,
-    cube: this.cube,
-  })
-
-  getCameraCoordsFromCubeCoords = (cubeCoords: THREE.Vector3) => getCameraCoords({
-    cubeCoords,
-    cube: this.cube,
-  })
-
-  getScreenCoordsFromCameraCoords = (cameraCoords: THREE.Vector3) => getScreenCoords({
-    cameraCoords,
-    camera: this.camera,
-  })
 }
 
 function makeLights() {

@@ -106,7 +106,7 @@ function setInstruction2() {
   cursor.style.transform = 'translateX(-50%)translateY(-50%)';
   cursor.innerHTML = grab;
 
-  const getStart = () => g.getScreenCoordsFromCameraCoords(
+  const getStart = () => g.projections.getScreenCoordsFromCameraCoords(
     new THREE.Vector3(0, 0, 1.5).applyMatrix4(MATRIX),
   );
 
@@ -201,10 +201,10 @@ function twistVertical() {
   const toTorque = Math.PI / 2;
 
   function getStartEnd() {
-    const start = g.getScreenCoordsFromCameraCoords(
+    const start = g.projections.getScreenCoordsFromCameraCoords(
       new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX),
     );
-    const end = g.getScreenCoordsFromCameraCoords(
+    const end = g.projections.getScreenCoordsFromCameraCoords(
       new THREE.Vector3(-1, -1, 1.5).applyMatrix4(MATRIX),
     );
     return [start, end];
@@ -251,10 +251,10 @@ function twistVertical() {
 
 function twistHorizontal() {
   function getStartEnd() {
-    const start = g.getScreenCoordsFromCameraCoords(
+    const start = g.projections.getScreenCoordsFromCameraCoords(
       new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX),
     );
-    const end = g.getScreenCoordsFromCameraCoords(
+    const end = g.projections.getScreenCoordsFromCameraCoords(
       new THREE.Vector3(1, 1, 1.5).applyMatrix4(MATRIX),
     );
     return [start, end];
@@ -310,7 +310,7 @@ export function setInstruction1() {
   g.render();
 
   function getStart() {
-    return g.getScreenCoordsFromCameraCoords(
+    return g.projections.getScreenCoordsFromCameraCoords(
       new THREE.Vector3(-1, 1, 1.5).applyMatrix4(MATRIX),
     );
   }

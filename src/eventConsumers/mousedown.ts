@@ -7,7 +7,7 @@ export default function mousedown() {
   if (!e) throw new Error('Event already drained!');
 
   const screenCoords = extractScreenCoords(e);
-  const data = globals.getProjectionOntoCube(screenCoords);
+  const data = globals.projections.getProjectionOntoCube(screenCoords);
 
   if (!data) {
     globals.cube.registry.deselectCube();
