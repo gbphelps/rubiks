@@ -1,3 +1,5 @@
+$black: #1d2230;
+
 #modal-screen {
   position: absolute; 
   height: 100%; 
@@ -45,10 +47,12 @@
 
   .demo-limelight {
     height: calc(100% - 100px); // NOTE: this must match faux container
-    width: calc(100% - 180px); // NOTE: this must match faux container
-
+    width: 100%;
     align-self: center; 
-    border-radius: 50%
+    border-radius: 50%;
+    display: flex; 
+    align-items: center; 
+    justify-content: space-around;
   }
 
   #faux-container {
@@ -110,10 +114,18 @@
 
 #menu-modal {
   button {
+    font-weight: 300;
+    transition: .3s;
     background: none;
-    font-size: 20px;
-    color: black;
+    font-size: 28px;
+    color: $black;
     margin: 6px;
+    box-shadow: none;
+    text-shadow: none;
+
+    &:hover {
+      color: rgb(0, 166, 255);
+    }
   }
 }
 
@@ -134,7 +146,12 @@
 }
 
 #demo-next-button, #demo-prev-button {
+  transition: color .3s;
   background: none;
-  font-size: 64px;
+  font-size: 96px;
   box-shadow: none;
+  color: $black;
+  &:disabled {
+    color: transparent;
+  }
 }

@@ -19,6 +19,7 @@ const T_DURATION = 300;
 let modalVisible = true;
 let solved = false;
 let activeInstruction = 1;
+let neverClosed = true;
 
 const listeners: Record<string, Record<string, ()=>void>> = {};
 
@@ -171,6 +172,7 @@ function hideModal() {
     modal.style.transform = 'scale(.5)';
     modal.style.opacity = '0';
     setTimeout(() => {
+      neverClosed = false;
       modalVisible = false;
       modal.style.visibility = 'hidden';
       modal.style.animationName = 'none';
@@ -412,8 +414,12 @@ function setTransitions() {
 function setNextButton(num: number) {
   if (num === 1) {
     setListener('demo-next-button', 'click', () => shrinkThenSetInstruction(2));
-    setListener('demo-prev-button', 'click', () => {});
+    setListener('demo-prev-button', 'click', () => {
+      activateModal('menu-modal');
+    });
+    if (neverClosed) (getId('demo-prev-button') as HTMLButtonElement).disabled = true;
   } else if (num === 2) {
+    (getId('demo-prev-button') as HTMLButtonElement).disabled = false;
     setListener('demo-prev-button', 'click', () => shrinkThenSetInstruction(1));
     setListener('demo-next-button', 'click', gotIt);
   } else {
