@@ -1,19 +1,18 @@
-import { drain } from '../events';
 import setAutocorrectTwist from '../actions/setAutocorrectTwist';
 import * as history from '../history';
-import { globals } from '../globals';
+import { Globals } from '../globals';
 
-export default function mouseup() {
-  globals.cube.registry.deselectCube();
+export default function mouseup(g: Globals) {
+  g.cube.registry.deselectCube();
 
-  const e = drain('mouseup');
+  const e = g.events.drain('mouseup');
   if (!e) throw new Error();
 
-  const action = globals.action.getAction();
+  const action = g.action.getAction();
   if (!action) return;
 
   if (action.type === 'rotate') {
-    const endRotation = globals.cube.rotation.getRotationAndInverse();
+    const endRotation = g.cube.rotation.getRotationAndInverse();
     const { startRotation } = action;
 
     const moveLog: history.RotateMove = {
@@ -28,13 +27,13 @@ export default function mouseup() {
       history.push(moveLog);
     }
 
-    globals.action.setAction(null);
+    g.action.setAction(null);
     return;
   }
 
   if (action.type === 'twist') {
-    setAutocorrectTwist(e);
-    const newAction = globals.action.getAction();
+    setAutocorrectTwist(g, e);
+    const newAction = g.action.getAction();
     if (newAction?.type !== 'twist-autocorrect') return; // NOTE: this condition is encountered if user clicks without dragging
 
     const {

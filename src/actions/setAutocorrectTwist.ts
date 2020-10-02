@@ -1,21 +1,20 @@
 import getUserTorque from '../getUserTorque';
-import { setUserEventsEnabled } from '../events';
 import { makeTwistProgressFn } from '../utils/animation/TwistProgressFunction';
-import { globals } from '../globals';
+import { Globals } from '../globals';
 import faceManager from '../faceManager';
 
-export default function setAutocorrectTwist(e: MouseEvent) {
-  const action = globals.action.getAction();
+export default function setAutocorrectTwist(g: Globals, e: MouseEvent) {
+  const action = g.action.getAction();
   if (action?.type !== 'twist') throw new Error();
   if (!action.torqueParams) {
     // no twisting has been applied - no need for cleanup.
-    globals.action.setAction(null);
+    g.action.setAction(null);
     return;
   }
 
-  setUserEventsEnabled(false);
+  g.events.setUserEventsEnabled(false);
 
-  const torque = getUserTorque(e);
+  const torque = getUserTorque(g, e);
   const quarterSlice = Math.PI / 2;
 
   const toTorque = Math.round(torque / quarterSlice) * quarterSlice;
@@ -24,18 +23,19 @@ export default function setAutocorrectTwist(e: MouseEvent) {
     tranche, unitTorque,
   } = action.torqueParams!;
 
-  globals.action.setAction({
+  g.action.setAction({
     type: 'twist-autocorrect',
     params: {
       progressFn: makeTwistProgressFn({
-        cube: globals.cube,
+        events: g.events,
+        cube: g.cube,
         tranche,
         unitTorque,
         toTorque,
         fromTorque: torque,
         duration: 300,
         addlCleanup: () => {
-          globals.action.setAction(null);
+          g.action.setAction(null);
           faceManager.updateFaces();
         },
       }),

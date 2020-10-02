@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import ActionManager from './action';
 import { Projections } from './cubeProjections';
 import makeCube, { CubeManager } from './cubeSpawn';
-import { Side } from './utils/types';
+import { Events } from './events';
 
 const UNIT = 10;
 
@@ -33,6 +33,8 @@ export class Globals {
 
   projections: Projections;
 
+  events: Events;
+
   constructor({ getCanvas, getContainer }: {
     getCanvas: () => HTMLCanvasElement,
     getContainer: () => HTMLDivElement,
@@ -62,6 +64,12 @@ export class Globals {
 
     this.cube = makeCube();
     this.scene.add(this.cube.object);
+
+    this.events = new Events({
+      getPPU: () => this.pixPerUnit,
+      canvas: this.canvas,
+    });
+    this.events.init();
 
     this.projections = new Projections({
       cube: this.cube,

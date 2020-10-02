@@ -1,15 +1,14 @@
-import { drain } from '../events';
 import applyRotate from '../actions/rotate';
 import applyTwist from '../actions/twist';
-import { globals } from '../globals';
+import { Globals } from '../globals';
 
-export default function mousemove() {
-  const e = drain('mousemove');
+export default function mousemove(g: Globals) {
+  const e = g.events.drain('mousemove');
   if (!e) return;
 
-  const action = globals.action.getAction();
+  const action = g.action.getAction();
 
   if (!action) return;
-  if (action.type === 'rotate') applyRotate(e);
-  if (action.type === 'twist') applyTwist(e);
+  if (action.type === 'rotate') applyRotate(g, e);
+  if (action.type === 'twist') applyTwist(g, e);
 }

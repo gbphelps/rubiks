@@ -1,10 +1,9 @@
 import * as THREE from 'three';
-import { extractScreenCoords } from './events';
-import { globals } from './globals';
+import { Globals } from './globals';
 import { dotProd } from './utils/matrix';
 
-export default function getUserTorque(e: MouseEvent) {
-  const action = globals.action.getAction();
+export default function getUserTorque(g: Globals, e: MouseEvent) {
+  const action = g.action.getAction();
   if (!action) throw new Error();
   if (action.type !== 'twist') throw new Error();
   if (!action.torqueParams) throw new Error();
@@ -14,7 +13,7 @@ export default function getUserTorque(e: MouseEvent) {
     screenDirection,
   } = action.torqueParams;
 
-  const { x: x2, y: y2 } = extractScreenCoords(e);
+  const { x: x2, y: y2 } = g.events.extractScreenCoords(e);
   const { x: x1, y: y1 } = action.startPosition.screenCoords;
   const userDir = new THREE.Vector2(x2 - x1, y2 - y1);
 

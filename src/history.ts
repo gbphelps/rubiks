@@ -1,9 +1,8 @@
 import * as THREE from 'three';
-import { setUserEventsEnabled } from './events';
 import rubiksSVG from './assets/rubiks.svg';
 import { makeTwistProgressFn } from './utils/animation/TwistProgressFunction';
 import { makeQuaternionProgressFn } from './utils/animation/QuaternionProgressFunction';
-import { globals } from './globals';
+import { Globals } from './globals';
 import faceManager from './faceManager';
 import cc from './assets/cc.svg';
 import cw from './assets/cw.svg';
@@ -98,7 +97,7 @@ export function clear() {
   setHistory();
 }
 
-export function init() {
+export function init(g: Globals) {
   document.getElementById('history-bg')!.innerHTML = rubiksSVG;
   undoBtn = document.getElementById('undo');
   redoBtn = document.getElementById('redo');
@@ -108,8 +107,8 @@ export function init() {
   setPointer();
   setHistory();
 
-  undoBtn!.addEventListener('click', () => doFunc(-1));
-  redoBtn!.addEventListener('click', () => doFunc(1));
+  undoBtn!.addEventListener('click', () => doFunc(g, -1));
+  redoBtn!.addEventListener('click', () => doFunc(g, 1));
 }
 
 export function push(moveLog: TwistMove | RotateMove): void {
@@ -122,16 +121,17 @@ export function push(moveLog: TwistMove | RotateMove): void {
   setHistory();
 }
 
-function doTwist(move: TwistMove, dir: number, cb: () => void) {
+function doTwist(g: Globals, move: TwistMove, dir: number, cb: () => void) {
   const {
     unitTorque, toTorque, tranche,
   } = move.params;
-  setUserEventsEnabled(false);
-  globals.action.setAction({
+  g.events.setUserEventsEnabled(false);
+  g.action.setAction({
     type: 'twist-autocorrect',
     params: {
       progressFn: makeTwistProgressFn({
-        cube: globals.cube,
+        events: g.events,
+        cube: g.cube,
         tranche,
         unitTorque,
         toTorque: dir * toTorque,
@@ -149,14 +149,15 @@ function doTwist(move: TwistMove, dir: number, cb: () => void) {
   });
 }
 
-function doRotate(move: RotateMove, dir: number, cb: () => void) {
+function doRotate(g: Globals, move: RotateMove, dir: number, cb: () => void) {
   const fromQ = new THREE.Quaternion().setFromRotationMatrix(move.params.endRotation.mx);
   const toQ = new THREE.Quaternion().setFromRotationMatrix(move.params.startRotation.mx);
-  setUserEventsEnabled(false);
-  globals.action.setAction({
+  g.events.setUserEventsEnabled(false);
+  g.action.setAction({
     type: 'rotate-autocorrect',
     params: {
       progressFn: makeQuaternionProgressFn({
+        g,
         fromQ: dir === -1 ? fromQ : toQ,
         toQ: dir === -1 ? toQ : fromQ,
         matrixData: dir === -1 ? move.params.startRotation : move.params.endRotation,
@@ -166,7 +167,7 @@ function doRotate(move: RotateMove, dir: number, cb: () => void) {
   });
 }
 
-function doFunc(dir: number) {
+function doFunc(g: Globals, dir: number) {
   if (virtual.lastDir === dir) {
     virtual.manifestIndex += dir;
   }
@@ -184,9 +185,9 @@ function doFunc(dir: number) {
     const move = manifest[manifestIndex];
 
     if (move.type === 'twist') {
-      doTwist(move, dir, cb);
+      doTwist(g, move, dir, cb);
     } else if (move.type === 'rotate') {
-      doRotate(move, dir, cb);
+      doRotate(g, move, dir, cb);
     }
   };
 

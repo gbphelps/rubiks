@@ -1,17 +1,16 @@
-import { drain, extractScreenCoords } from '../events';
 import { getBoxRegistryNode, isCenterSquare } from '../boxRegistry';
-import { globals } from '../globals';
+import { Globals } from '../globals';
 
-export default function mousedown() {
-  const e = drain('mousedown');
+export default function mousedown(g: Globals) {
+  const e = g.events.drain('mousedown');
   if (!e) throw new Error('Event already drained!');
 
-  const screenCoords = extractScreenCoords(e);
-  const data = globals.projections.getProjectionOntoCube(screenCoords);
+  const screenCoords = g.events.extractScreenCoords(e);
+  const data = g.projections.getProjectionOntoCube(screenCoords);
 
   if (!data) {
-    globals.cube.registry.deselectCube();
-    globals.cube.registry.setActiveBox(null);
+    g.cube.registry.deselectCube();
+    g.cube.registry.setActiveBox(null);
     return;
   }
 
@@ -19,13 +18,13 @@ export default function mousedown() {
   const boxRegistryNode = getBoxRegistryNode(cubeCoords);
 
   if (isCenterSquare(boxRegistryNode)) {
-    globals.action.setAction({
+    g.action.setAction({
       type: 'rotate',
       prevScreenCoords: screenCoords,
-      startRotation: globals.cube.rotation.getRotationAndInverse(),
+      startRotation: g.cube.rotation.getRotationAndInverse(),
     });
   } else {
-    globals.action.setAction({
+    g.action.setAction({
       type: 'twist',
       startPosition: {
         cubeCoords,
@@ -37,5 +36,5 @@ export default function mousedown() {
     });
   }
 
-  globals.cube.registry.setActiveBox(boxRegistryNode);
+  g.cube.registry.setActiveBox(boxRegistryNode);
 }

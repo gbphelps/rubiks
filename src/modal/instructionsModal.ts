@@ -3,12 +3,11 @@ import * as THREE from 'three';
 import {
   getTime, start as startClock, stop as stopClock, setClock,
 } from '../clock';
-import { setUserEventsEnabled } from '../events';
 import { startOver } from '../startOver';
 import grab from './grab.svg';
 import grabbing from './grabbing.svg';
 import faceManager from '../faceManager';
-import { Globals } from '../globals';
+import { Globals, globals } from '../globals';
 import { makeTwistProgressFn } from '../utils/animation/TwistProgressFunction';
 import * as timeouts from './timeouts';
 
@@ -159,7 +158,7 @@ function showModal() {
     modal.style.transform = 'none';
     setTimeout(() => {
       resize();
-      setUserEventsEnabled(false);
+      globals.events.setUserEventsEnabled(false);
       g.resize();
       r();
     }, T_DURATION);
@@ -179,7 +178,7 @@ function hideModal() {
       modal.style.animationName = 'none';
       cancelAnimationFrame(frame);
       startClock();
-      setUserEventsEnabled(true);
+      globals.events.setUserEventsEnabled(true);
       r();
     }, T_DURATION);
   });
@@ -216,6 +215,7 @@ function twistVertical() {
     type: 'twist-autocorrect',
     params: {
       progressFn: makeTwistProgressFn({
+        events: g.events,
         tranche,
         unitTorque,
         fromTorque: 0,
@@ -270,6 +270,7 @@ function twistHorizontal() {
     type: 'twist-autocorrect',
     params: {
       progressFn: makeTwistProgressFn({
+        events: g.events,
         tranche,
         unitTorque,
         fromTorque: 0,
@@ -372,7 +373,7 @@ export const init = () => {
 function initButtons() {
   getId('won-start-over').addEventListener('click', () => {
     hideModal().then(() => {
-      startOver();
+      startOver(g);
       solved = false;
     });
   });

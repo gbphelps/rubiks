@@ -1,58 +1,71 @@
 import * as THREE from 'three';
-import { globals } from './globals';
 
-let userEventsEnabled = true;
+export class Events {
+  userEventsEnabled = true;
 
-export function getUserEventsEnabled() {
-  return userEventsEnabled;
-}
-
-export function setUserEventsEnabled(value: boolean) {
-  userEventsEnabled = value;
-}
-
-const events: Record<string, false | MouseEvent> = {
-  mousemove: false,
-  mousedown: false,
-  mouseup: false,
-};
-
-function assign(key: string) {
-  return function enqueue(e: MouseEvent) {
-    if (getUserEventsEnabled()) events[key] = e;
+  events: Record<string, false | MouseEvent> = {
+    mousemove: false,
+    mousedown: false,
+    mouseup: false,
   };
-}
 
-export function extractScreenCoords(e: MouseEvent) {
-  const { canvas } = globals;
-  const {
-    top: y0, left: x0, height, width,
-  } = canvas.getBoundingClientRect();
+  getPPU: () => number;
 
-  const x = ((e.clientX - x0) - width / 2) / globals.pixPerUnit;
-  const y = (height / 2 - (e.clientY - y0)) / globals.pixPerUnit;
+  canvas: HTMLCanvasElement;
 
-  return new THREE.Vector2(x, y);
-}
+  constructor({ getPPU, canvas }:{
+    getPPU: () => number,
+    canvas: HTMLCanvasElement,
+  }) {
+    this.getPPU = getPPU;
+    this.canvas = canvas;
+  }
 
-export function init() {
-  document.addEventListener('mousemove', assign('mousemove'));
-  document.addEventListener('mousedown', assign('mousedown'));
-  document.addEventListener('mouseup', assign('mouseup'));
-}
+  getUserEventsEnabled() {
+    return this.userEventsEnabled;
+  }
 
-export function drain(key: string) {
-  const result = events[key];
-  events[key] = false;
-  return result;
-}
+  setUserEventsEnabled(value: boolean) {
+    this.userEventsEnabled = value;
+  }
 
-export function flushEvents() {
-  Object.keys(events).forEach((key) => {
-    events[key] = false;
-  });
-}
+  assign(key: string) {
+    return (e: MouseEvent) => {
+      console.log(this);
+      if (this.getUserEventsEnabled()) this.events[key] = e;
+    };
+  }
 
-export function peek(key: string) {
-  return !!events[key];
+  extractScreenCoords(e: MouseEvent) {
+    const {
+      top: y0, left: x0, height, width,
+    } = this.canvas.getBoundingClientRect();
+
+    const x = ((e.clientX - x0) - width / 2) / this.getPPU();
+    const y = (height / 2 - (e.clientY - y0)) / this.getPPU();
+
+    return new THREE.Vector2(x, y);
+  }
+
+  init() {
+    document.addEventListener('mousemove', this.assign('mousemove'));
+    document.addEventListener('mousedown', this.assign('mousedown'));
+    document.addEventListener('mouseup', this.assign('mouseup'));
+  }
+
+  drain(key: string) {
+    const result = this.events[key];
+    this.events[key] = false;
+    return result;
+  }
+
+  flushEvents() {
+    Object.keys(this.events).forEach((key) => {
+      this.events[key] = false;
+    });
+  }
+
+  peek(key: string) {
+    return !!this.events[key];
+  }
 }

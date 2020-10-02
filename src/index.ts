@@ -1,8 +1,5 @@
 import { globals } from './globals';
 import {
-  init as initControls, peek,
-} from './events';
-import {
   init as initHistory,
 } from './history';
 import {
@@ -26,11 +23,10 @@ import '../index.scss';
 
 document.addEventListener('DOMContentLoaded', () => {
   globals.init();
-  initControls();
-  initHistory();
+  initHistory(globals);
   initClock();
   initModal();
-  initOrthoViews();
+  initOrthoViews(globals, globals.events);
   disableNativeDrag();
 
   faceManager.init();
@@ -55,9 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (action?.type === 'twist-autocorrect') action.params.progressFn();
     if (action?.type === 'rotate-autocorrect') action.params.progressFn();
 
-    if (peek('mousedown')) mousedown();
-    if (peek('mouseup')) mouseup();
-    if (peek('mousemove')) mousemove();
+    if (globals.events.peek('mousedown')) mousedown(globals);
+    if (globals.events.peek('mouseup')) mouseup(globals);
+    if (globals.events.peek('mousemove')) mousemove(globals);
       globals.render!();
   }
 

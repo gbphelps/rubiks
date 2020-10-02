@@ -2,13 +2,12 @@ import * as THREE from 'three';
 import {
   TwistAction,
 } from '../action';
-import { extractScreenCoords } from '../events';
 import {
   getNormalCubeSpace, CoordTriad, Axis,
 } from '../utils/types';
 
 import getUserTorque from '../getUserTorque';
-import { globals } from '../globals';
+import { Globals } from '../globals';
 
 const THRESHHOLD = 0.1;
 
@@ -40,16 +39,16 @@ function getCardinalDirection(vec: THREE.Vector3) {
   return result;
 }
 
-function getScreenDirection(startPosition: CoordTriad, direction: THREE.Vector3) {
+function getScreenDirection(g: Globals, startPosition: CoordTriad, direction: THREE.Vector3) {
   const cameraStart = startPosition.cameraCoords;
-  const cameraDir = globals.projections.getCameraCoordsFromCubeCoords(direction);
+  const cameraDir = g.projections.getCameraCoordsFromCubeCoords(direction);
   const end = new THREE.Vector3(
     cameraStart.x + cameraDir.x,
     cameraStart.y + cameraDir.y,
     cameraStart.z + cameraDir.z,
   );
 
-  const screenEnd = globals.projections.getScreenCoordsFromCameraCoords(end);
+  const screenEnd = g.projections.getScreenCoordsFromCameraCoords(end);
   const screenStart = startPosition.screenCoords;
   const r = {
     x: screenEnd.x - screenStart.x,
@@ -60,15 +59,15 @@ function getScreenDirection(startPosition: CoordTriad, direction: THREE.Vector3)
   return new THREE.Vector2(r.x / mag, r.y / mag);
 }
 
-function canSetTorqueParams(e: MouseEvent, action: TwistAction) {
+function canSetTorqueParams(g: Globals, e: MouseEvent, action: TwistAction) {
   const { x: x1, y: y1 } = action.startPosition.screenCoords;
-  const { x: x2, y: y2 } = extractScreenCoords(e);
+  const { x: x2, y: y2 } = g.events.extractScreenCoords(e);
   return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) >= THRESHHOLD * THRESHHOLD;
 }
 
-function getTorqueParams(e: MouseEvent, action: TwistAction) {
-  const screenCoords = extractScreenCoords(e);
-  const { cubeCoords } = globals.projections.getProjectionOntoSide({
+function getTorqueParams(g: Globals, e: MouseEvent, action: TwistAction) {
+  const screenCoords = g.events.extractScreenCoords(e);
+  const { cubeCoords } = g.projections.getProjectionOntoSide({
     screen: screenCoords, side: action.side,
   });
 
@@ -78,27 +77,27 @@ function getTorqueParams(e: MouseEvent, action: TwistAction) {
   );
 
   const direction = getCardinalDirection(vec);
-  const screenDirection = getScreenDirection(action.startPosition, direction);
+  const screenDirection = getScreenDirection(g, action.startPosition, direction);
 
   const unitTorque = (new THREE.Vector3()).crossVectors(
     getNormalCubeSpace(action.side),
     direction,
   );
 
-  const activeNode = globals.cube.registry.getActiveNode();
+  const activeNode = g.cube.registry.getActiveNode();
   if (!activeNode) throw new Error();
 
   return {
     direction,
     screenDirection,
     unitTorque,
-    tranche: globals.cube.registry.getTranche(unitTorque),
+    tranche: g.cube.registry.getTranche(unitTorque),
     activeNode,
   };
 }
 
-export default function applyTwist(e: MouseEvent) {
-  const action = globals.action.getAction();
+export default function applyTwist(g: Globals, e: MouseEvent) {
+  const action = g.action.getAction();
   if (!action) throw new Error();
   if (action.type !== 'twist') throw new Error();
 
@@ -108,9 +107,9 @@ export default function applyTwist(e: MouseEvent) {
     // which direction they want to drag in. So we wait until their drag
     // distance has reached a certain threshhold here. Note that THRESHHOLD
     // is in screen units (the cube is 3x3x3 in screen units).
-    if (!canSetTorqueParams(e, action)) return;
-    torqueParams = getTorqueParams(e, action);
-    globals.action.setAction({
+    if (!canSetTorqueParams(g, e, action)) return;
+    torqueParams = getTorqueParams(g, e, action);
+    g.action.setAction({
       ...action,
       torqueParams,
     });
@@ -121,7 +120,7 @@ export default function applyTwist(e: MouseEvent) {
     if (!box) throw new Error('Tried to access unintialized box');
     box.setRotationFromAxisAngle(
       unitTorque,
-      getUserTorque(e),
+      getUserTorque(g, e),
     );
   });
 }
