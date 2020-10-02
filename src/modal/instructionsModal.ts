@@ -417,7 +417,7 @@ function setNextButton(num: number) {
     setListener('demo-prev-button', 'click', () => {
       activateModal('menu-modal');
     });
-    if (neverClosed) (getId('demo-prev-button') as HTMLButtonElement).disabled = true;
+    (getId('demo-prev-button') as HTMLButtonElement).disabled = neverClosed;
   } else if (num === 2) {
     (getId('demo-prev-button') as HTMLButtonElement).disabled = false;
     setListener('demo-prev-button', 'click', () => shrinkThenSetInstruction(1));
