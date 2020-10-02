@@ -158,6 +158,7 @@ function showModal() {
     modal.style.opacity = '1';
     modal.style.transform = 'none';
     setTimeout(() => {
+      resize();
       setUserEventsEnabled(false);
       g.resize();
       r();
@@ -439,6 +440,7 @@ export function triggerSolvedModal() {
 
 function resize() {
   const { height, width } = getId('faux-container').getBoundingClientRect();
+  console.log(height, width);
   getId('faux-canvas').style.height = `${Math.min(height, width)}px`;
   getId('faux-canvas').style.width = `${Math.min(height, width)}px`;
 }
