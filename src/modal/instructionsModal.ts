@@ -445,7 +445,6 @@ export function triggerSolvedModal() {
 
 function resize() {
   const { height, width } = getId('faux-container').getBoundingClientRect();
-  console.log(height, width);
   getId('faux-canvas').style.height = `${Math.min(height, width)}px`;
   getId('faux-canvas').style.width = `${Math.min(height, width)}px`;
 }

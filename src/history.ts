@@ -209,7 +209,7 @@ function setHistory() {
     const child = document.createElement('div');
     child.classList.add('history-log');
     child.style.height = `${LOG_HEIGHT}px`;
-    child.innerHTML = translateLog(manifest[i]);
+    child.innerHTML = translateLog(manifest[manifest.length - 1 - i]);
     history.appendChild(child);
   }
 }
@@ -217,7 +217,8 @@ function setHistory() {
 function setPointer() {
   historyPointer.style.visibility = manifest.length ? 'visible' : 'hidden';
   historyPointer.style.opacity = manifest.length ? 1 : 0;
-  historyPointer.style.top = `${(LOG_HEIGHT - 1) * (manifestIndex - (lastDir === -1 ? 1 : 0) + 1)}px`;
+  const i = manifest.length - manifestIndex - (lastDir === 1 ? 1 : 0);
+  historyPointer.style.top = `${(LOG_HEIGHT - 1) * i}px`;
 }
 
 export function getManifest() {

@@ -31,7 +31,6 @@ export class Events {
 
   assign(key: string) {
     return (e: MouseEvent) => {
-      console.log(this);
       if (this.getUserEventsEnabled()) this.events[key] = e;
     };
   }
