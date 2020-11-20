@@ -377,7 +377,7 @@ export const init = () => {
 function initButtons() {
   getId('won-start-over').addEventListener('click', () => {
     hideModal().then(() => {
-      startOver(g);
+      startOver();
       solved = false;
     });
   });
@@ -387,7 +387,7 @@ function initButtons() {
   });
 
   getId('start-over').addEventListener('click', () => {
-    hideModal().then(() => startOver(g));
+    hideModal().then(() => startOver());
   });
 
   getId('resume').addEventListener('click', () => {
