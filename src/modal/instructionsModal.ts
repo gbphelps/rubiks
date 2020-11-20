@@ -387,7 +387,7 @@ function initButtons() {
   });
 
   getId('start-over').addEventListener('click', () => {
-    hideModal().then(startOver);
+    hideModal().then(() => startOver(g));
   });
 
   getId('resume').addEventListener('click', () => {
