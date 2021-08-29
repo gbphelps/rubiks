@@ -66,19 +66,19 @@ class FaceManager {
     updateFaces() {
       let allSolved = true;
       sides.forEach((side) => {
-        const colors = globals.cube.registry.extractSide(side);
-        this.set(side, colors);
-        if (!sideIsSolved(colors)) allSolved = false;
+        const extractedColors = globals.cube.registry.extractSide(side);
+        this.set(side, extractedColors);
+        if (!sideIsSolved(extractedColors)) allSolved = false;
       });
       if (allSolved) this.puzzleSolved = true;
     }
 }
 
-function sideIsSolved(colors: string[][]): boolean {
-  const color = colors[0][0];
-  for (let i = 0; i < colors.length; i++) {
-    for (let j = 0; j < colors[0].length; j++) {
-      if (colors[i][j] !== color) return false;
+function sideIsSolved(extractedColors: string[][]): boolean {
+  const color = extractedColors[0][0];
+  for (let i = 0; i < extractedColors.length; i++) {
+    for (let j = 0; j < extractedColors[0].length; j++) {
+      if (extractedColors[i][j] !== color) return false;
     }
   }
   return true;

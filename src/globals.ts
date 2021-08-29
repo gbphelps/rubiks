@@ -35,6 +35,8 @@ export class Globals {
 
   events: Events;
 
+  modalVisible: boolean;
+
   constructor({ getCanvas, getContainer }: {
     getCanvas: () => HTMLCanvasElement,
     getContainer: () => HTMLDivElement,
@@ -78,6 +80,8 @@ export class Globals {
 
     window.addEventListener('resize', this.resize);
     this.resize();
+
+    this.modalVisible = true;
   }
 
   resize = () => {

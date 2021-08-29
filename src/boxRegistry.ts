@@ -201,8 +201,11 @@ export function getBoxRegistryNode(cubeCoords: THREE.Vector3) {
 }
 
 function roundVector(v: THREE.Vector3) {
+  // eslint-disable-next-line no-param-reassign
   v.x = Math.round(v.x);
+  // eslint-disable-next-line no-param-reassign
   v.y = Math.round(v.y);
+  // eslint-disable-next-line no-param-reassign
   v.z = Math.round(v.z);
 }
 

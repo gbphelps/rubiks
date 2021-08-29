@@ -6,7 +6,6 @@ import { Globals } from './globals';
 import faceManager from './faceManager';
 import cc from './assets/cc.svg';
 import cw from './assets/cw.svg';
-import { getModalVisible } from './modal/instructionsModal';
 
 class Queue {
   list: (() => void)[] = [];
@@ -169,7 +168,7 @@ function doRotate(g: Globals, move: RotateMove, dir: number, cb: () => void) {
 }
 
 function doFunc(g: Globals, dir: number) {
-  if (getModalVisible()) return;
+  if (g.modalVisible) return;
   if (virtual.lastDir === dir) {
     virtual.manifestIndex += dir;
   }

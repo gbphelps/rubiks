@@ -15,14 +15,9 @@ import { rotateForward } from './rotateInstruction';
 import { setCursorPosition } from './cursorPosition';
 
 const T_DURATION = 300;
-let modalVisible = true;
 let solved = false;
 let activeInstruction = 1;
 let neverClosed = true;
-
-export function getModalVisible() {
-  return modalVisible;
-}
 
 const listeners: Record<string, Record<string, ()=>void>> = {};
 
@@ -153,7 +148,7 @@ function gotIt() {
 }
 
 function showModal() {
-  modalVisible = true;
+  globals.modalVisible = true;
   getId('hamburger').classList.add('minimize');
   return new Promise((r) => {
     const modal = getId('modal');
@@ -164,7 +159,7 @@ function showModal() {
       resize();
       globals.events.setUserEventsEnabled(false);
       g.resize();
-      r();
+      r(undefined);
     }, T_DURATION);
   });
 }
@@ -177,13 +172,13 @@ function hideModal() {
     modal.style.opacity = '0';
     setTimeout(() => {
       neverClosed = false;
-      modalVisible = false;
+      globals.modalVisible = false;
       modal.style.visibility = 'hidden';
       modal.style.animationName = 'none';
       cancelAnimationFrame(frame);
       startClock();
       globals.events.setUserEventsEnabled(true);
-      r();
+      r(undefined);
     }, T_DURATION);
   });
 }
@@ -396,7 +391,7 @@ function initButtons() {
 
   getId('hamburger').addEventListener('click', () => {
     if (faceManager.puzzleSolved) return;
-    if (modalVisible) {
+    if (globals.modalVisible) {
       hideModal();
       return;
     }

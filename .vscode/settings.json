@@ -2,5 +2,6 @@
     "editor.codeActionsOnSave": {
         "source.fixAll": false,
         "source.fixAll.eslint": true,
+        "eslint.lintTask.enable": true,
     }
 }
