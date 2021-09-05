@@ -6,6 +6,7 @@ import { Globals } from './globals';
 import faceManager from './faceManager';
 import cc from './assets/cc.svg';
 import cw from './assets/cw.svg';
+import rotate from './assets/rotate.svg';
 
 class Queue {
   list: (() => void)[] = [];
@@ -247,9 +248,7 @@ function translateLog(entry: MoveLog) {
         const rot = getRotDirection(torque[dims[i]], pos[dims[i]]);
         return `
           <div class="history-log-content">
-            <div class="face-name">
-              <span>${faceName.toUpperCase()}</span>
-            </div> 
+            <span class="face-name">${faceName}</span>
             <div class="turns ${rot === 1 ? 'cw' : 'cc'}">
               ${rot === 1 ? cw : cc}
               <span>&nbsp;\u00d7&nbsp;${turns}</span>
@@ -261,7 +260,7 @@ function translateLog(entry: MoveLog) {
   }
   return `
   <div class="history-log-content rotate">
-    ROTATE
+  <span class="rotate-text">Rotate</span><span class="rotate-svg">${rotate}</span>
   </div>
   `;
 }

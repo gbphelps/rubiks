@@ -120,14 +120,9 @@ body, html {
 .card {
     padding: 20px;
     background: app.$card-background;
-    box-shadow: 0 5px 5px 0 rgba(0,0,80,.05), 
-        0 10px 25px 0 rgba(0,0,100,.2),
-        inset 0 1px white,
-        inset 0 -2px rgba(0,0, 80, .02);
     border-radius: 5px;
     margin: 8px;
 }
-
 
 
 #history {
@@ -151,11 +146,7 @@ body, html {
     height: 40px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid rgba($black, .05);
-    border-top: 1px solid rgba($black, .05);
     margin-bottom: -1px;
-    box-shadow: inset 0 1px white;
-    background: #fafafc;
 }
 
 
@@ -204,6 +195,7 @@ body, html {
 
 button {
     outline: none;
+    border-radius: 3px;
     background: black;
     color: white;
     border: none;
@@ -214,7 +206,7 @@ button {
     margin-right: 8px;
 
     &:disabled {
-        box-shadow: inset 0 0 0 1000px rgba(255,255,255,.9);
+        opacity: .1;
         cursor: not-allowed;
     }
 }
@@ -299,42 +291,44 @@ button {
 .history-log-content {
     display: flex;
     align-items: center;
+    font-size: 20px;
+    justify-content: space-between;
+    width: 100%;
 
     svg {
-        height: 20px;
+        height: 24px;
         width: auto;
     }
 
-    .face-name {
-        width: 80px;
-        span {
-            letter-spacing: 1.2;
-            font-size: 12px;
-            color: $black;
-            font-weight: 700;
-        }
+    * {
+        font-size: inherit;
+        font-weight: 700;
     }
-   
-    .turns {
-        letter-spacing: 1;
-        color: #777;
-        font-size: 12px;
-        display: inline-flex;
-        align-items: center;
-        &.cw svg {
-            fill: blue;
-        }
-        &.cc svg {
-            fill: red;
-            position: relative;
-            left: -3px;
-        }
+
+    .face-name {
+        text-transform: capitalize;
+        width: 80px;
+        letter-spacing: 1.2;
+        color: black;
+        display: inline-block;
     }
     
     &.rotate {
-        font-size: 12px;
-        color: #999;
-        letter-spacing: 1.2;
-        width: 100%;
+        .rotate-text {
+            color: #aaa;
+            margin-right: 12px;
+        }
+        svg {
+            fill: #aaa;
+            stroke: #aaa;
+        }
     }
+
+    .turns {
+        color: #777;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+
 }
